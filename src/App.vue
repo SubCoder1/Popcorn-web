@@ -1,3 +1,5 @@
+<!-- Root file of Popcorn-web which defines the root template of this Vue application -->
+
 <template>
   <router-view />
 </template>

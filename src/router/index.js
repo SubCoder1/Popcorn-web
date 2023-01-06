@@ -1,4 +1,4 @@
-// Routes to all of the views in Popcorn are defined here.
+// Routes to all of the views in Popcorn are defined here. This is one of the root components in Popcorn-web.
 
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
