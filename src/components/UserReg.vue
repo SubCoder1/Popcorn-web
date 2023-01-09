@@ -1,3 +1,5 @@
+<!-- User Registration component rendered through AuthView -->
+
 <template>
   <div class="reg-form">
     <h2>Register.</h2>

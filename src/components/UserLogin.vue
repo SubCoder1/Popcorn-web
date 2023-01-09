@@ -1,3 +1,5 @@
+<!-- User login component rendered through AuthView -->
+
 <template>
   <div class="login-form">
     <h2>Login.</h2>
