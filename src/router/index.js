@@ -1,13 +1,29 @@
 // Routes to all of the views in Popcorn are defined here. This is one of the root components in Popcorn-web.
 
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import UserAuth from "../components/UserAuth.vue";
+import UserLogin from "../components/UserLogin.vue";
+import UserReg from "../components/UserReg.vue";
 
 const routes = [
   {
-    path: "/",
-    name: "home",
-    component: HomeView,
+    path: "/auth",
+    name: "auth",
+    component: UserAuth,
+    children: [
+      {
+        // UserLogin will be rendered inside UserAuth's <router-view>
+        // when /auth/login is matched
+        path: "login",
+        component: UserLogin,
+      },
+      {
+        // UserReg will be rendered inside UserAuth's <router-view>
+        // when /auth/register is matched
+        path: "register",
+        component: UserReg,
+      },
+    ],
   },
 ];
 
