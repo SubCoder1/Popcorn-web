@@ -1,3 +1,7 @@
+<!-- 
+  Authentication View of Popcorn.
+  Components UserLogin and UserReg is rendered through the router-view mentioned here.
+-->
 <template>
   <div
     class="login-component h-100 d-flex align-items-center justify-content-center"
