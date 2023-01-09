@@ -30,4 +30,14 @@ a {
 a:hover {
   color: rgb(250, 71, 51);
 }
+
+::selection {
+  color: white;
+  background: rgb(241, 133, 121);
+}
+
+::-moz-selection {
+  color: white;
+  background: rgb(241, 133, 121);
+}
 </style>
