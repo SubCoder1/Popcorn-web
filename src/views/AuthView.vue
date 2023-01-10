@@ -7,6 +7,15 @@
     class="login-component h-100 d-flex align-items-center justify-content-center"
   >
     <div class="page-info d-flex flex-column justify-content-center">
+      <lottie-player
+        src="https://assets4.lottiefiles.com/private_files/lf30_pe36bsil.json"
+        class="auth-page-animation mb-3"
+        background="#f8f6f3"
+        speed="1"
+        loop
+        autoplay
+      >
+      </lottie-player>
       <h2>Create. Upload. Watch.</h2>
       <div class="d-flex align-items-center">
         <p class="m-0">And don't forget to make some</p>
@@ -45,5 +54,10 @@ export default {
 .auth-page-logo {
   height: 50px;
   width: 50px;
+}
+
+.auth-page-animation {
+  width: 400px;
+  height: 300px;
 }
 </style>
