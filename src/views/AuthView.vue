@@ -6,7 +6,7 @@
   <div
     class="login-component h-100 d-flex align-items-center justify-content-center"
   >
-    <div class="page-info d-flex flex-column justify-content-center">
+    <div class="page-info d-flex flex-column justify-content-start">
       <lottie-player
         src="https://assets4.lottiefiles.com/private_files/lf30_pe36bsil.json"
         class="auth-page-animation mb-3"
