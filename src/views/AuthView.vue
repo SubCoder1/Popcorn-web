@@ -14,6 +14,7 @@
         speed="1"
         loop
         autoplay
+        v-pre
       >
       </lottie-player>
       <h2>Create. Upload. Watch.</h2>
