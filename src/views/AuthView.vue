@@ -6,8 +6,12 @@
   <div
     class="login-component h-100 d-flex align-items-center justify-content-center"
   >
-    <div class="page-info">
-      <h3>Blah Blah Blah</h3>
+    <div class="page-info d-flex flex-column justify-content-center">
+      <h2>Create. Upload. Watch.</h2>
+      <div class="d-flex align-items-center">
+        <p class="m-0">And don't forget to make some</p>
+        <img class="auth-page-logo mb-2" src="@/assets/logo/logo-128x128.png" />
+      </div>
     </div>
     <div class="auth-form-container text-left p-5">
       <router-view />
@@ -32,9 +36,14 @@ export default {
 }
 
 .auth-form-container {
-  height: 500px;
+  height: 460px;
   width: 410px;
   background: white;
   border-radius: 0.5rem;
+}
+
+.auth-page-logo {
+  height: 50px;
+  width: 50px;
 }
 </style>
