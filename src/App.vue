@@ -64,7 +64,7 @@ a:hover {
 }
 
 .form-errors {
-  height: 50px;
+  height: 65px;
   color: rgb(241, 133, 121);
   padding: 0.75rem;
 }
