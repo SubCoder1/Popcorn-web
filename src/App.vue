@@ -66,6 +66,7 @@ a:hover {
 .form-errors {
   height: 50px;
   color: rgb(241, 133, 121);
+  padding: 0.75rem;
 }
 
 .show-error {
@@ -85,5 +86,126 @@ a:hover {
   background-color: rgb(228, 77, 60);
   box-shadow: none;
   outline: none;
+}
+
+.loader-1 {
+  height: 20px;
+  width: 20px;
+  left: 33%;
+  transform: translate(-30%, 0);
+  -webkit-animation: loader-entry 0.3s forwards, loader-1-1 4.8s linear infinite;
+  animation: loader-entry 0.3s forwards, loader-1-1 4.8s linear infinite;
+}
+
+@-webkit-keyframes loader-entry {
+  0% {
+    left: 33%;
+  }
+  100% {
+    left: 30%;
+  }
+}
+
+@keyframes loader-entry {
+  0% {
+    left: 33%;
+  }
+  100% {
+    left: 30%;
+  }
+}
+
+@-webkit-keyframes loader-1-1 {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes loader-1-1 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-1 span {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  height: 20px;
+  width: 20px;
+  clip: rect(0, 20px, 20px, 10px);
+  -webkit-animation: loader-1-2 1.2s linear infinite;
+  animation: loader-1-2 1.2s linear infinite;
+}
+
+@-webkit-keyframes loader-1-2 {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(220deg);
+  }
+}
+@keyframes loader-1-2 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(220deg);
+  }
+}
+
+.loader-1 span::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  height: 20px;
+  width: 20px;
+  clip: rect(0, 20px, 20px, 10px);
+  border-radius: 50%;
+  -webkit-animation: loader-1-3 1.2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+  animation: loader-1-3 1.2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+}
+
+@-webkit-keyframes loader-1-3 {
+  0% {
+    -webkit-transform: rotate(-140deg);
+    border: 2.5px solid rgb(238, 184, 6);
+  }
+  50% {
+    -webkit-transform: rotate(-160deg);
+    border: 2.5px solid rgba(255, 220, 227, 1);
+  }
+  100% {
+    -webkit-transform: rotate(140deg);
+    border: 2.5px solid rgb(238, 184, 6);
+  }
+}
+
+@keyframes loader-1-3 {
+  0% {
+    transform: rotate(-140deg);
+    border: 2.5px solid rgb(238, 184, 6);
+  }
+  50% {
+    transform: rotate(-160deg);
+    border: 2.5px solid rgba(255, 220, 227, 1);
+  }
+  100% {
+    transform: rotate(140deg);
+    border: 2.5px solid rgb(238, 184, 6);
+  }
 }
 </style>
