@@ -4,8 +4,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import UserAuth from "../views/AuthView.vue";
 import UserLogin from "../components/UserLogin.vue";
 import UserReg from "../components/UserReg.vue";
-import UserHome from "../components/UserHome.vue";
 import UserFPwD from "../components/UserFPwD.vue";
+import UserHome from "../views/HomeView.vue";
 
 const routes = [
   {
