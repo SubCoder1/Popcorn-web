@@ -61,4 +61,10 @@ export default {
   width: 400px;
   height: 300px;
 }
+
+@media only screen and (max-width: 1026px) {
+  .page-info {
+    display: none !important;
+  }
+}
 </style>
