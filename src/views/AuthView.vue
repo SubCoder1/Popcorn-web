@@ -3,9 +3,7 @@
   Components UserLogin and UserReg is rendered through the router-view mentioned here.
 -->
 <template>
-  <div
-    class="login-component h-100 d-flex align-items-center justify-content-center"
-  >
+  <div class="auth-view h-100 d-flex align-items-center justify-content-center">
     <div class="page-info d-flex flex-column justify-content-start">
       <lottie-player
         src="https://assets4.lottiefiles.com/private_files/lf30_pe36bsil.json"
@@ -30,9 +28,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
-//import UserLogin from "@/components/UserLogin.vue";
-
 export default {
   name: "UserAuth",
 };
