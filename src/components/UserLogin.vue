@@ -70,9 +70,11 @@ export default {
           password: this.password,
         })
         .then(() => {
-          this.$router.replace("/");
+          // successfully logged-in
+          this.$router.push({ name: "home" });
         })
         .catch((e) => {
+          // error occured
           if (e.response) {
             // Server sent a response
             if (e.response.data.status != 500) {
