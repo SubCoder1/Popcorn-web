@@ -92,7 +92,7 @@ export default {
       // hides the loader
       this.form_submitted = false;
     },
-    removeErr: async function () {
+    removeErr: function () {
       // Clean & hide error box on click event to input boxes
       this.showErr = false;
       this.formErr = "";
