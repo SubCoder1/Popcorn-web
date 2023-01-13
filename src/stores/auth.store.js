@@ -1,3 +1,6 @@
+// Global store of user authentication in Popcorn-web.
+// Handles data from auth APIs of Popcorn and utilizes pinia's global state management feature to save info.
+
 import { defineStore } from "pinia";
 import axios from "axios";
 
@@ -13,6 +16,7 @@ export const useUserStore = defineStore({
     getUserName: (state) => state.username,
   },
   actions: {
+    // Login API handler
     async login(username, password) {
       let res = {};
       // Login API request to server
@@ -46,6 +50,7 @@ export const useUserStore = defineStore({
         });
       return res;
     },
+    // Register API handler
     async register(username, password) {
       let res = {};
       await axios
