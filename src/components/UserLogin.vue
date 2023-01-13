@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import { useUserStore } from "@/stores/auth.store";
 
 export default {
   data() {
@@ -61,34 +61,19 @@ export default {
   name: "UserLogin",
   methods: {
     login: async function () {
+      const authStore = useUserStore();
       // shows the loader
       this.form_submitted = true;
       // Login API request to server
-      await axios
-        .post(process.env.VUE_APP_LOGIN_API, {
-          username: this.username,
-          password: this.password,
-        })
-        .then(() => {
-          // successfully logged-in
-          this.$router.push({ name: "home" });
-        })
-        .catch((e) => {
-          // error occured
-          if (e.response) {
-            // Server sent a response
-            if (e.response.data.status != 500) {
-              this.formErr = "Username or Password is incorrect.";
-            } else {
-              this.formErr = "Server error occured.";
-            }
-          } else {
-            // Server unreachable
-            this.formErr = "Server unreachable at the moment.";
-          }
-          // Show error to client
-          this.showErr = true;
-        });
+      const resp = await authStore.login(this.username, this.password);
+      if (resp.status == 200) {
+        // login successful
+        this.$router.push({ name: "home" });
+      } else {
+        // Error during login
+        this.formErr = resp.error;
+        this.showErr = true;
+      }
       // hides the loader
       this.form_submitted = false;
     },
