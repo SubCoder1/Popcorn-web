@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import { useUserStore } from "@/stores/auth.store";
 
 export default {
   data() {
@@ -59,37 +59,24 @@ export default {
       // shows the loader
       this.form_submitted = true;
       if (this.validateForm()) {
+        const authStore = useUserStore();
         // Register API request to server
-        await axios
-          .post(process.env.VUE_APP_REGISTER_API, {
-            username: this.username,
-            password: this.password,
-          })
-          .then(() => {
-            // successful registration
-            this.$router.push({ name: "home" });
-          })
-          .catch((e) => {
-            // error occured
-            if (e.response) {
-              // Server sent a response
-              // show the first validation issue received from server
-              this.formErr = e.response.data.details.errors[0].message;
-            } else {
-              // Server unreachable
-              this.formErr = "Server unreachable at the moment.";
-            }
-            // Show error to client
-            this.showErr = true;
-          });
+        const resp = await authStore.register(this.username, this.password);
+        if (resp.status == 200) {
+          this.$router.push({ name: "home" });
+        } else {
+          // Error during login
+          this.formErr = resp.error;
+          this.showErr = true;
+        }
       }
       this.form_submitted = false;
     },
-    removeErr: async function () {
+    removeErr: function () {
       this.showErr = false;
       this.formErr = "";
     },
-    validateForm: async function () {
+    validateForm: function () {
       // useless client side validation of user registration in Popcorn.
       if (this.username.length < 5 || this.username.length > 20) {
         // username length should be between [5,20]
