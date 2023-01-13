@@ -32,12 +32,10 @@ export const useUserStore = defineStore({
           res["status"] = 200;
         })
         .catch((e) => {
-          this.user_auth = false;
-          this.username = "";
           // error occured
-          res["status"] = 400;
           if (e.response) {
             // Server sent a response
+            res["status"] = e.response.data.status;
             if (e.response.data.status != 500) {
               res["error"] = "Username or Password is incorrect.";
             } else {
@@ -45,6 +43,7 @@ export const useUserStore = defineStore({
             }
           } else {
             // Server unreachable
+            res["status"] = 503;
             res["error"] = "Server unreachable at the moment.";
           }
         });
@@ -65,17 +64,44 @@ export const useUserStore = defineStore({
           res["status"] = 200;
         })
         .catch((e) => {
-          this.user_auth = false;
-          this.username = "";
           // error occured
-          res["status"] = 400;
           if (e.response) {
             // Server sent a response
+            res["status"] = e.response.data.status;
             // show the first validation issue received from server
             res["error"] = e.response.data.details.errors[0].message;
           } else {
             // Server unreachable
+            res["status"] = 503;
             res["error"] = "Server unreachable at the moment.";
+          }
+        });
+      return res;
+    },
+    // Logout API handler
+    async logout() {
+      let res = {};
+      await axios
+        .post(process.env.VUE_APP_LOGOUT_API)
+        .then(() => {
+          // logout successful
+          this.user_auth = false;
+          this.username = "";
+          res["status"] = 200;
+        })
+        .catch((e) => {
+          // error during logout
+          if (e.response) {
+            // Server sent a response
+            res["status"] = e.response.data.status;
+            if (e.response.data.status != 500) {
+              // Invalid token
+              this.user_auth = false;
+              this.username = "";
+            } else {
+              // Server error
+              res["error"] = "Server error occured.";
+            }
           }
         });
       return res;
