@@ -213,4 +213,23 @@ a:hover {
     border: 2.5px solid rgb(238, 184, 6);
   }
 }
+
+.skeleton {
+  animation: skeleton-loading 0.8s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-color: hsl(200, 20%, 80%);
+  }
+  100% {
+    background-color: hsl(200, 20%, 95%);
+  }
+}
+
+.skeleton-text {
+  width: 100px;
+  height: 0.7rem;
+  border-radius: 0.25rem;
+}
 </style>
