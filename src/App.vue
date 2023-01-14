@@ -5,7 +5,7 @@
 </template>
 
 <style lang="css">
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap");
 
 html,
 body {
@@ -19,6 +19,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: rgba(32 39 44 1);
   height: 100%;
+}
+
+.container-style {
+  background: white;
+  border-radius: 0.5rem;
 }
 
 a {
