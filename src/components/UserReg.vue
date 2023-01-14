@@ -2,7 +2,7 @@
 
 <template>
   <form @submit.prevent="register" class="reg-form">
-    <h2>Register.</h2>
+    <h3>Register.</h3>
     <router-link to="/auth/login">or have one already?</router-link>
     <p
       class="form-errors rounded-md text-sm mt-2"
