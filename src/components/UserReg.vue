@@ -70,7 +70,11 @@ export default {
       if (this.validateForm()) {
         const authStore = useUserStore();
         // Register API request to server
-        const resp = await authStore.register(this.username, this.password);
+        const resp = await authStore.register(
+          this.username,
+          this.full_name,
+          this.password
+        );
         if (resp.status == 200) {
           this.$router.push({ name: "home" });
         } else {
