@@ -14,6 +14,14 @@
       <input
         type="text"
         class="form-control text-sm rounded-md mb-3"
+        placeholder="Full Name"
+        v-model="full_name"
+        @click="removeErr"
+        required
+      />
+      <input
+        type="text"
+        class="form-control text-sm rounded-md mb-3"
         placeholder="Username"
         v-model="username"
         @click="removeErr"
@@ -48,6 +56,7 @@ export default {
     return {
       form_submitted: false,
       username: "",
+      full_name: "",
       password: "",
       showErr: false,
       formErr: "",
@@ -84,7 +93,17 @@ export default {
     },
     validateForm: function () {
       // useless client side validation of user registration in Popcorn.
-      if (this.username.length < 5 || this.username.length > 20) {
+      if (this.full_name.length < 5 || this.full_name.length > 30) {
+        // full_name length should be between [5,20]
+        this.formErr = "FullName should be of 5 - 30 characters.";
+        this.showErr = true;
+        return false;
+      } else if (!/^[A-Za-z\s]*$/.test(this.full_name)) {
+        // full_name should only contain alphabets (spaces excluded)
+        this.formErr = "Full Name should only contain alphabets and spaces";
+        this.showErr = true;
+        return false;
+      } else if (this.username.length < 5 || this.username.length > 20) {
         // username length should be between [5,20]
         this.formErr = "Username should be of 5 - 20 characters.";
         this.showErr = true;
