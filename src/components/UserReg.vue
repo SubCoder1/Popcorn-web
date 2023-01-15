@@ -65,9 +65,15 @@ export default {
         if (resp.status == 200) {
           this.$router.push({ name: "home" });
         } else {
-          // Error during login
-          this.formErr = resp.error;
-          this.showErr = true;
+          // Error during Register
+          if (resp.status >= 500) {
+            // Server error
+            this.$parent.$parent.$parent.$parent.srvErrModal();
+          } else {
+            // Maybe validation
+            this.formErr = resp.error;
+            this.showErr = true;
+          }
         }
       }
       this.form_submitted = false;

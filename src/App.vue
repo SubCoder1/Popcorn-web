@@ -1,8 +1,54 @@
 <!-- Root file of Popcorn-web which defines the root template with top-level routing of this Vue application -->
 
 <template>
+  <!-- Error modal only used to show if any server side issue has occured. -->
+  <div
+    class="modal fade"
+    v-show="showErrModal"
+    v-bind:class="{ show: showErrModal, 'd-block': showErrModal }"
+    refs="srvErrModal"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0">
+        <div class="modal-body">
+          Server error occured. Please try again after sometime.
+        </div>
+        <div class="modal-footer border-0">
+          <button
+            type="button"
+            class="btn d-flex align-items-center justify-content-center position-relative rounded-md text-sm mt-2 mb-2"
+            data-bs-dismiss="modal"
+            @click="srvErrModal"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <router-view />
+  <div v-if="showErrModal" class="modal-backdrop fade show"></div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      showErrModal: false,
+    };
+  },
+  methods: {
+    srvErrModal: function () {
+      this.showErrModal = !this.showErrModal;
+    },
+  },
+};
+</script>
 
 <style lang="css">
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap");

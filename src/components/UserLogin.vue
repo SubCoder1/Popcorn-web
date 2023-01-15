@@ -71,8 +71,14 @@ export default {
         this.$router.push({ name: "home" });
       } else {
         // Error during login
-        this.formErr = resp.error;
-        this.showErr = true;
+        if (resp.status >= 500) {
+          // Server error
+          this.$parent.$parent.$parent.$parent.srvErrModal();
+        } else {
+          // Maybe validation
+          this.formErr = resp.error;
+          this.showErr = true;
+        }
       }
       // hides the loader
       this.form_submitted = false;
