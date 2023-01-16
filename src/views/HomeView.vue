@@ -8,7 +8,9 @@
   <div
     class="home-view h-100 m-auto d-flex align-items-center justify-content-center"
   >
-    <div class="gang-create-container h-auto container-style text-left p-5">
+    <div
+      class="gang-create-container h-auto container-style text-left me-4 p-5"
+    >
       <GangCreate />
     </div>
     <div class="d-flex flex-column">
@@ -41,7 +43,6 @@ export default {
 <style scoped lang="css">
 .gang-create-container {
   width: 700px;
-  margin-right: 50px;
 }
 
 .gang-join-container {
