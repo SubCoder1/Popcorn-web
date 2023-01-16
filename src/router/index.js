@@ -50,7 +50,7 @@ const routes = [
   },
   // catch all redirect to home page
   {
-    path: "/:pathMatch(.*)*",
+    path: "/:catchAll(.*)",
     name: "unknown",
     redirect: { name: "home" },
   },
