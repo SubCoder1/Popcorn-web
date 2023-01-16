@@ -51,7 +51,7 @@ const routes = [
   // catch all redirect to home page
   {
     path: "/:catchAll(.*)",
-    name: "unknown",
+    name: "404",
     redirect: { name: "home" },
   },
 ];
