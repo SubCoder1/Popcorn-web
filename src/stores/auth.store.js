@@ -2,15 +2,12 @@
 // Handles data from auth APIs of Popcorn and utilizes pinia's global state management feature to save info.
 
 import { defineStore } from "pinia";
+import { useUserStore } from "./user.store";
 import axios from "axios";
 
-export const useUserStore = defineStore({
-  id: "user",
+export const useAuthStore = defineStore("auth", {
   state: () => ({
     user_auth: false,
-    username: "",
-    full_name: "",
-    user_profile_pic: "",
   }),
   persist: true, // store in localStorage
   getters: {
@@ -42,12 +39,20 @@ export const useUserStore = defineStore({
           if (e.response) {
             // Server sent a response
             res["status"] = e.response.status;
-            if (res["status"] != 500) {
+            if (res["status"] == 422) {
+              // JSON bind error
+              res["error"] = "Invalid JSON provided.";
+            } else if (res["status"] == 401) {
+              // Validation error
               res["error"] = "Username or Password is incorrect.";
+            } else {
+              // Server error
+              res["error"] = "Server error occured.";
             }
           } else {
             // Server unreachable
             res["status"] = 503;
+            res["error"] = "Server unreachable.";
           }
         });
       return res;
@@ -78,7 +83,16 @@ export const useUserStore = defineStore({
             // Server sent a response
             res["status"] = e.response.status;
             // show the first validation issue received from server
-            res["error"] = e.response.data.details.errors[0].message;
+            if (res["status"] == 422) {
+              // JSON bind error
+              res["error"] = "Invalid JSON provided.";
+            } else if (res["status"] == 400) {
+              // Validation error
+              res["error"] = e.response.data.details.errors[0].message;
+            } else {
+              // Server error
+              res["error"] = "Server error occured.";
+            }
           } else {
             // Server unreachable
             res["status"] = 503;
@@ -89,6 +103,7 @@ export const useUserStore = defineStore({
     // Logout API handler
     async logout() {
       let res = {};
+      const userStore = useUserStore();
       await axios
         .post(
           process.env.VUE_APP_LOGOUT_API,
@@ -100,9 +115,7 @@ export const useUserStore = defineStore({
         .then(() => {
           // logout successful
           this.user_auth = false;
-          this.username = "";
-          this.full_name = "";
-          this.user_profile_pic = "";
+          userStore.clearUserData();
           res["status"] = 200;
         })
         .catch((e) => {
@@ -113,36 +126,14 @@ export const useUserStore = defineStore({
             if (e.response.data.status != 500) {
               // Invalid token
               this.user_auth = false;
-              this.username = "";
-              this.user_profile_pic = "";
+              userStore.clearUserData();
+            } else {
+              // Server error
+              res["error"] = "Server error occured.";
             }
           } else {
             res["status"] = 503;
-          }
-        });
-      return res;
-    },
-    // GetUser API handler
-    async getUser() {
-      let res = {};
-      // GetUser API request to server
-      await axios
-        .get(process.env.VUE_APP_GET_USER_API)
-        .then((response) => {
-          // Successfully fetched client's data
-          res["status"] = 200;
-          this.username = response.data.username;
-          this.full_name = response.data.full_name;
-          this.user_profile_pic = response.data.user_profile_pic;
-        })
-        .catch((e) => {
-          // error occured
-          if (e.response) {
-            // Server sent a response
-            res["status"] = e.response.status;
-          } else {
-            // Server unreachable
-            res["status"] = 503;
+            res["error"] = "Server unreachable.";
           }
         });
       return res;
@@ -150,6 +141,7 @@ export const useUserStore = defineStore({
     // Refresh token API handler
     async refreshToken() {
       let res = {};
+      const userStore = useUserStore();
       // Refresh Token API request to server
       await axios
         .post(
@@ -171,13 +163,15 @@ export const useUserStore = defineStore({
             if (res["status"] == 401) {
               // Access as well as Refresh token has expired.
               this.user_auth = false;
-              this.user_profile_pic = "";
-              this.username = "";
-              this.full_name = "";
+              userStore.clearUserData();
               res["error"] = "User session expired.";
+            } else {
+              // Server error
+              res["error"] = "Server error occured.";
             }
           } else {
             res["status"] = 503;
+            res["error"] = "Server unreachable.";
           }
         });
       return res;
