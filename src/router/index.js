@@ -6,7 +6,7 @@ import UserLogin from "../components/UserLogin.vue";
 import UserReg from "../components/UserReg.vue";
 import UserFPwD from "../components/UserFPwD.vue";
 import UserHome from "../views/HomeView.vue";
-import { useUserStore } from "@/stores/auth.store";
+import { useAuthStore } from "@/stores/auth.store";
 
 const routes = [
   // AuthView routes
@@ -64,7 +64,7 @@ const router = createRouter({
 // Global guard to ensure that client is authenticated before visiting auth only pages
 // even though this is handled server-side
 router.beforeEach(async (to) => {
-  const authStore = useUserStore();
+  const authStore = useAuthStore();
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     // View or Component requires auth
     if (!authStore.getUserAuth) {
