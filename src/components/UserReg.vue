@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { useUserStore } from "@/stores/auth.store";
+import { useAuthStore } from "@/stores/auth.store";
 
 export default {
   data() {
@@ -68,7 +68,7 @@ export default {
       // shows the loader
       this.form_submitted = true;
       if (this.validateForm()) {
-        const authStore = useUserStore();
+        const authStore = useAuthStore();
         // Register API request to server
         const resp = await authStore.register(
           this.username,
