@@ -278,4 +278,8 @@ a:hover {
   height: 0.7rem;
   border-radius: 0.25rem;
 }
+
+.h-fit-content {
+  height: fit-content;
+}
 </style>
