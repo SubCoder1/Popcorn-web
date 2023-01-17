@@ -18,10 +18,13 @@
       <h2>Create. Upload. Watch.</h2>
       <div class="d-flex align-items-center">
         <p class="m-0">And don't forget to make some</p>
-        <img class="auth-page-logo mb-2" src="@/assets/logo/logo-128x128.png" />
+        <img
+          class="auth-page-logo mb-2 ms-2"
+          src="@/assets/logo/logo-128x128.png"
+        />
       </div>
     </div>
-    <div class="auth-form-container text-left p-5">
+    <div class="auth-form-container container-style text-left p-5">
       <router-view />
     </div>
   </div>
@@ -29,7 +32,7 @@
 
 <script>
 export default {
-  name: "UserAuth",
+  name: "AuthView",
 };
 </script>
 
@@ -43,8 +46,6 @@ export default {
 .auth-form-container {
   height: 460px;
   width: 410px;
-  background: white;
-  border-radius: 0.5rem;
 }
 
 .auth-page-logo {
