@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { useUserStore } from "@/stores/auth.store";
+import { useAuthStore } from "@/stores/auth.store";
 
 export default {
   data() {
@@ -61,7 +61,7 @@ export default {
   name: "UserLogin",
   methods: {
     login: async function () {
-      const authStore = useUserStore();
+      const authStore = useAuthStore();
       // shows the loader
       this.form_submitted = true;
       // Login API request to server
