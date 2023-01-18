@@ -42,7 +42,7 @@ export const useAuthStore = defineStore("auth", {
             if (res["status"] == 422) {
               // JSON bind error
               res["error"] = "Invalid JSON provided.";
-            } else if (res["status"] == 401) {
+            } else if (res["status"] == 401 || res["status"] == 400) {
               // Validation error
               res["error"] = "Username or Password is incorrect.";
             } else {
