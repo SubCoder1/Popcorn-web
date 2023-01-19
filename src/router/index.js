@@ -1,11 +1,11 @@
 // Routes to all of the views in Popcorn are defined here. This is one of the root components in Popcorn-web.
 
 import { createRouter, createWebHistory } from "vue-router";
-import UserAuth from "../views/AuthView.vue";
-import UserLogin from "../components/UserLogin.vue";
-import UserReg from "../components/UserReg.vue";
-import UserFPwD from "../components/UserFPwD.vue";
-import UserHome from "../views/HomeView.vue";
+import UserAuth from "@/views/AuthView.vue";
+import UserLogin from "@/components/UserLogin.vue";
+import UserReg from "@/components/UserReg.vue";
+import UserFPwD from "@/components/UserFPwD.vue";
+import UserHome from "@/views/HomeView.vue";
 import { useAuthStore } from "@/stores/auth.store";
 
 const routes = [
@@ -50,7 +50,7 @@ const routes = [
   },
   // catch all redirect to home page
   {
-    path: "/:catchAll(.*)",
+    path: "/:catchAll(.*)*",
     name: "404",
     redirect: { name: "home" },
   },
