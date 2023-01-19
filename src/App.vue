@@ -131,6 +131,10 @@ a:hover {
   padding: 0.75rem;
 }
 
+.btn-md {
+  width: 150px;
+}
+
 .btn:hover,
 .btn:focus {
   color: white;
