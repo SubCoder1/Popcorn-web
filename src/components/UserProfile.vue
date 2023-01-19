@@ -18,7 +18,7 @@
         />
         <div class="d-flex flex-column justify-content-center">
           <p class="mb-1 text-sm">{{ user.full_name }}</p>
-          <p class="m-0 text-sm">@{{ user.username }}</p>
+          <p class="mb-1 text-sm text-secondary">@{{ user.username }}</p>
           <router-link
             to="{ name: 'auth' }"
             custom
