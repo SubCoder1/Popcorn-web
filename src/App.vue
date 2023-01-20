@@ -305,9 +305,14 @@ a:hover {
 }
 
 .skeleton-text {
-  width: 100px;
+  width: 135px;
   height: 0.7rem;
   border-radius: 0.25rem;
+}
+
+.user-prof-skeleton-md {
+  height: 50px;
+  width: 50px;
 }
 
 .h-fit-content {
