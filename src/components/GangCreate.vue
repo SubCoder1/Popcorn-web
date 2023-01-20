@@ -1,15 +1,21 @@
 <!-- Create Gang form component rendered through HomeView -->
 
 <template>
-  <h4>Create a Gang!</h4>
-  <router-link :to="{ name: 'joingang' }">or join one?</router-link>
+  <div class="d-flex justify-content-between">
+    <div class="h-auto">
+      <h4>Create a Gang!</h4>
+      <router-link :to="{ name: 'joingang' }">or join one?</router-link>
+    </div>
+    <div class="gang-create-error">
+      <p
+        class="form-errors rounded-md text-sm"
+        v-bind:class="{ 'show-error': showErr }"
+      >
+        {{ formErr }}
+      </p>
+    </div>
+  </div>
   <form @submit.prevent="createGang(false)" class="gang-create-form">
-    <p
-      class="form-errors rounded-md text-sm mt-2"
-      v-bind:class="{ 'show-error': showErr }"
-    >
-      {{ formErr }}
-    </p>
     <div
       class="d-flex align-items-center justify-content-between flex-wrap mb-3"
     >
@@ -55,7 +61,7 @@
           max="10"
           required
         />
-        / 10
+        / 10 (Max Gang Members)
       </div>
     </div>
     <button
@@ -205,6 +211,6 @@ export default {
 }
 
 .input-xsm {
-  width: 80px;
+  width: 60px;
 }
 </style>
