@@ -8,7 +8,7 @@
       <lottie-player
         src="https://assets4.lottiefiles.com/private_files/lf30_pe36bsil.json"
         class="auth-page-animation mb-3"
-        background="#f8f6f3"
+        background="transparent"
         speed="1"
         loop
         autoplay
