@@ -49,7 +49,7 @@
       class="d-flex align-items-center justify-content-between flex-wrap mb-3"
     >
       <label for="gangLimit" class="text-sm">Gang Members limit:</label>
-      <div class="input-md d-flex align-items-center">
+      <div class="input-md d-flex align-items-center text-secondary">
         <input
           type="number"
           class="form-control text-sm rounded-md input-xsm me-3"
