@@ -131,10 +131,6 @@ a:hover {
   padding: 0.75rem;
 }
 
-.btn-md {
-  width: 150px;
-}
-
 .btn:hover,
 .btn:focus {
   color: white;
@@ -148,11 +144,22 @@ a:hover {
   width: 20px;
   left: 33%;
   transform: translate(-30%, 0);
-  -webkit-animation: loader-entry 0.3s forwards, loader-1-1 4.8s linear infinite;
-  animation: loader-entry 0.3s forwards, loader-1-1 4.8s linear infinite;
+  -webkit-animation: loader-entry-1 0.3s forwards,
+    loader-1-1 4.8s linear infinite;
+  animation: loader-entry-1 0.3s forwards, loader-1-1 4.8s linear infinite;
 }
 
-@-webkit-keyframes loader-entry {
+.loader-2 {
+  height: 20px;
+  width: 20px;
+  left: 27%;
+  transform: translate(-30%, 0);
+  -webkit-animation: loader-entry-2 0.3s forwards,
+    loader-1-1 4.8s linear infinite;
+  animation: loader-entry-2 0.3s forwards, loader-1-1 4.8s linear infinite;
+}
+
+@-webkit-keyframes loader-entry-1 {
   0% {
     left: 33%;
   }
@@ -161,12 +168,30 @@ a:hover {
   }
 }
 
-@keyframes loader-entry {
+@keyframes loader-entry-1 {
   0% {
     left: 33%;
   }
   100% {
     left: 30%;
+  }
+}
+
+@-webkit-keyframes loader-entry-2 {
+  0% {
+    left: 27%;
+  }
+  100% {
+    left: 24%;
+  }
+}
+
+@keyframes loader-entry-2 {
+  0% {
+    left: 27%;
+  }
+  100% {
+    left: 24%;
   }
 }
 
@@ -188,7 +213,8 @@ a:hover {
   }
 }
 
-.loader-1 span {
+.loader-1 span,
+.loader-2 span {
   top: 0;
   left: 0;
   bottom: 0;
@@ -218,7 +244,8 @@ a:hover {
   }
 }
 
-.loader-1 span::after {
+.loader-1 span::after,
+.loader-2 span::after {
   content: "";
   position: absolute;
   top: 0;
