@@ -1,7 +1,6 @@
 <!--
   Home View of Popcorn.
-  Components like GangCreate, GangJoin, UserAcc . . . are rendered through this View.
-  Kinda like the dashboard pages in other applications. Needs auth users to access this view.
+  Components like GangDashboard sub-view, GangInvite, UserProfile . . . are rendered through this View.
  -->
 
 <template>
@@ -9,13 +8,13 @@
     class="home-view h-100 m-auto d-flex align-items-center justify-content-center"
   >
     <div
-      class="gang-create-container h-auto container-style text-left me-4 p-5"
+      class="gang-dashboard-container h-auto container-style text-left me-4 p-5"
     >
-      <GangCreate />
+      <router-view />
     </div>
     <div class="d-flex flex-column">
-      <div class="gang-join-container container-style text-left p-5">
-        <GangJoin />
+      <div class="gang-invite-container container-style text-left">
+        <GangInvite />
       </div>
       <div class="user-profile-container container-style w-auto mt-4 p-5">
         <UserProfile />
@@ -25,15 +24,13 @@
 </template>
 
 <script>
-import GangCreate from "@/components/GangCreate.vue";
-import GangJoin from "@/components/GangJoin.vue";
+import GangInvite from "@/components/GangInvite.vue";
 import UserProfile from "@/components/UserProfile.vue";
 
 export default {
   name: "HomeView",
   components: {
-    GangCreate,
-    GangJoin,
+    GangInvite,
     UserProfile,
   },
 };
@@ -41,12 +38,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="css">
-.gang-create-container {
+.gang-dashboard-container {
   width: 700px;
 }
 
-.gang-join-container {
+.gang-invite-container {
   width: 410px;
-  height: 390px;
+  height: 280px;
 }
 </style>
