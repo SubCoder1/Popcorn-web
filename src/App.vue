@@ -23,7 +23,7 @@
             type="button"
             class="btn d-flex align-items-center justify-content-center position-relative rounded-md text-sm mt-2 mb-2"
             data-bs-dismiss="modal"
-            @click="srvErrModal"
+            @click="srvErrModal(true)"
           >
             Close
           </button>
@@ -43,8 +43,12 @@ export default {
     };
   },
   methods: {
-    srvErrModal: function () {
-      this.showErrModal = !this.showErrModal;
+    srvErrModal: function (Close) {
+      if (!this.showErrModal) {
+        this.showErrModal = true;
+      } else if (Close) {
+        this.showErrModal = false;
+      }
     },
   },
 };
@@ -94,6 +98,11 @@ a:hover {
 
 .text-sm {
   font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-xsm {
+  font-size: 0.75rem;
   line-height: 1.25rem;
 }
 
