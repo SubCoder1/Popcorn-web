@@ -138,6 +138,24 @@ export const useAuthStore = defineStore("auth", {
         });
       return res;
     },
+    // isUserAuthenticated API handler
+    async isUserAuth() {
+      let authenticated = await axios
+        .get(process.env.VUE_APP_AUTH_CHECK_API, {
+          withCredentials: true,
+        })
+        .then(() => {
+          // User is authenticated
+          this.user_auth = true;
+          return true;
+        })
+        .catch(() => {
+          // Error occured
+          this.user_auth = false;
+          return false;
+        });
+      return authenticated;
+    },
     // Refresh token API handler
     async refreshToken() {
       let res = {};
