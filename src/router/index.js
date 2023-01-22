@@ -2,14 +2,14 @@
 
 import { createRouter, createWebHistory } from "vue-router";
 import UserAuth from "@/views/AuthView.vue";
-import UserLogin from "@/components/UserLogin.vue";
-import UserReg from "@/components/UserReg.vue";
-import UserFPwD from "@/components/UserFPwD.vue";
+import UserLogin from "@/components/user/UserLogin.vue";
+import UserReg from "@/components/user/UserReg.vue";
+import UserFPwD from "@/components/user/UserFPwD.vue";
 import UserHome from "@/views/HomeView.vue";
-import GangDashboard from "@/components/GangDashboard.vue";
-import GangCreate from "@/components/GangCreate.vue";
-import GangJoin from "@/components/GangJoin.vue";
-import GangList from "@/components/GangList.vue";
+import GangDashboard from "@/components/gang/GangDashboard.vue";
+import GangCreate from "@/components/gang/GangCreate.vue";
+import GangJoin from "@/components/gang/GangJoin.vue";
+import GangList from "@/components/gang/GangList.vue";
 import { useAuthStore } from "@/stores/auth.store";
 import { useLoaderStore } from "@/stores/loader.store";
 
