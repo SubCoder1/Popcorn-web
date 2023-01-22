@@ -141,6 +141,7 @@ export default {
         const response = await this.createGangAPI();
         if (response.status == 200) {
           // Success
+          this.$router.push({ name: "listgang" });
         } else {
           // Error
           if (response.status == 401) {
