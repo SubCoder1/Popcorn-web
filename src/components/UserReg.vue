@@ -76,7 +76,7 @@ export default {
           this.password
         );
         if (resp.status == 200) {
-          this.$router.push({ name: "home" });
+          this.$router.replace({ name: "home" });
         } else {
           // Error during Register
           if (resp.status >= 500) {

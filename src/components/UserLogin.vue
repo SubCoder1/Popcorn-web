@@ -68,7 +68,7 @@ export default {
       const resp = await authStore.login(this.username, this.password);
       if (resp.status == 200) {
         // login successful
-        this.$router.push({ name: "home" });
+        this.$router.replace({ name: "home" });
       } else {
         // Error during login
         if (resp.status >= 500) {
