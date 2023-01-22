@@ -48,9 +48,11 @@
 <script>
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth.store";
-import GangList from "./GangList.vue";
-import GangCreate from "./GangCreate.vue";
-import GangJoin from "./GangJoin.vue";
+import { defineAsyncComponent } from "vue";
+
+const GangList = defineAsyncComponent(() => import("./GangList.vue"));
+const GangCreate = defineAsyncComponent(() => import("./GangCreate.vue"));
+const GangJoin = defineAsyncComponent(() => import("./GangJoin.vue"));
 
 export default {
   data() {
