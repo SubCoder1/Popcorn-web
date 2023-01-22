@@ -8,15 +8,19 @@
     class="home-view h-100 m-auto d-flex align-items-center justify-content-center"
   >
     <div
-      class="gang-dashboard-container h-auto container-style text-left me-4 p-5"
+      class="gang-dashboard-container h-auto container-style container-shadow text-left me-4 p-5"
     >
       <router-view />
     </div>
     <div class="d-flex flex-column">
-      <div class="gang-invite-container container-style text-left">
+      <div
+        class="gang-invite-container container-style container-shadow text-left"
+      >
         <GangInvite />
       </div>
-      <div class="user-profile-container container-style w-auto mt-4 p-5">
+      <div
+        class="user-profile-container container-style container-shadow w-auto mt-4 p-5"
+      >
         <UserProfile />
       </div>
     </div>

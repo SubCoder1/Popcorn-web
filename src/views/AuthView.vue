@@ -24,7 +24,9 @@
         />
       </div>
     </div>
-    <div class="auth-form-container container-style text-left p-5">
+    <div
+      class="auth-form-container container-style container-shadow text-left p-5"
+    >
       <router-view />
     </div>
   </div>

@@ -87,6 +87,10 @@ body {
   border-radius: 0.5rem;
 }
 
+.container-shadow {
+  box-shadow: rgb(0 0 0 / 5%) 0px 4px 12px;
+}
+
 a {
   text-decoration: none;
   font-size: 0.875rem;
