@@ -1,3 +1,5 @@
+<!-- Gang Invite component rendered through GangDashboard -->
+
 <template>
   <div v-if="loading" class="d-flex flex-column p-5">
     <div class="d-flex flex-row mb-3">

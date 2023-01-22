@@ -10,7 +10,7 @@
     <div
       class="gang-dashboard-container h-auto container-style container-shadow text-left me-4 p-5"
     >
-      <router-view />
+      <GangDashboard />
     </div>
     <div class="d-flex flex-column">
       <div
@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import GangDashboard from "@/components/gang/GangDashboard.vue";
 import GangInvite from "@/components/gang/GangInvite.vue";
 import UserProfile from "@/components/user/UserProfile.vue";
 
@@ -36,6 +37,7 @@ export default {
   components: {
     GangInvite,
     UserProfile,
+    GangDashboard,
   },
 };
 </script>

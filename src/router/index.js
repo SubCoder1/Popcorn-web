@@ -5,11 +5,7 @@ import UserAuth from "@/views/AuthView.vue";
 import UserLogin from "@/components/user/UserLogin.vue";
 import UserReg from "@/components/user/UserReg.vue";
 import UserFPwD from "@/components/user/UserFPwD.vue";
-import UserHome from "@/views/HomeView.vue";
-import GangDashboard from "@/components/gang/GangDashboard.vue";
-import GangCreate from "@/components/gang/GangCreate.vue";
-import GangJoin from "@/components/gang/GangJoin.vue";
-import GangList from "@/components/gang/GangList.vue";
+import HomeView from "@/views/HomeView.vue";
 import { useAuthStore } from "@/stores/auth.store";
 import { useLoaderStore } from "@/stores/loader.store";
 
@@ -46,54 +42,12 @@ const routes = [
   },
   // HomeView routes
   {
-    path: "/home",
-    redirect: { name: "dashboard" },
+    path: "/",
     name: "home",
-    component: UserHome,
+    component: HomeView,
     meta: {
       requiresAuth: true,
     },
-    children: [
-      // Dashboard routes
-      {
-        path: "dashboard",
-        name: "dashboard",
-        redirect: { name: "listgang" },
-        component: GangDashboard,
-        meta: {
-          requiresAuth: true,
-        },
-        children: [
-          {
-            // GangList will be rendered through GangDashboard's <router-view>
-            path: "list-gang",
-            name: "listgang",
-            component: GangList,
-            meta: {
-              requiresAuth: true,
-            },
-          },
-          {
-            // GangCreate will be rendered through GangDashboard's <router-view>
-            path: "create-gang",
-            name: "creategang",
-            component: GangCreate,
-            meta: {
-              requiresAuth: true,
-            },
-          },
-          {
-            // GangJoin will be rendered through GangDashboard's <router-view>
-            path: "join-gang",
-            name: "joingang",
-            component: GangJoin,
-            meta: {
-              requiresAuth: true,
-            },
-          },
-        ],
-      },
-    ],
   },
   // catch all redirect to home page
   {
@@ -115,7 +69,7 @@ router.beforeEach(async (to, from) => {
     loaderStore.loading = true;
   }
   const authStore = useAuthStore();
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
+  if (to.meta.requiresAuth) {
     // View or Component requires auth
     if (!authStore.getUserAuth && !(await authStore.isUserAuth())) {
       // client not authenticated
@@ -123,7 +77,11 @@ router.beforeEach(async (to, from) => {
       await authStore.refreshToken();
       if (!authStore.getUserAuth) {
         // refreshing token didn't work, redirect to login
-        return { name: "auth" };
+        return {
+          name: "auth",
+          // to come back later to this path after login
+          query: { redirect: to.fullPath },
+        };
       }
     }
   } else {

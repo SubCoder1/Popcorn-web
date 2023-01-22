@@ -2,10 +2,6 @@
 
 <template>
   <div class="d-flex justify-content-between">
-    <div class="h-auto">
-      <h4>Create a Gang!</h4>
-      <router-link :to="{ name: 'joingang' }">or join one?</router-link>
-    </div>
     <div class="gang-create-error">
       <p
         class="form-errors rounded-md text-sm"
@@ -141,7 +137,7 @@ export default {
         const response = await this.createGangAPI();
         if (response.status == 200) {
           // Success
-          this.$router.push({ name: "listgang" });
+          this.$parent.getUserGang();
         } else {
           // Error
           if (response.status == 401) {

@@ -1,8 +1,7 @@
 <!-- Join Gang form component rendered through HomeView -->
 
 <template>
-  <h4>Join a Gang!</h4>
-  <router-link :to="{ name: 'creategang' }">or create one?</router-link>
+  <p>Join gang body</p>
 </template>
 
 <script>
