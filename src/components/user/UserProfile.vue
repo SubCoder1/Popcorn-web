@@ -68,7 +68,7 @@ export default {
       this.user.profile_pic = userStore.getUserProfPic;
       this.loading = false;
     },
-    getUserData: async function () {
+    getUserData: async function (retry) {
       const userStore = useUserStore();
       const get_user_resp = await userStore.getUser();
       if (get_user_resp.status == 200) {
@@ -78,34 +78,22 @@ export default {
         // Server error
         this.$parent.$parent.$parent.srvErrModal();
       } else if (get_user_resp.status == 401) {
-        // access_token expired, use refresh_token to refresh JWT
-        const authStore = useAuthStore();
-        const ref_token_resp = await authStore.refreshToken();
-        if (ref_token_resp.status == 200) {
-          // Successfully refreshed JWT auth token for user
-          // Try to fetch user data again
-          const get_user_resp_2 = await userStore.getUser();
-          if (get_user_resp_2.status == 200) {
-            // Successfully fetched and stored user data
-            this.fillUserData();
-          } else if (get_user_resp.status >= 500) {
-            // Server error
-            this.$parent.$parent.$parent.srvErrModal();
-          } else {
-            // logout as only possible outcome is 404 (User not found) or 401 again
-            this.$refs.logout.click();
+        if (retry == false) {
+          // access_token expired, use refresh_token to refresh JWT
+          // Try again on success
+          const authStore = useAuthStore();
+          const ref_token_resp = await authStore.refreshToken();
+          if (ref_token_resp.status == 200) {
+            await this.getUserData(true);
           }
-        } else if (ref_token_resp.status >= 500) {
-          // Server error
-          this.$parent.$parent.$parent.srvErrModal();
         } else {
-          // logout as only possible outcome is 401 (access_token invalid or expired)
-          this.$refs.logout.click();
+          // Even after refreshing, can't fetch user data from server
+          this.$parent.$parent.$parent.srvErrModal();
         }
       } else {
         // Unknown error
         // Better to logout
-        this.$refs.logout.click();
+        this.$parent.$parent.$parent.srvErrModal();
       }
     },
     logout: async function () {
@@ -125,7 +113,7 @@ export default {
     },
   },
   async mounted() {
-    await this.getUserData();
+    await this.getUserData(false);
   },
 };
 </script>

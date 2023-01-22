@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import GangInvite from "@/components/GangInvite.vue";
-import UserProfile from "@/components/UserProfile.vue";
+import GangInvite from "@/components/gang/GangInvite.vue";
+import UserProfile from "@/components/user/UserProfile.vue";
 
 export default {
   name: "HomeView",
