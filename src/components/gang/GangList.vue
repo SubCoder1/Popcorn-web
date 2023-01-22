@@ -39,9 +39,21 @@
           </p>
         </div>
       </div>
-      <p class="text-xsm text-secondary">
-        {{ gang.gang_created_timeago }}
-      </p>
+      <div class="d-flex flex-column">
+        <p class="text-xsm text-secondary text-end">
+          {{ gang.gang_created_timeago }}
+        </p>
+        <button
+          v-if="gang.isAdmin"
+          type="button"
+          class="btn btn-sm rounded-md text-sm"
+        >
+          Customize
+        </button>
+        <button v-else type="button" class="btn btn-sm rounded-md text-sm">
+          Join
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -148,5 +160,9 @@ export default {
   100% {
     border-left: 6px solid salmon;
   }
+}
+
+.btn-sm {
+  width: 150px;
 }
 </style>
