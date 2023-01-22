@@ -31,15 +31,25 @@
       </div>
     </div>
   </div>
-  <router-view />
+  <div
+    v-if="loader.showLoader"
+    class="d-flex align-items-center justify-content-center h-100"
+  >
+    <img class="auth-page-logo" src="@/assets/logo/logo-128x128.png" />
+  </div>
+  <router-view v-else />
   <div v-if="showErrModal" class="modal-backdrop fade show"></div>
 </template>
 
 <script>
+import { useLoaderStore } from "@/stores/loader.store";
+
 export default {
   data() {
+    const loaderStore = useLoaderStore();
     return {
       showErrModal: false,
+      loader: loaderStore,
     };
   },
   methods: {
@@ -69,6 +79,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: rgba(32 39 44 1);
   height: 100%;
+  /* background-image: url("~@/assets/background.png"); */
 }
 
 .container-style {
