@@ -6,7 +6,12 @@ import UserLogin from "@/components/UserLogin.vue";
 import UserReg from "@/components/UserReg.vue";
 import UserFPwD from "@/components/UserFPwD.vue";
 import UserHome from "@/views/HomeView.vue";
+import GangDashboard from "@/components/GangDashboard.vue";
+import GangCreate from "@/components/GangCreate.vue";
+import GangJoin from "@/components/GangJoin.vue";
+import GangList from "@/components/GangList.vue";
 import { useAuthStore } from "@/stores/auth.store";
+import { useLoaderStore } from "@/stores/loader.store";
 
 const routes = [
   // AuthView routes
@@ -41,12 +46,54 @@ const routes = [
   },
   // HomeView routes
   {
-    path: "/",
+    path: "/home",
+    redirect: { name: "dashboard" },
     name: "home",
     component: UserHome,
     meta: {
       requiresAuth: true,
     },
+    children: [
+      // Dashboard routes
+      {
+        path: "dashboard",
+        name: "dashboard",
+        redirect: { name: "listgang" },
+        component: GangDashboard,
+        meta: {
+          requiresAuth: true,
+        },
+        children: [
+          {
+            // GangList will be rendered through GangDashboard's <router-view>
+            path: "list-gang",
+            name: "listgang",
+            component: GangList,
+            meta: {
+              requiresAuth: true,
+            },
+          },
+          {
+            // GangCreate will be rendered through GangDashboard's <router-view>
+            path: "create-gang",
+            name: "creategang",
+            component: GangCreate,
+            meta: {
+              requiresAuth: true,
+            },
+          },
+          {
+            // GangJoin will be rendered through GangDashboard's <router-view>
+            path: "join-gang",
+            name: "joingang",
+            component: GangJoin,
+            meta: {
+              requiresAuth: true,
+            },
+          },
+        ],
+      },
+    ],
   },
   // catch all redirect to home page
   {
@@ -61,15 +108,23 @@ const router = createRouter({
   routes: routes,
 });
 
-// Global guard to ensure that client is authenticated before visiting auth only pages
-// even though this is handled server-side
-router.beforeEach(async (to) => {
+// Global navigation guard which gets executed before any navigation to router paths
+router.beforeEach(async (to, from) => {
+  if (from.name == undefined || from.name != to.name) {
+    const loaderStore = useLoaderStore();
+    loaderStore.loading = true;
+  }
   const authStore = useAuthStore();
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     // View or Component requires auth
-    if (!authStore.getUserAuth) {
+    if (!authStore.getUserAuth && !(await authStore.isUserAuth())) {
       // client not authenticated
-      return { name: "auth" };
+      // use refresh_token and check if user can still authenticate
+      await authStore.refreshToken();
+      if (!authStore.getUserAuth) {
+        // refreshing token didn't work, redirect to login
+        return { name: "auth" };
+      }
     }
   } else {
     // View or Component doesn't require auth
@@ -78,6 +133,11 @@ router.beforeEach(async (to) => {
       return { name: "home" };
     }
   }
+});
+// Global navigation guard which gets executed after any navigation to router paths
+router.afterEach(() => {
+  const loaderStore = useLoaderStore();
+  loaderStore.loading = false;
 });
 
 export default router;
