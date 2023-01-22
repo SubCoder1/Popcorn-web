@@ -10,7 +10,6 @@ export const useUserStore = defineStore("user", {
     full_name: "",
     user_profile_pic: "",
   }),
-  persist: true, // store in localStorage
   getters: {
     getUserName: (state) => state.username,
     getUserFullName: (state) => state.full_name,
