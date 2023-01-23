@@ -38,6 +38,7 @@
       <button
         type="submit"
         class="btn d-flex align-items-center justify-content-center position-relative w-100 rounded-md text-sm mt-2 mb-2"
+        :disabled="form_submitted"
       >
         <div v-if="form_submitted" class="loader-1 position-absolute">
           <span />
