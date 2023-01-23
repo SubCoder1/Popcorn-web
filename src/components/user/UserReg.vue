@@ -15,7 +15,7 @@
         type="text"
         class="form-control text-sm rounded-md mb-3"
         placeholder="Full Name"
-        v-model="full_name"
+        v-model.trim="full_name"
         @click="removeErr"
         required
       />
