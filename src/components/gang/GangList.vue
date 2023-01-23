@@ -36,14 +36,14 @@
   <router-link
     to=""
     v-if="canJoin"
-    v-on:click="this.$parent.$parent.showJoinGangOnly()"
+    @click="this.$parent.$parent.showJoinGangOnly()"
   >
     Join a gang
   </router-link>
   <router-link
     to=""
     v-if="canCreate"
-    v-on:click="this.$parent.$parent.showCreateGangOnly()"
+    @click="this.$parent.$parent.showCreateGangOnly()"
   >
     Create a gang
   </router-link>

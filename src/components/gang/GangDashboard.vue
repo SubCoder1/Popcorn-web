@@ -36,12 +36,12 @@
         <h4 v-if="createOrJoin">Join a Gang</h4>
         <h4 v-else>Create a Gang</h4>
         <template v-if="canJoinGang">
-          <router-link to="" v-on:click="toggleCreateOrJoinGang()">
+          <router-link to="" @click="toggleCreateOrJoinGang()">
             or create one?
           </router-link>
         </template>
         <template v-else>
-          <router-link to="" v-on:click="toggleCreateOrJoinGang()">
+          <router-link to="" @click="toggleCreateOrJoinGang()">
             or join one?
           </router-link>
         </template>
@@ -49,7 +49,7 @@
       <template v-else>
         <h4 v-if="canCreateGang">Create a Gang</h4>
         <h4 v-else>Join a Gang</h4>
-        <router-link to="" v-on:click="getUserGang(false)">Go back</router-link>
+        <router-link to="" @click="getUserGang(false)">Go back</router-link>
       </template>
       <GangJoin v-if="canJoinGang && createOrJoin" />
       <GangCreate v-else-if="canCreateGang && !createOrJoin" />
