@@ -21,7 +21,7 @@
           {{ gang.gang_created_timeago }}
         </p>
         <button
-          v-if="gang.isAdmin"
+          v-if="gang.is_admin"
           type="button"
           class="btn btn-sm rounded-md text-sm"
         >
@@ -33,48 +33,29 @@
       </div>
     </div>
   </div>
+  <router-link
+    to=""
+    v-if="canJoin"
+    v-on:click="this.$parent.$parent.showJoinGangOnly()"
+  >
+    Join a gang
+  </router-link>
+  <router-link
+    to=""
+    v-if="canCreate"
+    v-on:click="this.$parent.$parent.showCreateGangOnly()"
+  >
+    Create a gang
+  </router-link>
 </template>
 
 <script>
 export default {
   props: {
     gangData: Object,
+    canCreate: Boolean,
+    canJoin: Boolean,
   },
   name: "GangList",
 };
 </script>
-
-<style scoped lang="css">
-.border-left {
-  animation: border-entry 0.15s forwards;
-  -webkit-animation: border-entry 0.15s forwards;
-}
-
-@-webkit-keyframes border-entry {
-  0% {
-    border-left: 0px solid salmon;
-  }
-  50% {
-    border-left: 3px solid salmon;
-  }
-  100% {
-    border-left: 6px solid salmon;
-  }
-}
-
-@keyframes border-entry {
-  0% {
-    border-left: 0px solid salmon;
-  }
-  50% {
-    border-left: 3px solid salmon;
-  }
-  100% {
-    border-left: 6px solid salmon;
-  }
-}
-
-.btn-sm {
-  width: 150px;
-}
-</style>

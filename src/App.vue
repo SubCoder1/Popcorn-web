@@ -350,4 +350,37 @@ a:hover {
 .h-fit-content {
   height: fit-content;
 }
+
+.border-left {
+  animation: border-entry 0.15s forwards;
+  -webkit-animation: border-entry 0.15s forwards;
+}
+
+@-webkit-keyframes border-entry {
+  0% {
+    border-left: 0px solid salmon;
+  }
+  50% {
+    border-left: 3px solid salmon;
+  }
+  100% {
+    border-left: 6px solid salmon;
+  }
+}
+
+@keyframes border-entry {
+  0% {
+    border-left: 0px solid salmon;
+  }
+  50% {
+    border-left: 3px solid salmon;
+  }
+  100% {
+    border-left: 6px solid salmon;
+  }
+}
+
+.btn-sm {
+  width: 150px;
+}
 </style>

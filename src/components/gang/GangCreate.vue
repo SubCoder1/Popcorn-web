@@ -137,7 +137,7 @@ export default {
         const response = await this.createGangAPI();
         if (response.status == 200) {
           // Success
-          this.$parent.$parent.getUserGang();
+          this.$parent.$parent.getUserGang(false);
         } else {
           // Error
           if (response.status == 401) {

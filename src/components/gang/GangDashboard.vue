@@ -25,22 +25,34 @@
     </div>
   </div>
   <div v-else class="d-flex flex-column">
-    <GangList :gang-data="this.gangData" v-if="gangData.length != 0" />
+    <GangList
+      :gang-data="gangData"
+      :can-create="canCreateGang"
+      :can-join="canJoinGang"
+      v-if="gangData.length != 0"
+    />
     <div class="h-auto" v-else>
-      <h4 v-if="createGang">Create a Gang</h4>
-      <h4 v-else>Join a Gang</h4>
-      <template v-if="createGang">
-        <router-link to="" v-on:click="showCreateOrJoinGang()">
-          or join one?
-        </router-link>
+      <template v-if="canCreateGang && canJoinGang">
+        <h4 v-if="createOrJoin">Join a Gang</h4>
+        <h4 v-else>Create a Gang</h4>
+        <template v-if="canJoinGang">
+          <router-link to="" v-on:click="toggleCreateOrJoinGang()">
+            or create one?
+          </router-link>
+        </template>
+        <template v-else>
+          <router-link to="" v-on:click="toggleCreateOrJoinGang()">
+            or join one?
+          </router-link>
+        </template>
       </template>
       <template v-else>
-        <router-link to="" v-on:click="showCreateOrJoinGang()">
-          or create one?
-        </router-link>
+        <h4 v-if="canCreateGang">Create a Gang</h4>
+        <h4 v-else>Join a Gang</h4>
+        <router-link to="" v-on:click="getUserGang(false)">Go back</router-link>
       </template>
-      <GangCreate v-if="createGang" />
-      <GangJoin v-else />
+      <GangJoin v-if="canJoinGang && createOrJoin" />
+      <GangCreate v-else-if="canCreateGang && !createOrJoin" />
     </div>
   </div>
 </template>
@@ -55,7 +67,9 @@ export default {
     return {
       loading: true,
       gangData: [],
-      createGang: true,
+      canCreateGang: false,
+      canJoinGang: false,
+      createOrJoin: true, // Used for toggling
     };
   },
   name: "GangDashboard",
@@ -67,19 +81,20 @@ export default {
           withCredentials: true,
         })
         .then((response) => {
-          // successfully created gang
-          res["status"] = 200;
-          res["gang"] = response.data;
+          res.status = 200;
+          res.gang = response.data.gang;
+          res.canJoinGang = response.data.canJoinGang;
+          res.canCreateGang = response.data.canCreateGang;
         })
         .catch((e) => {
           // error occured
           if (e.response) {
             // Server sent a response
-            res["status"] = e.response.status;
+            res.status = e.response.status;
             // show the first validation issue received from server
           } else {
             // Server unreachable
-            res["status"] = 503;
+            res.status = 503;
           }
         });
       return res;
@@ -89,6 +104,8 @@ export default {
       const response = await this.getUserGangAPI();
       if (response.status == 200) {
         this.gangData = response.gang;
+        this.canCreateGang = response.canCreateGang;
+        this.canJoinGang = response.canJoinGang;
         this.loading = false;
       } else if (response.status == 401) {
         // Unauthorized
@@ -109,8 +126,16 @@ export default {
         this.$parent.$parent.$parent.srvErrModal();
       }
     },
-    showCreateOrJoinGang: function () {
-      this.createGang = !this.createGang;
+    toggleCreateOrJoinGang: function () {
+      this.createOrJoin = !this.createOrJoin;
+    },
+    showJoinGangOnly: function () {
+      this.gangData = [];
+      this.canCreateGang = false;
+    },
+    showCreateGangOnly: function () {
+      this.gangData = [];
+      this.canJoinGang = false;
     },
   },
   components: {
