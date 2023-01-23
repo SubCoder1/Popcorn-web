@@ -137,7 +137,7 @@ export default {
         const response = await this.createGangAPI();
         if (response.status == 200) {
           // Success
-          this.$parent.getUserGang();
+          this.$parent.$parent.getUserGang();
         } else {
           // Error
           if (response.status == 401) {
@@ -199,10 +199,6 @@ export default {
 </script>
 
 <style scoped lang="css">
-.input-md {
-  width: 350px;
-}
-
 .btn-md {
   width: 203px;
 }
