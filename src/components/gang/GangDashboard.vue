@@ -24,7 +24,7 @@
       </div>
     </div>
   </div>
-  <div v-if="!loading" class="d-flex flex-column">
+  <div v-else class="d-flex flex-column">
     <GangList :gang-data="this.gangData" v-if="gangData.length != 0" />
     <div class="h-auto" v-else>
       <h4 v-if="createGang">Create a Gang</h4>
