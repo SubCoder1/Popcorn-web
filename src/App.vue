@@ -35,7 +35,11 @@
     v-if="loader.showLoader"
     class="d-flex align-items-center justify-content-center h-100"
   >
-    <img class="auth-page-logo" src="@/assets/logo/logo-128x128.png" />
+    <img
+      class="auth-page-logo"
+      src="@/assets/logo/logo-128x128.png"
+      alt="Popcorn logo"
+    />
   </div>
   <router-view v-else />
   <div v-if="showErrModal" class="modal-backdrop fade show"></div>
@@ -142,6 +146,10 @@ a:hover {
   height: 65px;
   color: rgb(241, 133, 121);
   padding: 0.75rem;
+}
+
+.input-md {
+  width: 350px;
 }
 
 .show-error {
