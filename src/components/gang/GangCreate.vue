@@ -105,27 +105,27 @@ export default {
         )
         .then(() => {
           // successfully created gang
-          res["status"] = 200;
+          res.status = 200;
         })
         .catch((e) => {
           // error occured
           if (e.response) {
             // Server sent a response
-            res["status"] = e.response.status;
+            res.status = e.response.status;
             // show the first validation issue received from server
-            if (res["status"] == 422) {
+            if (res.status == 422) {
               // JSON bind error
-              res["error"] = "Invalid JSON provided.";
-            } else if (res["status"] == 400) {
+              res.error = "Invalid JSON provided.";
+            } else if (res.status == 400) {
               // Validation error
-              res["error"] = e.response.data.details.errors[0].message;
+              res.error = e.response.data.details.errors[0].message;
             } else {
               // Server error
-              res["error"] = "Server error occured.";
+              res.error = "Server error occured.";
             }
           } else {
             // Server unreachable
-            res["status"] = 503;
+            res.status = 503;
           }
         });
       return res;
