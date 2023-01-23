@@ -50,10 +50,6 @@ import axios from "axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { defineAsyncComponent } from "vue";
 
-const GangList = defineAsyncComponent(() => import("./GangList.vue"));
-const GangCreate = defineAsyncComponent(() => import("./GangCreate.vue"));
-const GangJoin = defineAsyncComponent(() => import("./GangJoin.vue"));
-
 export default {
   data() {
     return {
@@ -117,7 +113,11 @@ export default {
       this.createGang = !this.createGang;
     },
   },
-  components: { GangList, GangCreate, GangJoin },
+  components: {
+    GangList: defineAsyncComponent(() => import("./GangList.vue")),
+    GangCreate: defineAsyncComponent(() => import("./GangCreate.vue")),
+    GangJoin: defineAsyncComponent(() => import("./GangJoin.vue")),
+  },
   async mounted() {
     await this.getUserGang(false);
   },
