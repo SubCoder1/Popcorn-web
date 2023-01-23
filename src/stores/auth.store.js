@@ -32,27 +32,27 @@ export const useAuthStore = defineStore("auth", {
         .then(() => {
           // successfully logged-in
           this.user_auth = true;
-          res["status"] = 200;
+          res.status = 200;
         })
         .catch((e) => {
           // error occured
           if (e.response) {
             // Server sent a response
-            res["status"] = e.response.status;
-            if (res["status"] == 422) {
+            res.status = e.response.status;
+            if (res.status == 422) {
               // JSON bind error
-              res["error"] = "Invalid JSON provided.";
-            } else if (res["status"] == 401 || res["status"] == 400) {
+              res.error = "Invalid JSON provided.";
+            } else if (res.status == 401 || res.status == 400) {
               // Validation error
-              res["error"] = "Username or Password is incorrect.";
+              res.error = "Username or Password is incorrect.";
             } else {
               // Server error
-              res["error"] = "Server error occured.";
+              res.error = "Server error occured.";
             }
           } else {
             // Server unreachable
-            res["status"] = 503;
-            res["error"] = "Server unreachable.";
+            res.status = 503;
+            res.error = "Server unreachable.";
           }
         });
       return res;
@@ -75,27 +75,27 @@ export const useAuthStore = defineStore("auth", {
         .then(() => {
           // successful registration
           this.user_auth = true;
-          res["status"] = 200;
+          res.status = 200;
         })
         .catch((e) => {
           // error occured
           if (e.response) {
             // Server sent a response
-            res["status"] = e.response.status;
+            res.status = e.response.status;
             // show the first validation issue received from server
-            if (res["status"] == 422) {
+            if (res.status == 422) {
               // JSON bind error
-              res["error"] = "Invalid JSON provided.";
-            } else if (res["status"] == 400) {
+              res.status = "Invalid JSON provided.";
+            } else if (res.status == 400) {
               // Validation error
-              res["error"] = e.response.data.details.errors[0].message;
+              res.error = e.response.data.details.errors[0].message;
             } else {
               // Server error
-              res["error"] = "Server error occured.";
+              res.error = "Server error occured.";
             }
           } else {
             // Server unreachable
-            res["status"] = 503;
+            res.status = 503;
           }
         });
       return res;
@@ -116,24 +116,24 @@ export const useAuthStore = defineStore("auth", {
           // logout successful
           this.user_auth = false;
           userStore.clearUserData();
-          res["status"] = 200;
+          res.status = 200;
         })
         .catch((e) => {
           // error during logout
           if (e.response) {
             // Server sent a response
-            res["status"] = e.response.status;
+            res.status = e.response.status;
             if (e.response.data.status != 500) {
               // Invalid token
               this.user_auth = false;
               userStore.clearUserData();
             } else {
               // Server error
-              res["error"] = "Server error occured.";
+              res.error = "Server error occured.";
             }
           } else {
-            res["status"] = 503;
-            res["error"] = "Server unreachable.";
+            res.status = 503;
+            res.error = "Server unreachable.";
           }
         });
       return res;
@@ -171,25 +171,25 @@ export const useAuthStore = defineStore("auth", {
         )
         .then(() => {
           // Successfully refreshed token
-          res["status"] = 200;
+          res.status = 200;
         })
         .catch((e) => {
           // Error during refreshing token
           if (e.response) {
             // Server sent a response
-            res["status"] = e.response.status;
-            if (res["status"] == 401) {
+            res.status = e.response.status;
+            if (res.status == 401) {
               // Access as well as Refresh token has expired.
               this.user_auth = false;
               userStore.clearUserData();
-              res["error"] = "User session expired.";
+              res.error = "User session expired.";
             } else {
               // Server error
-              res["error"] = "Server error occured.";
+              res.error = "Server error occured.";
             }
           } else {
-            res["status"] = 503;
-            res["error"] = "Server unreachable.";
+            res.status = 503;
+            res.error = "Server unreachable.";
           }
         });
       return res;
