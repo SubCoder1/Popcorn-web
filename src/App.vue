@@ -163,12 +163,21 @@ a:hover {
   padding: 0.75rem;
 }
 
+.admin-btn {
+  background-color: mediumaquamarine;
+}
+
 .btn:hover,
 .btn:focus {
   color: white;
   background-color: rgb(228, 77, 60);
   box-shadow: none;
   outline: none;
+}
+
+.admin-btn:hover,
+.admin-btn:focus {
+  background-color: #0cc183;
 }
 
 .loader-1 {
@@ -351,32 +360,61 @@ a:hover {
   height: fit-content;
 }
 
-.border-left {
+.br-left {
   animation: border-entry 0.15s forwards;
   -webkit-animation: border-entry 0.15s forwards;
 }
 
+.admin-br-left {
+  animation: admin-border-entry 0.15s forwards;
+  -webkit-animation: admin-border-entry 0.15s forwards;
+}
+
 @-webkit-keyframes border-entry {
   0% {
-    border-left: 0px solid salmon;
+    border-left: 0px solid rgb(241, 133, 121);
   }
   50% {
-    border-left: 3px solid salmon;
+    border-left: 3px solid rgb(241, 133, 121);
   }
   100% {
-    border-left: 6px solid salmon;
+    border-left: 6px solid rgb(241, 133, 121);
   }
 }
 
 @keyframes border-entry {
   0% {
-    border-left: 0px solid salmon;
+    border-left: 0px solid rgb(241, 133, 121);
   }
   50% {
-    border-left: 3px solid salmon;
+    border-left: 3px solid rgb(241, 133, 121);
   }
   100% {
-    border-left: 6px solid salmon;
+    border-left: 6px solid rgb(241, 133, 121);
+  }
+}
+
+@-webkit-keyframes admin-border-entry {
+  0% {
+    border-left: 0px solid mediumaquamarine;
+  }
+  50% {
+    border-left: 3px solid mediumaquamarine;
+  }
+  100% {
+    border-left: 6px solid mediumaquamarine;
+  }
+}
+
+@keyframes admin-border-entry {
+  0% {
+    border-left: 0px solid mediumaquamarine;
+  }
+  50% {
+    border-left: 3px solid mediumaquamarine;
+  }
+  100% {
+    border-left: 6px solid mediumaquamarine;
   }
 }
 
