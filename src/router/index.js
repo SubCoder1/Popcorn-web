@@ -71,7 +71,7 @@ router.beforeEach(async (to, from) => {
   const authStore = useAuthStore();
   if (to.meta.requiresAuth) {
     // View or Component requires auth
-    if (!authStore.getUserAuth && !(await authStore.isUserAuth())) {
+    if (!(await authStore.isUserAuth())) {
       // client not authenticated
       // use refresh_token and check if user can still authenticate
       await authStore.refreshToken();
