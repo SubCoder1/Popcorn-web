@@ -2,10 +2,16 @@
   <div class="d-flex flex-column">
     <div
       class="d-flex flex-row justify-content-between mb-3"
-      v-bind:key="gang"
       v-for="gang in gangData"
+      :key="gang.gang.gang_admin"
     >
-      <div class="d-flex border-left ps-3">
+      <div
+        class="d-flex br-left ps-3"
+        v-bind:class="{
+          'br-left': !gang.is_admin,
+          'admin-br-left': gang.is_admin,
+        }"
+      >
         <div class="d-flex flex-column justify-content-center">
           <p class="text-sm mb-1">{{ gang.gang.gang_name }}</p>
           <p class="text-sm mb-1 text-secondary">
@@ -24,6 +30,7 @@
           v-if="gang.is_admin"
           type="button"
           class="btn btn-sm rounded-md text-sm"
+          v-bind:class="{ 'admin-btn': gang.is_admin }"
         >
           Customize
         </button>
@@ -33,18 +40,10 @@
       </div>
     </div>
   </div>
-  <router-link
-    to=""
-    v-if="canJoin"
-    @click="this.$parent.$parent.showJoinGangOnly()"
-  >
+  <router-link to="" v-if="canJoin" @click="showJoinGangOnly()">
     Join a gang
   </router-link>
-  <router-link
-    to=""
-    v-if="canCreate"
-    @click="this.$parent.$parent.showCreateGangOnly()"
-  >
+  <router-link to="" v-if="canCreate" @click="showCreateGangOnly()">
     Create a gang
   </router-link>
 </template>
@@ -57,5 +56,13 @@ export default {
     canJoin: Boolean,
   },
   name: "GangList",
+  methods: {
+    showJoinGangOnly: async function () {
+      await this.$parent.$parent.showJoinGangOnly();
+    },
+    showCreateGangOnly: async function () {
+      await this.$parent.$parent.showCreateGangOnly();
+    },
+  },
 };
 </script>
