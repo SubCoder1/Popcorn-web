@@ -9,7 +9,6 @@ export const useAuthStore = defineStore("auth", {
   state: () => ({
     user_auth: false,
   }),
-  persist: true, // store in localStorage
   getters: {
     getUserAuth: (state) => state.user_auth,
   },
