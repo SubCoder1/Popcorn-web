@@ -3,22 +3,22 @@
     <div
       class="d-flex flex-row justify-content-between mb-3"
       v-for="gang in gangData"
-      :key="gang.gang.gang_admin"
+      :key="gang.gang_admin"
     >
       <div
         class="d-flex br-left ps-3"
         v-bind:class="{
-          'br-left': !gang.is_admin,
-          'admin-br-left': gang.is_admin,
+          'br-left': !gang.gang_admin,
+          'admin-br-left': gang.gang_admin,
         }"
       >
         <div class="d-flex flex-column justify-content-center">
-          <p class="text-sm mb-1">{{ gang.gang.gang_name }}</p>
+          <p class="text-sm mb-1">{{ gang.gang_name }}</p>
           <p class="text-sm mb-1 text-secondary">
-            Admin: {{ gang.gang.gang_admin }}
+            Admin: {{ gang.gang_admin }}
           </p>
           <p class="text-sm mb-1 text-secondary">
-            {{ gang.members }} / {{ gang.gang.gang_member_limit }} members
+            {{ gang.gang_members_count }} / {{ gang.gang_member_limit }} members
           </p>
         </div>
       </div>

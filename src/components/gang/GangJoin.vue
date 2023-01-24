@@ -56,23 +56,24 @@
       <div
         class="d-flex flex-row justify-content-between mb-3"
         v-for="gang in searchResult"
-        :key="gang.gang.gang_admin"
+        :key="gang.gang_admin"
       >
         <div
           class="d-flex ps-3"
           v-bind:class="{
             'br-left': !gang.is_admin,
             'admin-br-left': gang.is_admin,
-            'exp-br-left': gang.gang.is_expired != null && gang.gang.is_expired,
+            'exp-br-left': gang.is_expired != null && gang.is_expired,
           }"
         >
           <div class="d-flex flex-column justify-content-center">
-            <p class="text-sm mb-1">{{ gang.gang.gang_name }}</p>
+            <p class="text-sm mb-1">{{ gang.gang_name }}</p>
             <p class="text-sm mb-1 text-secondary">
-              Admin: {{ gang.gang.gang_admin }}
+              Admin: {{ gang.gang_admin }}
             </p>
             <p class="text-sm mb-1 text-secondary">
-              {{ gang.members }} / {{ gang.gang.gang_member_limit }} members
+              {{ gang.gang_members_count }}
+              / {{ gang.gang_member_limit }} members
             </p>
           </div>
         </div>
@@ -94,13 +95,13 @@
           </button>
           <button
             v-else-if="
-              gang.members < gang.gang.gang_member_limit &&
-              (gang.gang.is_expired == null || !gang.gang.is_expired)
+              gang.gang_members_count < gang.gang_member_limit &&
+              (gang.gang.is_expired == null || !gang.is_expired)
             "
             type="button"
             class="btn d-flex align-items-center justify-content-center position-relative btn-sm rounded-md text-sm"
             :disabled="load_btn"
-            @click="joinGang(false, gang.gang.gang_admin, gang.gang.gang_name)"
+            @click="joinGang(false, gang.gang_admin, gang.gang_name)"
           >
             <div v-if="load_btn" class="loader-2 position-absolute">
               <span />
