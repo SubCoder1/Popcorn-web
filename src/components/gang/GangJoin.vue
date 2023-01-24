@@ -55,10 +55,17 @@
     <div v-else>
       <div
         class="d-flex flex-row justify-content-between mb-3"
-        v-bind:key="gang"
         v-for="gang in searchResult"
+        :key="gang.gang.gang_admin"
       >
-        <div class="d-flex border-left ps-3">
+        <div
+          class="d-flex ps-3"
+          v-bind:class="{
+            'br-left': !gang.is_admin,
+            'admin-br-left': gang.is_admin,
+            'exp-br-left': gang.gang.is_expired != null && gang.gang.is_expired,
+          }"
+        >
           <div class="d-flex flex-column justify-content-center">
             <p class="text-sm mb-1">{{ gang.gang.gang_name }}</p>
             <p class="text-sm mb-1 text-secondary">
@@ -77,11 +84,36 @@
             v-if="gang.is_admin"
             type="button"
             class="btn btn-sm rounded-md text-sm"
+            :disabled="load_btn"
+            v-bind:class="{ 'admin-btn': gang.is_admin }"
           >
+            <div v-if="load_btn" class="loader-2 position-absolute">
+              <span />
+            </div>
             Customize
           </button>
-          <button v-else type="button" class="btn btn-sm rounded-md text-sm">
+          <button
+            v-else-if="
+              gang.members < gang.gang.gang_member_limit &&
+              (gang.gang.is_expired == null || !gang.gang.is_expired)
+            "
+            type="button"
+            class="btn d-flex align-items-center justify-content-center position-relative btn-sm rounded-md text-sm"
+            :disabled="load_btn"
+            @click="joinGang(false, gang.gang.gang_admin, gang.gang.gang_name)"
+          >
+            <div v-if="load_btn" class="loader-2 position-absolute">
+              <span />
+            </div>
             Join
+          </button>
+          <button
+            v-else
+            type="button"
+            class="btn btn-secondary btn-sm rounded-md text-sm"
+            disabled
+          >
+            Expired
           </button>
         </div>
       </div>
@@ -100,6 +132,7 @@ export default {
       timeout: null,
       cursor: 0,
       loading: false,
+      load_btn: false,
       searchResult: [],
     };
   },
@@ -133,6 +166,33 @@ export default {
 
       return res;
     },
+    joinGangAPI: async function (gang_admin, gang_name) {
+      let res = {};
+      await axios
+        .post(
+          process.env.VUE_APP_JOIN_GANG_API,
+          {
+            gang_name: gang_name,
+            gang_admin: gang_admin,
+          },
+          {
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          res.status = response.status;
+        })
+        .catch((e) => {
+          if (e.response) {
+            // Server sent a response
+            res.status = e.response.status;
+          } else {
+            // Server unreachable
+            res.status = 503;
+          }
+        });
+      return res;
+    },
     searchWithDelay: async function (retry) {
       this.loading = true;
       this.searchResult = [];
@@ -157,7 +217,7 @@ export default {
               await this.searchWithDelay(true);
             }
           } else {
-            // Not able to create gang even after refreshing token
+            // Not able to search gang even after refreshing token
             this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
           }
         } else {
@@ -167,6 +227,40 @@ export default {
 
         this.loading = false;
       }, 1000);
+    },
+    joinGang: async function (retry, gang_admin, gang_name) {
+      this.load_btn = true;
+      const response = await this.joinGangAPI(gang_admin, gang_name);
+      if (response.status == 200) {
+        // show fresh gang_list
+        await this.$parent.$parent.getUserGang(false);
+        this.load_btn = false;
+      } else if (response.status == 400) {
+        // gang not found, maybe expired
+        // Mark this gang as expired
+        var gangIndex = this.searchResult.findIndex(
+          (x) => x.gang.gang_admin == gang_admin
+        );
+        this.searchResult[gangIndex].gang.is_expired = true;
+      } else if (response.status == 401) {
+        // unauthorized
+        if (retry == false) {
+          // access_token expired, use refresh_token to refresh JWT
+          // Try again on success
+          const authStore = useAuthStore();
+          const ref_token_resp = await authStore.refreshToken();
+          if (ref_token_resp.status == 200) {
+            await this.joinGang(true, gang_admin, gang_name);
+          } else {
+            // Not able to create gang even after refreshing token
+            this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          }
+        }
+      } else {
+        // Server error
+        this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+      }
+      this.load_btn = false;
     },
   },
 };
