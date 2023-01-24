@@ -370,6 +370,11 @@ a:hover {
   -webkit-animation: admin-border-entry 0.15s forwards;
 }
 
+.exp-br-left {
+  animation: exp-border-entry 0.15s forwards;
+  -webkit-animation: exp-border-entry 0.15s forwards;
+}
+
 @-webkit-keyframes border-entry {
   0% {
     border-left: 0px solid rgb(241, 133, 121);
@@ -415,6 +420,30 @@ a:hover {
   }
   100% {
     border-left: 6px solid mediumaquamarine;
+  }
+}
+
+@-webkit-keyframes exp-border-entry {
+  0% {
+    border-left: 0px solid #6c757d;
+  }
+  50% {
+    border-left: 3px solid #6c757d;
+  }
+  100% {
+    border-left: 6px solid #6c757d;
+  }
+}
+
+@keyframes exp-border-entry {
+  0% {
+    border-left: 0px solid #6c757d;
+  }
+  50% {
+    border-left: 3px solid #6c757d;
+  }
+  100% {
+    border-left: 6px solid #6c757d;
   }
 }
 
