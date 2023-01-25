@@ -106,6 +106,7 @@ export default {
         this.gangData = response.gang;
         this.canCreateGang = response.canCreateGang;
         this.canJoinGang = response.canJoinGang;
+        this.createOrJoin = true;
         this.loading = false;
       } else if (response.status == 401) {
         // Unauthorized
