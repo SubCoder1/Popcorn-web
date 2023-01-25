@@ -2,7 +2,7 @@
 
 <template>
   <div class="d-flex justify-content-between">
-    <div class="gang-create-error">
+    <div class="gang-create-error mt-1 mb-1">
       <p
         class="form-errors rounded-md text-sm"
         v-bind:class="{ 'show-error': showErr }"
@@ -138,7 +138,7 @@ export default {
         const response = await this.createGangAPI();
         if (response.status == 200) {
           // Success
-          this.$parent.$parent.getUserGang(false);
+          await this.$parent.$parent.getUserGang(false);
         } else {
           // Error
           if (response.status == 401) {
@@ -178,8 +178,10 @@ export default {
         this.showErr = true;
         return false;
       } else if (/[^a-zA-Z0-9_.\s]/g.test(this.gang_name)) {
-        this.formErr = "Gang name can contain only letters, numbers, underscore, period and whitespaces.";
+        this.formErr =
+          "Gang name can contain only letters, numbers, underscore, period and whitespaces.";
         this.showErr = true;
+        return false;
       } else if (/[^\x20-\x7E]/g.test(this.gang_name)) {
         // gang_name should not contain any unprintable ASCII
         this.formErr = "Gang name cannot contain any weird characters.";
