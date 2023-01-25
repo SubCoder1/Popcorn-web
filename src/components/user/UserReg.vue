@@ -113,9 +113,10 @@ export default {
         this.formErr = "Username should be of 5 - 20 characters.";
         this.showErr = true;
         return false;
-      } else if (/\s/g.test(this.username)) {
+      } else if (/[^a-zA-Z0-9_.]/g.test(this.username)) {
         // username should not contain whitespace in-between
-        this.formErr = "Username shouldn't contain spaces.";
+        this.formErr =
+          "Username can only contain letters, numbers, underscores and periods";
         this.showErr = true;
         return false;
       } else if (/[^\x20-\x7E]/g.test(this.username)) {
@@ -130,7 +131,8 @@ export default {
         return false;
       } else if (!/\d/.test(this.password) || !/[a-zA-Z]/.test(this.password)) {
         // password should contain at least 1 character and 1 number.
-        this.formErr = "Password should contain at least 1 character & number.";
+        this.formErr =
+          "Password should contain at least 1 character & 1 number.";
         this.showErr = true;
         return false;
       }

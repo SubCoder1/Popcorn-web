@@ -65,20 +65,22 @@ export default {
       const authStore = useAuthStore();
       // shows the loader
       this.form_submitted = true;
-      // Login API request to server
-      const resp = await authStore.login(this.username, this.password);
-      if (resp.status == 200) {
-        // login successful
-        this.$router.replace({ name: "home" });
-      } else {
-        // Error during login
-        if (resp.status >= 500) {
-          // Server error
-          this.$parent.$parent.$parent.$parent.srvErrModal();
+      if (this.validateForm()) {
+        // Login API request to server
+        const resp = await authStore.login(this.username, this.password);
+        if (resp.status == 200) {
+          // login successful
+          this.$router.replace({ name: "home" });
         } else {
-          // Maybe validation
-          this.formErr = resp.error;
-          this.showErr = true;
+          // Error during login
+          if (resp.status >= 500) {
+            // Server error
+            this.$parent.$parent.$parent.$parent.srvErrModal();
+          } else {
+            // Maybe validation
+            this.formErr = resp.error;
+            this.showErr = true;
+          }
         }
       }
       // hides the loader
@@ -88,6 +90,27 @@ export default {
       // Clean & hide error box on click event to input boxes
       this.showErr = false;
       this.formErr = "";
+    },
+    validateForm: function () {
+      if (this.username.length < 5 || this.username.length > 20) {
+        // username length should be between [5,20]
+        this.formErr = "Username should be of 5 - 20 characters.";
+        this.showErr = true;
+        return false;
+      } else if (/[^a-zA-Z0-9_.]/g.test(this.username)) {
+        // username should not contain whitespace in-between
+        this.formErr =
+          "Username can only contain letters, numbers, underscores and periods";
+        this.showErr = true;
+        return false;
+      } else if (/[^\x20-\x7E]/g.test(this.username)) {
+        // username should not contain any unprintable ASCII
+        this.formErr = "No weird characters allowed.";
+        this.showErr = true;
+        return false;
+      } else {
+        return true;
+      }
     },
   },
 };
