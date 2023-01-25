@@ -177,6 +177,9 @@ export default {
         this.formErr = "Gang name should be of 5 - 20 characters.";
         this.showErr = true;
         return false;
+      } else if (/[^a-zA-Z0-9_.\s]/g.test(this.gang_name)) {
+        this.formErr = "Gang name can contain only letters, numbers, underscore, period and whitespaces.";
+        this.showErr = true;
       } else if (/[^\x20-\x7E]/g.test(this.gang_name)) {
         // gang_name should not contain any unprintable ASCII
         this.formErr = "Gang name cannot contain any weird characters.";
