@@ -5,7 +5,7 @@
     <h3>Register.</h3>
     <router-link to="/auth/login">or have one already?</router-link>
     <p
-      class="form-errors rounded-md text-sm mt-2"
+      class="form-errors form-errors-md rounded-md text-sm mt-2"
       v-bind:class="{ 'show-error': showErr }"
     >
       {{ formErr }}
