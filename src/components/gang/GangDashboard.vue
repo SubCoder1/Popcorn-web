@@ -33,26 +33,52 @@
     />
     <div class="h-auto" v-else>
       <template v-if="canCreateGang && canJoinGang">
-        <h4 v-if="createOrJoin">Join a Gang</h4>
-        <h4 v-else>Create a Gang</h4>
-        <template v-if="createOrJoin">
-          <router-link to="" @click="toggleCreateOrJoinGang()">
-            or create one?
-          </router-link>
-        </template>
-        <template v-else>
-          <router-link to="" @click="toggleCreateOrJoinGang()">
-            or join one?
-          </router-link>
-        </template>
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h4 v-if="createOrJoin">Join a Gang</h4>
+            <h4 v-else>Create a Gang</h4>
+            <template v-if="createOrJoin">
+              <router-link to="" @click="toggleCreateOrJoinGang()">
+                or create one?
+              </router-link>
+            </template>
+            <template v-else>
+              <router-link to="" @click="toggleCreateOrJoinGang()">
+                or join one?
+              </router-link>
+            </template>
+          </div>
+          <div class="mt-1 mb-1">
+            <p
+              class="form-errors rounded-md text-sm"
+              v-bind:class="{ 'show-error': showErr }"
+            >
+              {{ formErr }}
+            </p>
+          </div>
+        </div>
       </template>
       <template v-else>
-        <h4 v-if="canCreateGang">Create a Gang</h4>
-        <h4 v-else>Join a Gang</h4>
-        <router-link to="" @click="getUserGang(false)">Go back</router-link>
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h4 v-if="canCreateGang">Create a Gang</h4>
+            <h4 v-else-if="canJoinGang">Join a Gang</h4>
+            <h4 v-else>Customize Gang</h4>
+            <router-link to="" @click="getUserGang(false)">Go back</router-link>
+          </div>
+          <div class="mt-1 mb-1">
+            <p
+              class="form-errors rounded-md text-sm"
+              v-bind:class="{ 'show-error': showErr }"
+            >
+              {{ formErr }}
+            </p>
+          </div>
+        </div>
       </template>
       <GangJoin v-if="canJoinGang && createOrJoin" />
       <GangCreate v-else-if="canCreateGang" />
+      <GangCustomize :gang="customizeGangData" v-else />
     </div>
   </div>
 </template>
@@ -70,6 +96,9 @@ export default {
       canCreateGang: false,
       canJoinGang: false,
       createOrJoin: true, // Used for toggling
+      customizeGangData: {},
+      showErr: false,
+      formErr: "",
     };
   },
   name: "GangDashboard",
@@ -107,6 +136,7 @@ export default {
         this.canCreateGang = response.canCreateGang;
         this.canJoinGang = response.canJoinGang;
         this.createOrJoin = true;
+        this.customizeGangData = {};
         this.loading = false;
       } else if (response.status == 401) {
         // Unauthorized
@@ -138,11 +168,26 @@ export default {
       this.gangData = [];
       this.canJoinGang = false;
     },
+    showCustomizeGangOnly: function (gang) {
+      this.gangData = [];
+      this.canJoinGang = false;
+      this.canCreateGang = false;
+      this.customizeGangData = gang;
+    },
+    ErrPopUp: function (errMsg) {
+      this.formErr = errMsg;
+      this.showErr = true;
+    },
+    removeErr: function () {
+      this.showErr = false;
+      this.formErr = "";
+    },
   },
   components: {
     GangList: defineAsyncComponent(() => import("./GangList.vue")),
     GangCreate: defineAsyncComponent(() => import("./GangCreate.vue")),
     GangJoin: defineAsyncComponent(() => import("./GangJoin.vue")),
+    GangCustomize: defineAsyncComponent(() => import("./GangCustomize.vue")),
   },
   async mounted() {
     await this.getUserGang(false);
