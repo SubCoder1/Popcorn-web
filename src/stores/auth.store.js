@@ -84,7 +84,7 @@ export const useAuthStore = defineStore("auth", {
             // show the first validation issue received from server
             if (res.status == 422) {
               // JSON bind error
-              res.status = "Invalid JSON provided.";
+              res.error = "Invalid JSON provided.";
             } else if (res.status == 400) {
               // Validation error
               res.error = e.response.data.details.errors[0].message;
