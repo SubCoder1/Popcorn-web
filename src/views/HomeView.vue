@@ -8,7 +8,7 @@
     class="home-view h-100 m-auto d-flex align-items-center justify-content-center"
   >
     <div
-      class="gang-dashboard-container h-auto container-style container-shadow text-left me-4 p-5"
+      class="gang-dashboard-container h-auto container-style container-shadow text-left me-4 p-4"
     >
       <GangDashboard />
     </div>
@@ -19,7 +19,7 @@
         <GangInvite />
       </div>
       <div
-        class="user-profile-container container-style container-shadow w-auto mt-4 p-5"
+        class="user-profile-container container-style container-shadow w-auto mt-4 p-4"
       >
         <UserProfile />
       </div>
