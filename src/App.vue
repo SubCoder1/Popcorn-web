@@ -143,9 +143,16 @@ a:hover {
 }
 
 .form-errors {
-  height: 65px;
+  height: 85px;
+  width: 350px;
+  overflow-wrap: break-word;
   color: rgb(241, 133, 121);
   padding: 0.75rem;
+}
+
+.form-errors-md {
+  height: 65px;
+  width: auto;
 }
 
 .input-md {
@@ -449,5 +456,24 @@ a:hover {
 
 .btn-sm {
   width: 150px;
+}
+
+.btn-md {
+  width: 203px;
+}
+
+.input-xsm {
+  width: 60px;
+}
+
+.profile-pic-sm {
+  height: 45px;
+}
+
+.modal-header {
+  padding: 1rem 1rem;
+  border-bottom: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 </style>
