@@ -2,21 +2,74 @@
 
 <template>
   <div
-    class="d-flex align-items-center justify-content-between flex-wrap mb-3 mt-3"
+    class="modal fade"
+    v-show="showPassKeyModal"
+    v-bind:class="{ show: showPassKeyModal, 'd-block': showPassKeyModal }"
+    refs="PassKeyModal"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
   >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0">
+        <form @submit.prevent="joinGang(false)" class="gang-join-form">
+          <div class="modal-body">
+            <label for="gangPassKey" class="text-sm mb-3">
+              Enter Passkey for
+              <strong>{{ gang_join.gang_name }}</strong>
+              :
+            </label>
+            <input
+              type="password"
+              class="form-control text-sm rounded-md"
+              v-bind:class="{ 'pass-key-err': gang_join.passKeyErr }"
+              @click="gang_join.passKeyErr = false"
+              placeholder="Passkey"
+              id="gangPassKey"
+              v-model.trim="gang_join.gang_passkey"
+              minlength="5"
+              autocomplete="off"
+              required
+            />
+          </div>
+          <div class="modal-footer border-0">
+            <button
+              type="submit"
+              class="btn d-flex align-items-center justify-content-center btn-sm rounded-md text-sm"
+              :disabled="load_btn"
+            >
+              <div class="loader" v-if="load_btn"></div>
+              <span v-if="!load_btn">Submit</span>
+            </button>
+            <button
+              type="button"
+              class="btn modal-close-btn rounded-md text-sm"
+              data-bs-dismiss="modal"
+              @click="togglePassKeyModal('', '')"
+            >
+              Close
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
     <label for="gangName" class="text-sm">Search for a gang:</label>
     <input
       type="text"
       class="form-control text-sm rounded-md input-md"
-      placeholder="Gang Name"
-      v-model.trim="gang_name"
+      placeholder="Search by gang name"
+      v-model.trim="gang_search.gang_name"
       @keyup="searchWithDelay(false)"
       autocomplete="off"
       required
     />
   </div>
   <div
-    v-if="loading"
+    v-if="load_search"
     class="search-box d-flex flex-column justify-content-center"
   >
     <div class="d-flex flex-row mb-3">
@@ -87,25 +140,20 @@
             class="btn btn-sm rounded-md text-sm"
             :disabled="load_btn"
             v-bind:class="{ 'admin-btn': gang.is_admin }"
+            @click="showCustomizeGangOnly(gang)"
           >
-            <div v-if="load_btn" class="loader-2 position-absolute">
-              <span />
-            </div>
             Customize
           </button>
           <button
             v-else-if="
               gang.gang_members_count < gang.gang_member_limit &&
-              (gang.gang.is_expired == null || !gang.is_expired)
+              (gang.is_expired == null || !gang.is_expired)
             "
             type="button"
             class="btn d-flex align-items-center justify-content-center position-relative btn-sm rounded-md text-sm"
             :disabled="load_btn"
-            @click="joinGang(false, gang.gang_admin, gang.gang_name)"
+            @click="togglePassKeyModal(gang.gang_name, gang.gang_admin)"
           >
-            <div v-if="load_btn" class="loader-2 position-absolute">
-              <span />
-            </div>
             Join
           </button>
           <button
@@ -120,6 +168,7 @@
       </div>
     </div>
   </div>
+  <div v-if="showPassKeyModal" class="modal-backdrop fade show"></div>
 </template>
 
 <script>
@@ -129,12 +178,21 @@ import { useAuthStore } from "@/stores/auth.store";
 export default {
   data() {
     return {
-      gang_name: "",
+      gang_search: {
+        gang_name: "",
+        cursor: 0,
+      },
+      gang_join: {
+        gang_name: "",
+        gang_admin: "",
+        gang_passkey: "",
+        passKeyErr: false,
+      },
       timeout: null,
-      cursor: 0,
-      loading: false,
+      load_search: false,
       load_btn: false,
       searchResult: [],
+      showPassKeyModal: false,
     };
   },
   name: "GangJoin",
@@ -144,8 +202,8 @@ export default {
       await axios
         .get(process.env.VUE_APP_SEARCH_GANG_API, {
           params: {
-            gang_name: this.gang_name,
-            cursor: this.cursor,
+            gang_name: this.gang_search.gang_name,
+            cursor: this.gang_search.cursor,
           },
           withCredentials: true,
         })
@@ -167,14 +225,15 @@ export default {
 
       return res;
     },
-    joinGangAPI: async function (gang_admin, gang_name) {
+    joinGangAPI: async function () {
       let res = {};
       await axios
         .post(
           process.env.VUE_APP_JOIN_GANG_API,
           {
-            gang_name: gang_name,
-            gang_admin: gang_admin,
+            gang_name: this.gang_join.gang_name,
+            gang_admin: this.gang_join.gang_admin,
+            gang_passkey: this.gang_join.gang_passkey,
           },
           {
             withCredentials: true,
@@ -187,6 +246,15 @@ export default {
           if (e.response) {
             // Server sent a response
             res.status = e.response.status;
+            // 401 can be either passKey mismatch or authToken expired
+            if (
+              res.status == 401 &&
+              e.response.data.message == "PassKey didn't match"
+            ) {
+              res.errMsg = "PassKey didn't match";
+            } else {
+              res.errMsg = "authToken expired";
+            }
           } else {
             // Server unreachable
             res.status = 503;
@@ -195,7 +263,7 @@ export default {
       return res;
     },
     searchWithDelay: async function (retry) {
-      this.loading = true;
+      this.load_search = true;
       this.searchResult = [];
       clearTimeout(this.timeout);
 
@@ -206,7 +274,7 @@ export default {
           this.cursor = response.cursor;
         } else if (response.status == 400) {
           // Bad request - validation issue or no data found
-          this.loading = false;
+          this.load_search = false;
         } else if (response.status == 401) {
           // Unauthorized
           if (retry == false) {
@@ -225,13 +293,12 @@ export default {
           // Server error
           this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
-
-        this.loading = false;
+        this.load_search = false;
       }, 1000);
     },
-    joinGang: async function (retry, gang_admin, gang_name) {
+    joinGang: async function (retry) {
       this.load_btn = true;
-      const response = await this.joinGangAPI(gang_admin, gang_name);
+      const response = await this.joinGangAPI();
       if (response.status == 200) {
         // show fresh gang_list
         await this.$parent.$parent.getUserGang(false);
@@ -240,28 +307,45 @@ export default {
         // gang not found, maybe expired
         // Mark this gang as expired
         var gangIndex = this.searchResult.findIndex(
-          (x) => x.gang.gang_admin == gang_admin
+          (x) => x.gang_admin == this.gang_join.gang_admin
         );
-        this.searchResult[gangIndex].gang.is_expired = true;
+        this.searchResult[gangIndex].is_expired = true;
       } else if (response.status == 401) {
-        // unauthorized
-        if (retry == false) {
+        if (response.errMsg == "PassKey didn't match") {
+          // passkey didn't match
+          this.gang_join.passKeyErr = true;
+        } else if (retry == false) {
+          // unauthorized
           // access_token expired, use refresh_token to refresh JWT
           // Try again on success
           const authStore = useAuthStore();
           const ref_token_resp = await authStore.refreshToken();
           if (ref_token_resp.status == 200) {
-            await this.joinGang(true, gang_admin, gang_name);
+            await this.joinGang(true);
           } else {
+            this.togglePassKeyModal("", "");
             // Not able to create gang even after refreshing token
             this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
           }
         }
       } else {
+        this.togglePassKeyModal("", "");
         // Server error
         this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
       this.load_btn = false;
+    },
+    showCustomizeGangOnly: function (gang) {
+      this.$parent.$parent.showCustomizeGangOnly(gang);
+    },
+    togglePassKeyModal: function (gang_join_name, gang_join_admin) {
+      this.showPassKeyModal = !this.showPassKeyModal;
+      this.gang_join.gang_admin = gang_join_admin;
+      this.gang_join.gang_name = gang_join_name;
+      this.gang_join.gang_passkey = "";
+      if (!this.showPassKeyModal) {
+        this.load_btn = false;
+      }
     },
   },
 };
@@ -270,5 +354,10 @@ export default {
 <style scoped lang="css">
 .search-box {
   height: 288px;
+}
+
+.pass-key-err {
+  background-color: rgb(243 180 180);
+  border: 2px solid #f35050;
 }
 </style>
