@@ -10,10 +10,10 @@
           <div class="skeleton skeleton-text"></div>
         </div>
       </div>
-      <div v-if="!loading" class="d-flex flex-row">
+      <div v-if="!loading" class="d-flex flex-row align-items-center">
         <img
           v-bind:src="require(`@/assets/profile/${user.profile_pic}`)"
-          class="me-3"
+          class="me-3 profile-pic-lg"
           alt="User profile picture"
         />
         <div class="d-flex flex-column justify-content-center">
