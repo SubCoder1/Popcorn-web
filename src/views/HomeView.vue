@@ -14,7 +14,7 @@
     </div>
     <div class="d-flex flex-column">
       <div
-        class="gang-invite-container container-style container-shadow text-left"
+        class="gang-invite-container container-style container-shadow text-left p-4"
       >
         <GangInvite />
       </div>
