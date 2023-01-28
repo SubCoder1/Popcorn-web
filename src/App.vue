@@ -385,6 +385,10 @@ a:hover {
   height: 45px;
 }
 
+.profile-pic-lg {
+  height: 64px;
+}
+
 .modal-header {
   padding: 1rem 1rem;
   border-bottom: 0;
