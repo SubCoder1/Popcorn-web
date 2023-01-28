@@ -396,12 +396,15 @@ a:hover {
   border-top-right-radius: 0;
 }
 
-.modal-close-btn {
+.modal-close-btn,
+.kick-member-btn {
   background: palevioletred;
 }
 
 .modal-close-btn:hover,
-.modal-close-btn:focus {
+.kick-member-btn:hover,
+.modal-close-btn:focus,
+.kick-member-btn:focus {
   background: #d94072;
 }
 
