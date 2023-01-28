@@ -188,8 +188,15 @@ a:hover {
   outline: none;
 }
 
+.btn-circle {
+  height: 48px;
+  width: 48px;
+}
+
 .admin-btn:hover,
-.admin-btn:focus {
+.admin-btn:focus,
+.success:hover,
+.success:focus {
   background-color: #0cc183;
 }
 
