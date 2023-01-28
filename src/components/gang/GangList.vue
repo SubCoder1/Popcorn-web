@@ -31,6 +31,7 @@
           type="button"
           class="btn btn-sm rounded-md text-sm"
           v-bind:class="{ 'admin-btn': gang.is_admin }"
+          @click="showCustomizeGangOnly(gang)"
         >
           Customize
         </button>
@@ -57,11 +58,14 @@ export default {
   },
   name: "GangList",
   methods: {
-    showJoinGangOnly: async function () {
-      await this.$parent.$parent.showJoinGangOnly();
+    showJoinGangOnly: function () {
+      this.$parent.$parent.showJoinGangOnly();
     },
-    showCreateGangOnly: async function () {
-      await this.$parent.$parent.showCreateGangOnly();
+    showCreateGangOnly: function () {
+      this.$parent.$parent.showCreateGangOnly();
+    },
+    showCustomizeGangOnly: function (gang) {
+      this.$parent.$parent.showCustomizeGangOnly(gang);
     },
   },
 };
