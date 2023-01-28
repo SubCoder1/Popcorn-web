@@ -8,8 +8,8 @@
       <div
         class="d-flex br-left ps-3"
         v-bind:class="{
-          'br-left': !gang.gang_admin,
-          'admin-br-left': gang.gang_admin,
+          'br-left': !gang.is_admin,
+          'admin-br-left': gang.is_admin,
         }"
       >
         <div class="d-flex flex-column justify-content-center">
