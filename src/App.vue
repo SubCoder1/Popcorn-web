@@ -169,9 +169,14 @@ a:hover {
   color: white;
   padding: 0.75rem;
   height: 48px;
+  -moz-transition: all 0.2s ease-in;
+  -webkit-transition: all 0.2s ease-in;
+  -o-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
 }
 
-.admin-btn {
+.admin-btn,
+.success {
   background-color: mediumaquamarine;
 }
 
@@ -283,26 +288,23 @@ a:hover {
 }
 
 .br-left {
-  animation: border-entry 0.15s forwards;
-  -webkit-animation: border-entry 0.15s forwards;
+  animation: border-entry 0.2s forwards;
+  -webkit-animation: border-entry 0.2s ease-in forwards;
 }
 
 .admin-br-left {
-  animation: admin-border-entry 0.15s forwards;
-  -webkit-animation: admin-border-entry 0.15s forwards;
+  animation: admin-border-entry 0.2s forwards;
+  -webkit-animation: admin-border-entry 0.2s ease-in forwards;
 }
 
 .exp-br-left {
-  animation: exp-border-entry 0.15s forwards;
-  -webkit-animation: exp-border-entry 0.15s forwards;
+  animation: exp-border-entry 0.2s forwards;
+  -webkit-animation: exp-border-entry 0.2s ease-in forwards;
 }
 
 @-webkit-keyframes border-entry {
   0% {
     border-left: 0px solid rgb(241, 133, 121);
-  }
-  50% {
-    border-left: 3px solid rgb(241, 133, 121);
   }
   100% {
     border-left: 6px solid rgb(241, 133, 121);
@@ -313,9 +315,6 @@ a:hover {
   0% {
     border-left: 0px solid rgb(241, 133, 121);
   }
-  50% {
-    border-left: 3px solid rgb(241, 133, 121);
-  }
   100% {
     border-left: 6px solid rgb(241, 133, 121);
   }
@@ -324,9 +323,6 @@ a:hover {
 @-webkit-keyframes admin-border-entry {
   0% {
     border-left: 0px solid mediumaquamarine;
-  }
-  50% {
-    border-left: 3px solid mediumaquamarine;
   }
   100% {
     border-left: 6px solid mediumaquamarine;
@@ -337,9 +333,6 @@ a:hover {
   0% {
     border-left: 0px solid mediumaquamarine;
   }
-  50% {
-    border-left: 3px solid mediumaquamarine;
-  }
   100% {
     border-left: 6px solid mediumaquamarine;
   }
@@ -349,9 +342,6 @@ a:hover {
   0% {
     border-left: 0px solid #6c757d;
   }
-  50% {
-    border-left: 3px solid #6c757d;
-  }
   100% {
     border-left: 6px solid #6c757d;
   }
@@ -360,9 +350,6 @@ a:hover {
 @keyframes exp-border-entry {
   0% {
     border-left: 0px solid #6c757d;
-  }
-  50% {
-    border-left: 3px solid #6c757d;
   }
   100% {
     border-left: 6px solid #6c757d;
@@ -400,6 +387,10 @@ a:hover {
 .kick-member-btn {
   background: palevioletred;
   border: 0;
+  -moz-transition: all 0.2s ease-in;
+  -webkit-transition: all 0.2s ease-in;
+  -o-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
 }
 
 .modal-close-btn:hover,
