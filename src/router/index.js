@@ -16,6 +16,9 @@ const routes = [
     redirect: { name: "login" },
     name: "auth",
     component: UserAuth,
+    meta: {
+      requiresAuth: false,
+    },
     children: [
       {
         // UserLogin will be rendered inside UserAuth's <router-view>
@@ -69,27 +72,24 @@ router.beforeEach(async (to, from) => {
     loaderStore.loading = true;
   }
   const authStore = useAuthStore();
-  if (to.meta.requiresAuth) {
-    // View or Component requires auth
-    if (!(await authStore.isUserAuth())) {
-      // client not authenticated
-      // use refresh_token and check if user can still authenticate
-      await authStore.refreshToken();
-      if (!authStore.getUserAuth) {
-        // refreshing token didn't work, redirect to login
-        return {
-          name: "auth",
-          // to come back later to this path after login
-          query: { redirect: to.fullPath },
-        };
-      }
-    }
-  } else {
-    // View or Component doesn't require auth
-    if (authStore.getUserAuth) {
-      // client authenticated, redirect to home
+  if (!(await authStore.isUserAuth())) {
+    // client not authenticated
+    // use refresh_token and check if user can still authenticate
+    await authStore.refreshToken();
+    if (!authStore.getUserAuth) {
+      // refreshing token didn't work, redirect to login
+      return {
+        name: "auth",
+        // to come back later to this path after login
+        query: { redirect: to.fullPath },
+      };
+    } else if (!to.meta.requiresAuth) {
+      // User is logged in, can't visit these pages without logging out
       return { name: "home" };
     }
+  } else if (!to.meta.requiresAuth) {
+    // User is logged in, can't visit these pages without logging out
+    return { name: "home" };
   }
 });
 // Global navigation guard which gets executed after any navigation to router paths
