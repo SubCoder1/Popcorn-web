@@ -37,7 +37,7 @@
           <div class="modal-footer border-0">
             <button
               type="submit"
-              class="btn d-flex align-items-center justify-content-center btn-sm rounded-md text-sm"
+              class="btn btn-sm rounded-md text-sm"
               :disabled="load_btn"
             >
               <div class="loader" v-if="load_btn"></div>
