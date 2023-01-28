@@ -31,13 +31,11 @@
       />
       <button
         type="submit"
-        class="btn d-flex align-items-center justify-content-center position-relative w-100 rounded-md text-sm mt-2 mb-2"
+        class="btn d-flex align-items-center justify-content-center w-100 rounded-md text-sm mt-2 mb-2"
         :disabled="form_submitted"
       >
-        <div v-if="form_submitted" class="loader-1 position-absolute">
-          <span />
-        </div>
-        Log in
+        <div class="loader" v-if="form_submitted"></div>
+        <span v-if="!form_submitted">Log in</span>
       </button>
     </div>
     <router-link to="/auth/forgot-password">
