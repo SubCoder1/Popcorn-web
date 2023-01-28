@@ -287,10 +287,12 @@ export default {
             }
           } else {
             // Not able to search gang even after refreshing token
+            this.showPassKeyModal = false;
             this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
           }
         } else {
           // Server error
+          this.showPassKeyModal = false;
           this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
         this.load_search = false;
@@ -323,14 +325,14 @@ export default {
           if (ref_token_resp.status == 200) {
             await this.joinGang(true);
           } else {
-            this.togglePassKeyModal("", "");
             // Not able to create gang even after refreshing token
+            this.showPassKeyModal = false;
             this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
           }
         }
       } else {
-        this.togglePassKeyModal("", "");
         // Server error
+        this.showPassKeyModal = false;
         this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
       this.load_btn = false;
