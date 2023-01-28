@@ -399,6 +399,7 @@ a:hover {
 .modal-close-btn,
 .kick-member-btn {
   background: palevioletred;
+  border: 0;
 }
 
 .modal-close-btn:hover,
