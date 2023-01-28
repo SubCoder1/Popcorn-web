@@ -27,14 +27,12 @@
           >
             <a
               :href="href"
-              class="h-fit-content d-flex w-100px"
+              class="h-20px"
               ref="logout"
               @click.prevent="logout(navigate, $event)"
             >
-              Log out
-              <div v-if="loggingOut" class="loader-1 ms-3">
-                <span />
-              </div>
+              <div class="loader" v-if="loggingOut"></div>
+              <span v-if="!loggingOut">Log out</span>
             </a>
           </router-link>
         </div>
@@ -124,11 +122,7 @@ export default {
   width: 64px;
 }
 
-.start-logout-loader {
-  left: 20px;
-}
-
-.w-100px {
-  width: 95px;
+.h-20px {
+  height: 20px;
 }
 </style>
