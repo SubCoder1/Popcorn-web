@@ -395,7 +395,8 @@ h4 {
 }
 
 .modal-close-btn,
-.kick-member-btn {
+.kick-member-btn,
+.decline-invite-btn {
   background: palevioletred;
   border: 0;
   -moz-transition: all 0.2s ease-in;
@@ -406,8 +407,10 @@ h4 {
 
 .modal-close-btn:hover,
 .kick-member-btn:hover,
+.decline-invite-btn:hover,
 .modal-close-btn:focus,
-.kick-member-btn:focus {
+.kick-member-btn:focus,
+.decline-invite-btn:focus {
   background: #d94072;
 }
 
