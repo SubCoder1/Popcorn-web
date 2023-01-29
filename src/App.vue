@@ -83,7 +83,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: rgba(32 39 44 1);
   height: 100%;
-  /* background-image: url("~@/assets/background.png"); */
+  background-image: url("~@/assets/background.png");
 }
 
 .container-style {
@@ -103,6 +103,10 @@ a {
 
 a:hover {
   color: rgb(228, 77, 60);
+}
+
+h4 {
+  font-weight: 400;
 }
 
 ::selection {
