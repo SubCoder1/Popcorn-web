@@ -15,7 +15,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0">
         <form @submit.prevent="joinGang(false)" class="gang-join-form">
-          <div class="modal-body">
+          <div class="modal-body text-sm text-justify">
             <label for="gangPassKey" class="text-sm mb-3">
               Enter Passkey for
               <strong>{{ gang_join.gang_name }}</strong>
@@ -23,7 +23,7 @@
             </label>
             <input
               type="password"
-              class="form-control text-sm rounded-md"
+              class="form-control text-sm rounded-md mb-3"
               v-bind:class="{ 'pass-key-err': gang_join.passKeyErr }"
               @click="gang_join.passKeyErr = false"
               placeholder="Passkey"
@@ -33,11 +33,13 @@
               autocomplete="off"
               required
             />
+            This will make you leave your current gang. You can rejoin your
+            current gang through gang invites or searches.
           </div>
           <div class="modal-footer border-0">
             <button
               type="submit"
-              class="btn btn-sm rounded-md text-sm"
+              class="btn btn-sm d-flex align-items-center justify-content-center rounded-md text-sm"
               :disabled="load_btn"
             >
               <div class="loader" v-if="load_btn"></div>
@@ -255,44 +257,53 @@ export default {
       }, 1000);
     },
     joinGang: async function (retry) {
-      this.load_btn = true;
-      const gangStore = useGangStore();
-      const response = await gangStore.joinGang(this.gang_join);
-      if (response.status == 200) {
-        // show fresh gang_list
-        this.load_btn = false;
-        await this.$parent.$parent.getUserGang(false);
-      } else if (response.status == 400) {
-        // gang not found, maybe expired
-        // Mark this gang as expired
-        var gangIndex = this.searchResult.findIndex(
-          (x) => x.gang_admin == this.gang_join.gang_admin
-        );
-        this.searchResult[gangIndex].is_expired = true;
-      } else if (response.status == 401) {
-        if (response.errMsg == "PassKey didn't match") {
-          // passkey didn't match
-          this.gang_join.passKeyErr = true;
-        } else if (retry == false) {
-          // unauthorized
-          // access_token expired, use refresh_token to refresh JWT
-          // Try again on success
-          const authStore = useAuthStore();
-          const ref_token_resp = await authStore.refreshToken();
-          if (ref_token_resp.status == 200) {
-            await this.joinGang(true);
-          } else {
-            // Not able to create gang even after refreshing token
-            this.showPassKeyModal = false;
-            this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+      if (this.validatePassKey()) {
+        this.load_btn = true;
+        const gangStore = useGangStore();
+        const response = await gangStore.joinGang(this.gang_join);
+        if (response.status == 200) {
+          // show fresh gang_list
+          this.load_btn = false;
+          await this.$parent.$parent.getUserGang(false);
+        } else if (response.status == 400) {
+          // gang not found, maybe expired
+          // Mark this gang as expired
+          var gangIndex = this.searchResult.findIndex(
+            (x) => x.gang_admin == this.gang_join.gang_admin
+          );
+          this.searchResult[gangIndex].is_expired = true;
+        } else if (response.status == 401) {
+          if (response.error == "PassKey didn't match") {
+            // passkey didn't match
+            this.gang_join.passKeyErr = true;
+          } else if (retry == false) {
+            // unauthorized
+            // access_token expired, use refresh_token to refresh JWT
+            // Try again on success
+            const authStore = useAuthStore();
+            const ref_token_resp = await authStore.refreshToken();
+            if (ref_token_resp.status == 200) {
+              await this.joinGang(true);
+            } else {
+              // Not able to create gang even after refreshing token
+              this.showPassKeyModal = false;
+              this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+            }
           }
+        } else {
+          // Server error
+          this.showPassKeyModal = false;
+          this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
-      } else {
-        // Server error
-        this.showPassKeyModal = false;
-        this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        this.load_btn = false;
       }
-      this.load_btn = false;
+    },
+    validatePassKey: function () {
+      if (this.gang_join.gang_passkey.length < 5) {
+        this.gang_join.passKeyErr = true;
+        return false;
+      }
+      return true;
     },
     togglePassKeyModal: function (gang_join_name, gang_join_admin) {
       this.showPassKeyModal = !this.showPassKeyModal;
