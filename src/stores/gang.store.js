@@ -18,8 +18,7 @@ export const useGangStore = defineStore("gang", {
   actions: {
     // getGang API handler
     async getGang() {
-      let res = {};
-      await axios
+      const res = await axios
         .get(process.env.VUE_APP_GET_GANG_API, {
           withCredentials: true,
         })
@@ -27,17 +26,17 @@ export const useGangStore = defineStore("gang", {
           this.userGang = response.data.gang;
           this.CreateGang = response.data.canCreateGang;
           this.JoinGang = response.data.canJoinGang;
-          res.status = response.status;
+          return response.status;
         })
         .catch((e) => {
           // error occured
           if (e.response) {
             // Server sent a response
-            res.status = e.response.status;
+            return e.response.status;
             // show the first validation issue received from server
           } else {
             // Server unreachable
-            res.status = 503;
+            return 503;
           }
         });
       return res;
@@ -97,13 +96,34 @@ export const useGangStore = defineStore("gang", {
               res.status == 401 &&
               e.response.data.message == "PassKey didn't match"
             ) {
-              res.errMsg = "PassKey didn't match";
+              res.error = "PassKey didn't match";
             } else {
-              res.errMsg = "authToken expired";
+              res.error = "authToken expired";
             }
           } else {
             // Server unreachable
             res.status = 503;
+          }
+        });
+      return res;
+    },
+    // acceptInvite API handler
+    async acceptInvite(invite) {
+      const res = await axios
+        .post(process.env.VUE_APP_ACCEPT_INVITE_API, invite, {
+          withCredentials: true,
+        })
+        .then((response) => {
+          this.JoinGang = false;
+          return response.status;
+        })
+        .catch((e) => {
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+          } else {
+            // Server unreachable
+            return 503;
           }
         });
       return res;

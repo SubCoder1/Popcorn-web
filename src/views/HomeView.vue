@@ -10,7 +10,7 @@
     <div
       class="gang-dashboard-container h-auto container-style container-shadow text-left me-4 p-4"
     >
-      <GangDashboard />
+      <GangDashboard :key="reload" />
     </div>
     <div class="d-flex flex-column">
       <div
@@ -38,6 +38,16 @@ export default {
     GangInvite,
     UserProfile,
     GangDashboard,
+  },
+  data() {
+    return {
+      reload: 0,
+    };
+  },
+  methods: {
+    reloadDashboard: function () {
+      this.reload += 1;
+    },
   },
 };
 </script>
