@@ -83,7 +83,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: rgba(32 39 44 1);
   height: 100%;
-  background-image: url("~@/assets/background.png");
+  background-image: url("~@/assets/background/bg-1.png");
 }
 
 .container-style {
