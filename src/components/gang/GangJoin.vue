@@ -134,36 +134,28 @@
           <p class="text-xsm text-secondary text-end">
             {{ gang.gang_created_timeago }}
           </p>
-          <button
-            v-if="gang.is_admin"
-            type="button"
-            class="btn btn-sm rounded-md text-sm"
-            :disabled="load_btn"
-            v-bind:class="{ 'admin-btn': gang.is_admin }"
-            @click="showCustomizeGangOnly(gang)"
-          >
-            Customize
-          </button>
-          <button
-            v-else-if="
-              gang.gang_members_count < gang.gang_member_limit &&
-              (gang.is_expired == null || !gang.is_expired)
-            "
-            type="button"
-            class="btn d-flex align-items-center justify-content-center position-relative btn-sm rounded-md text-sm"
-            :disabled="load_btn"
-            @click="togglePassKeyModal(gang.gang_name, gang.gang_admin)"
-          >
-            Join
-          </button>
-          <button
-            v-else
-            type="button"
-            class="btn btn-secondary btn-sm rounded-md text-sm"
-            disabled
-          >
-            Expired
-          </button>
+          <template v-if="!gang.is_admin">
+            <button
+              v-if="
+                gang.gang_members_count < gang.gang_member_limit &&
+                (gang.is_expired == null || !gang.is_expired)
+              "
+              type="button"
+              class="btn d-flex align-items-center justify-content-center position-relative btn-sm rounded-md text-sm"
+              :disabled="load_btn"
+              @click="togglePassKeyModal(gang.gang_name, gang.gang_admin)"
+            >
+              Join
+            </button>
+            <button
+              v-else
+              type="button"
+              class="btn btn-secondary btn-sm rounded-md text-sm"
+              disabled
+            >
+              Expired
+            </button>
+          </template>
         </div>
       </div>
     </div>
@@ -174,6 +166,7 @@
 <script>
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth.store";
+import { useGangStore } from "@/stores/gang.store";
 
 export default {
   data() {
@@ -225,43 +218,6 @@ export default {
 
       return res;
     },
-    joinGangAPI: async function () {
-      let res = {};
-      await axios
-        .post(
-          process.env.VUE_APP_JOIN_GANG_API,
-          {
-            gang_name: this.gang_join.gang_name,
-            gang_admin: this.gang_join.gang_admin,
-            gang_passkey: this.gang_join.gang_passkey,
-          },
-          {
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          res.status = response.status;
-        })
-        .catch((e) => {
-          if (e.response) {
-            // Server sent a response
-            res.status = e.response.status;
-            // 401 can be either passKey mismatch or authToken expired
-            if (
-              res.status == 401 &&
-              e.response.data.message == "PassKey didn't match"
-            ) {
-              res.errMsg = "PassKey didn't match";
-            } else {
-              res.errMsg = "authToken expired";
-            }
-          } else {
-            // Server unreachable
-            res.status = 503;
-          }
-        });
-      return res;
-    },
     searchWithDelay: async function (retry) {
       this.load_search = true;
       this.searchResult = [];
@@ -300,11 +256,12 @@ export default {
     },
     joinGang: async function (retry) {
       this.load_btn = true;
-      const response = await this.joinGangAPI();
+      const gangStore = useGangStore();
+      const response = await gangStore.joinGang(this.gang_join);
       if (response.status == 200) {
         // show fresh gang_list
-        await this.$parent.$parent.getUserGang(false);
         this.load_btn = false;
+        await this.$parent.$parent.getUserGang(false);
       } else if (response.status == 400) {
         // gang not found, maybe expired
         // Mark this gang as expired
@@ -336,9 +293,6 @@ export default {
         this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
       this.load_btn = false;
-    },
-    showCustomizeGangOnly: function (gang) {
-      this.$parent.$parent.showCustomizeGangOnly(gang);
     },
     togglePassKeyModal: function (gang_join_name, gang_join_admin) {
       this.showPassKeyModal = !this.showPassKeyModal;

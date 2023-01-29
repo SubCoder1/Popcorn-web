@@ -2,7 +2,7 @@
   <div class="d-flex flex-column">
     <div
       class="d-flex flex-row justify-content-between mb-3"
-      v-for="gang in gangData"
+      v-for="gang in gangStore.getUserGang"
       :key="gang.gang_admin"
     >
       <div
@@ -41,28 +41,27 @@
       </div>
     </div>
   </div>
-  <router-link to="" v-if="canJoin" @click="showJoinGangOnly()">
+  <router-link to="" v-if="gangStore.canJoinGang" @click="showGangList()">
     Join a gang
   </router-link>
-  <router-link to="" v-if="canCreate" @click="showCreateGangOnly()">
+  <router-link to="" v-if="gangStore.canCreateGang" @click="showGangList()">
     Create a gang
   </router-link>
 </template>
 
 <script>
+import { useGangStore } from "@/stores/gang.store";
+
 export default {
-  props: {
-    gangData: Object,
-    canCreate: Boolean,
-    canJoin: Boolean,
-  },
   name: "GangList",
+  data() {
+    return {
+      gangStore: useGangStore(),
+    };
+  },
   methods: {
-    showJoinGangOnly: function () {
-      this.$parent.$parent.showJoinGangOnly();
-    },
-    showCreateGangOnly: function () {
-      this.$parent.$parent.showCreateGangOnly();
+    showGangList: function () {
+      this.$parent.$parent.toggleGangList();
     },
     showCustomizeGangOnly: function (gang) {
       this.$parent.$parent.showCustomizeGangOnly(gang);

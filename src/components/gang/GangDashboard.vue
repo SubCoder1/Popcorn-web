@@ -1,4 +1,4 @@
-<!-- Gang Dashboard sub-view of Popcorn HomeView. -->
+<!-- Gang Dashboard sub-view of Popcorn, rendered through HomeView. -->
 
 <template>
   <div v-if="loading" class="d-flex flex-column">
@@ -25,14 +25,9 @@
     </div>
   </div>
   <div v-else class="d-flex flex-column">
-    <GangList
-      :gang-data="gangData"
-      :can-create="canCreateGang"
-      :can-join="canJoinGang"
-      v-if="gangData.length != 0"
-    />
+    <GangList v-if="showGangList" />
     <div class="h-auto" v-else>
-      <template v-if="canCreateGang && canJoinGang">
+      <template v-if="gangStore.canCreateGang && gangStore.canJoinGang">
         <div class="d-flex align-items-center justify-content-between">
           <div>
             <h4 v-if="createOrJoin">Join a Gang</h4>
@@ -61,10 +56,12 @@
       <template v-else>
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <h4 v-if="canCreateGang">Create a Gang</h4>
-            <h4 v-else-if="canJoinGang">Join a Gang</h4>
-            <h4 v-else>Customize Gang</h4>
-            <router-link to="" @click="getUserGang(false)">Go back</router-link>
+            <h4 v-if="showCustomizePage">Customize Gang</h4>
+            <h4 v-else-if="gangStore.canCreateGang">Create a Gang</h4>
+            <h4 v-else>Join a Gang</h4>
+            <router-link to="" @click="showGangList = true">
+              Go back
+            </router-link>
           </div>
           <div class="mt-1 mb-1">
             <p
@@ -76,26 +73,26 @@
           </div>
         </div>
       </template>
-      <GangJoin v-if="canJoinGang && createOrJoin" />
-      <GangCreate v-else-if="canCreateGang" />
-      <GangCustomize :gang="customizeGangData" v-else />
+      <GangCustomize :gang="customizeGangData" v-if="showCustomizePage" />
+      <GangJoin v-else-if="gangStore.canJoinGang && createOrJoin" />
+      <GangCreate v-else />
     </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import { useAuthStore } from "@/stores/auth.store";
+import { useGangStore } from "@/stores/gang.store";
 import { defineAsyncComponent } from "vue";
 
 export default {
   data() {
     return {
       loading: true,
-      gangData: [],
-      canCreateGang: false,
-      canJoinGang: false,
-      createOrJoin: true, // Used for toggling
+      gangStore: useGangStore(),
+      createOrJoin: true, // true -> join, false -> create
+      showGangList: false,
+      showCustomizePage: false,
       customizeGangData: {},
       showErr: false,
       formErr: "",
@@ -103,41 +100,15 @@ export default {
   },
   name: "GangDashboard",
   methods: {
-    getUserGangAPI: async function () {
-      let res = {};
-      await axios
-        .get(process.env.VUE_APP_GET_GANG_API, {
-          withCredentials: true,
-        })
-        .then((response) => {
-          res.status = 200;
-          res.gang = response.data.gang;
-          res.canJoinGang = response.data.canJoinGang;
-          res.canCreateGang = response.data.canCreateGang;
-        })
-        .catch((e) => {
-          // error occured
-          if (e.response) {
-            // Server sent a response
-            res.status = e.response.status;
-            // show the first validation issue received from server
-          } else {
-            // Server unreachable
-            res.status = 503;
-          }
-        });
-      return res;
-    },
     getUserGang: async function (retry) {
       this.loading = true;
-      const response = await this.getUserGangAPI();
+      const gangStore = useGangStore();
+      const response = await gangStore.getGang();
       if (response.status == 200) {
-        this.gangData = response.gang;
-        this.canCreateGang = response.canCreateGang;
-        this.canJoinGang = response.canJoinGang;
-        this.createOrJoin = true;
-        this.customizeGangData = {};
         this.loading = false;
+        if (this.gangStore.getUserGang.length > 0) {
+          this.showGangList = true;
+        } // else other options are shown
       } else if (response.status == 401) {
         // Unauthorized
         if (retry == false) {
@@ -157,22 +128,18 @@ export default {
         this.$parent.$parent.$parent.srvErrModal();
       }
     },
+    // used when user can create and join a gang
     toggleCreateOrJoinGang: function () {
       this.createOrJoin = !this.createOrJoin;
     },
-    showJoinGangOnly: function () {
-      this.gangData = [];
-      this.canCreateGang = false;
-    },
-    showCreateGangOnly: function () {
-      this.gangData = [];
-      this.canJoinGang = false;
-    },
     showCustomizeGangOnly: function (gang) {
-      this.gangData = [];
-      this.canJoinGang = false;
-      this.canCreateGang = false;
+      this.showGangList = false;
       this.customizeGangData = gang;
+      this.showCustomizePage = true;
+    },
+    // used in GangList component to switch to create or join gang view
+    toggleGangList: function () {
+      this.showGangList = !this.showGangList;
     },
     ErrPopUp: function (errMsg) {
       this.formErr = errMsg;
