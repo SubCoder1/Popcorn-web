@@ -130,6 +130,10 @@ h4 {
   line-height: 1.25rem;
 }
 
+.text-justify {
+  text-align: justify;
+}
+
 .rounded-md {
   border-radius: 0.375rem;
 }
