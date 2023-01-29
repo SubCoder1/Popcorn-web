@@ -104,12 +104,12 @@ export default {
       this.loading = true;
       const gangStore = useGangStore();
       const response = await gangStore.getGang();
-      if (response.status == 200) {
+      if (response == 200) {
         this.loading = false;
         if (this.gangStore.getUserGang.length > 0) {
           this.showGangList = true;
         } // else other options are shown
-      } else if (response.status == 401) {
+      } else if (response == 401) {
         // Unauthorized
         if (retry == false) {
           // access_token expired, use refresh_token to refresh JWT
