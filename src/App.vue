@@ -99,6 +99,7 @@ a {
   text-decoration: none;
   font-size: 0.875rem;
   color: rgb(241, 133, 121);
+  width: max-content;
 }
 
 a:hover {
