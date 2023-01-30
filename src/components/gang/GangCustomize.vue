@@ -30,40 +30,45 @@
           />
         </div>
         <div class="modal-body">
-          <div
-            v-if="search.loading_members_search"
-            class="d-flex flex-column justify-content-center loading-mt"
-          >
-            <div class="d-flex flex-row mb-3">
-              <div
-                class="skeleton user-prof-skeleton-md rounded-circle me-3"
-              ></div>
-              <div class="d-flex flex-column justify-content-center">
-                <div class="skeleton skeleton-text mb-3"></div>
-                <div class="skeleton skeleton-text"></div>
+          <div v-show="search.loading_members_search">
+            <div class="d-flex flex-column justify-content-center">
+              <div class="d-flex flex-row mb-3">
+                <div
+                  class="skeleton user-prof-skeleton-md rounded-circle me-3"
+                ></div>
+                <div class="d-flex flex-column justify-content-center">
+                  <div class="skeleton skeleton-text mb-3"></div>
+                  <div class="skeleton skeleton-text"></div>
+                </div>
               </div>
-            </div>
-            <div class="d-flex flex-row mb-3">
-              <div
-                class="skeleton user-prof-skeleton-md rounded-circle me-3"
-              ></div>
-              <div class="d-flex flex-column justify-content-center">
-                <div class="skeleton skeleton-text mb-3"></div>
-                <div class="skeleton skeleton-text"></div>
+              <div class="d-flex flex-row mb-3">
+                <div
+                  class="skeleton user-prof-skeleton-md rounded-circle me-3"
+                ></div>
+                <div class="d-flex flex-column justify-content-center">
+                  <div class="skeleton skeleton-text mb-3"></div>
+                  <div class="skeleton skeleton-text"></div>
+                </div>
               </div>
-            </div>
-            <div class="d-flex flex-row mb-3">
-              <div
-                class="skeleton user-prof-skeleton-md rounded-circle me-3"
-              ></div>
-              <div class="d-flex flex-column justify-content-center">
-                <div class="skeleton skeleton-text mb-3"></div>
-                <div class="skeleton skeleton-text"></div>
+              <div class="d-flex flex-row mb-1-5">
+                <div
+                  class="skeleton user-prof-skeleton-md rounded-circle me-3"
+                ></div>
+                <div class="d-flex flex-column justify-content-center">
+                  <div class="skeleton skeleton-text mb-3"></div>
+                  <div class="skeleton skeleton-text"></div>
+                </div>
               </div>
             </div>
           </div>
-          <div v-else class="d-flex flex-column justify-content-center mt-3">
-            <div v-if="search.searchResult.length == 0" class="text-center">
+          <div class="d-flex flex-column justify-content-center mt-3">
+            <div
+              v-show="
+                !search.loading_members_search &&
+                search.searchResult.length == 0
+              "
+              class="text-center"
+            >
               <img
                 class="empty-search-img m-auto"
                 src="@/assets/misc/empty-search.png"
@@ -73,11 +78,15 @@
                 Your searches will show up here.
               </p>
             </div>
-            <div v-else>
+            <transition-group
+              v-show="search.searchResult.length != 0"
+              name="fade"
+              tag="div"
+            >
               <div
                 class="d-flex flex-row justify-content-between mb-3"
                 v-for="member in search.searchResult"
-                :key="member.username"
+                :key="member"
               >
                 <div class="d-flex flex-row align-items-center">
                   <img
@@ -149,7 +158,7 @@
                   Admin
                 </p>
               </div>
-            </div>
+            </transition-group>
           </div>
         </div>
         <div class="modal-footer border-0">
@@ -227,7 +236,7 @@
         </router-link>
       </div>
       <div class="gang-members-box-md">
-        <div v-if="loading_members_list">
+        <div v-show="loading_members_list">
           <div class="d-flex flex-row mb-3">
             <div
               class="skeleton user-prof-skeleton-md rounded-circle me-3"
@@ -247,50 +256,53 @@
             </div>
           </div>
         </div>
-        <div
-          v-else
-          class="d-flex flex-row justify-content-between mb-3"
-          v-for="member in membersList"
-          :key="member.username"
-        >
-          <div class="d-flex flex-row align-items-center">
-            <img
-              v-bind:src="
-                require(`@/assets/profile/${member.user_profile_pic}`)
-              "
-              class="me-3 profile-pic-sm"
-              alt="User profile picture"
-            />
-            <div class="d-flex flex-column justify-content-center">
-              <p class="mb-1 text-sm">{{ member.full_name }}</p>
-              <p class="mb-0 text-sm text-secondary">@{{ member.username }}</p>
-            </div>
-          </div>
-          <button
-            v-if="gang.gang_admin != member.username"
-            type="button"
-            class="btn btn-circle d-flex align-items-center justify-content-center kick-member-btn rounded-circle p-0"
+        <transition-group v-show="!loading_members_list" name="fade" tag="div">
+          <div
+            class="d-flex flex-row justify-content-between mb-3"
+            v-for="member in membersList"
+            :key="member"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="26"
-              height="26"
-              fill="currentColor"
-              class="bi bi-x-lg"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"
+            <div class="d-flex flex-row align-items-center">
+              <img
+                v-bind:src="
+                  require(`@/assets/profile/${member.user_profile_pic}`)
+                "
+                class="me-3 profile-pic-sm"
+                alt="User profile picture"
               />
-            </svg>
-          </button>
-          <p
-            v-else
-            class="d-flex align-items-center text-sm text-secondary mb-0 me-1"
-          >
-            Admin
-          </p>
-        </div>
+              <div class="d-flex flex-column justify-content-center">
+                <p class="mb-1 text-sm">{{ member.full_name }}</p>
+                <p class="mb-0 text-sm text-secondary">
+                  @{{ member.username }}
+                </p>
+              </div>
+            </div>
+            <button
+              v-if="gang.gang_admin != member.username"
+              type="button"
+              class="btn btn-circle d-flex align-items-center justify-content-center kick-member-btn rounded-circle p-0"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="26"
+                height="26"
+                fill="currentColor"
+                class="bi bi-x-lg"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"
+                />
+              </svg>
+            </button>
+            <p
+              v-else
+              class="d-flex align-items-center text-sm text-secondary mb-0 me-1"
+            >
+              Admin
+            </p>
+          </div>
+        </transition-group>
       </div>
     </div>
   </form>
@@ -411,6 +423,7 @@ export default {
       this.loading_members_list = true;
       const response = await this.getGangMembersAPI();
       if (response.status == 200) {
+        this.loading_members_list = false;
         this.membersList = response.membersList;
       } else if (response.status == 401) {
         // Unauthorized
@@ -432,7 +445,6 @@ export default {
         this.showAddMemberModal = false;
         this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
-      this.loading_members_list = false;
     },
     searchWithDelay: async function (retry) {
       this.search.loading_members_search = true;
@@ -447,6 +459,7 @@ export default {
           this.search.searchResult = this.search.searchResult.map((e) => {
             return { ...e, load_invite_btn: 0 };
           });
+          this.search.loading_members_search = false;
         } else if (response.status == 400) {
           // Bad request - validation issue or no data found
           this.search.loading_members_search = false;
@@ -470,7 +483,6 @@ export default {
           this.search.showAddMemberModal = false;
           this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
-        this.search.loading_members_search = false;
       }, 1000);
     },
     sendInvite: async function (member, retry) {
@@ -560,7 +572,7 @@ export default {
   height: 250px;
   width: 350px;
 }
-.loading-mt {
-  margin-top: 6px;
+.mb-1-5 {
+  margin-bottom: 0.375rem;
 }
 </style>
