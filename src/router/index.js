@@ -16,9 +16,6 @@ const routes = [
     redirect: { name: "login" },
     name: "auth",
     component: UserAuth,
-    meta: {
-      requiresAuth: false,
-    },
     children: [
       {
         // UserLogin will be rendered inside UserAuth's <router-view>
@@ -66,30 +63,35 @@ const router = createRouter({
 });
 
 // Global navigation guard which gets executed before any navigation to router paths
-router.beforeEach(async (to, from) => {
-  if (from.name == undefined || from.name != to.name) {
-    const loaderStore = useLoaderStore();
-    loaderStore.loading = true;
-  }
+router.beforeEach(async (to) => {
+  const loaderStore = useLoaderStore();
+  loaderStore.loading = true;
   const authStore = useAuthStore();
-  if (!(await authStore.isUserAuth())) {
-    // client not authenticated
-    // use refresh_token and check if user can still authenticate
-    await authStore.refreshToken();
-    if (!authStore.getUserAuth) {
-      // refreshing token didn't work, redirect to login
-      return {
-        name: "auth",
-        // to come back later to this path after login
-        query: { redirect: to.fullPath },
-      };
-    } else if (!to.meta.requiresAuth) {
-      // User is logged in, can't visit these pages without logging out
-      return { name: "home" };
+  if (to.meta.requiresAuth) {
+    // View or Component requires auth
+    if (!(await authStore.isUserAuth())) {
+      // client not authenticated
+      // use refresh_token and check if user can still authenticate
+      await authStore.refreshToken();
+      if (!authStore.getUserAuth) {
+        // refreshing token didn't work, redirect to login
+        return {
+          name: "auth",
+          // to come back later to this path after login
+          query: { redirect: to.fullPath },
+        };
+      }
     }
-  } else if (!to.meta.requiresAuth) {
-    // User is logged in, can't visit these pages without logging out
-    return { name: "home" };
+  } else {
+    // User can't access noAuth pages like login, logout... if they're already authenticated
+    if (await authStore.isUserAuth()) {
+      return { name: "home" };
+    } else {
+      await authStore.refreshToken();
+      if (authStore.getUserAuth) {
+        return { name: "home" };
+      }
+    }
   }
 });
 // Global navigation guard which gets executed after any navigation to router paths
