@@ -70,34 +70,36 @@
       required
     />
   </div>
-  <div
-    v-if="load_search"
-    class="search-box d-flex flex-column justify-content-center"
-  >
-    <div class="d-flex flex-row mb-3">
-      <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
-      <div class="d-flex flex-column justify-content-center">
-        <div class="skeleton skeleton-text mb-3"></div>
-        <div class="skeleton skeleton-text"></div>
+  <div class="h-auto d-flex flex-column justify-content-center pt-4">
+    <div v-show="load_search">
+      <div class="h-auto d-flex flex-column justify-content-center">
+        <div class="d-flex flex-row mb-3">
+          <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
+          <div class="d-flex flex-column justify-content-center">
+            <div class="skeleton skeleton-text mb-3"></div>
+            <div class="skeleton skeleton-text"></div>
+          </div>
+        </div>
+        <div class="d-flex flex-row mb-3">
+          <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
+          <div class="d-flex flex-column justify-content-center">
+            <div class="skeleton skeleton-text mb-3"></div>
+            <div class="skeleton skeleton-text"></div>
+          </div>
+        </div>
+        <div class="d-flex flex-row mb-2-5">
+          <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
+          <div class="d-flex flex-column justify-content-center">
+            <div class="skeleton skeleton-text mb-3"></div>
+            <div class="skeleton skeleton-text"></div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="d-flex flex-row mb-3">
-      <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
-      <div class="d-flex flex-column justify-content-center">
-        <div class="skeleton skeleton-text mb-3"></div>
-        <div class="skeleton skeleton-text"></div>
-      </div>
-    </div>
-    <div class="d-flex flex-row mb-3">
-      <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
-      <div class="d-flex flex-column justify-content-center">
-        <div class="skeleton skeleton-text mb-3"></div>
-        <div class="skeleton skeleton-text"></div>
-      </div>
-    </div>
-  </div>
-  <div v-else class="search-box d-flex flex-column justify-content-center">
-    <div v-if="searchResult.length == 0" class="text-center">
+    <div
+      v-show="!load_search && searchResult.length == 0"
+      class="text-center mt-2"
+    >
       <img
         class="empty-search-img m-auto"
         src="@/assets/misc/empty-search.png"
@@ -107,7 +109,7 @@
         Your searches will show up here.
       </p>
     </div>
-    <div v-else>
+    <transition-group v-show="searchResult.length != 0" name="fade" tag="div">
       <div
         class="d-flex flex-row justify-content-between mb-3"
         v-for="gang in searchResult"
@@ -160,7 +162,7 @@
           </template>
         </div>
       </div>
-    </div>
+    </transition-group>
   </div>
   <div v-if="showPassKeyModal" class="modal-backdrop fade show"></div>
 </template>
@@ -228,6 +230,7 @@ export default {
       this.timeout = setTimeout(async () => {
         const response = await this.searchAPI();
         if (response.status == 200) {
+          this.load_search = false;
           this.searchResult = response.searchResult;
           this.cursor = response.cursor;
         } else if (response.status == 400) {
@@ -253,7 +256,6 @@ export default {
           this.showPassKeyModal = false;
           this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
-        this.load_search = false;
       }, 1000);
     },
     joinGang: async function (retry) {
@@ -326,5 +328,9 @@ export default {
 .pass-key-err {
   background-color: rgb(243 180 180);
   border: 2px solid #f35050;
+}
+
+.mb-2-5 {
+  margin-bottom: 0.875rem;
 }
 </style>
