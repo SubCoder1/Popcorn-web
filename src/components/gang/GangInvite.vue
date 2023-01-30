@@ -115,6 +115,7 @@
             "
           >
             <svg
+              v-if="!invite.load_accept_btn"
               xmlns="http://www.w3.org/2000/svg"
               width="26"
               height="26"
@@ -126,12 +127,15 @@
                 d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
               />
             </svg>
+            <div v-else class="loader"></div>
           </button>
           <button
             type="button"
             class="btn btn-circle d-flex align-items-center justify-content-center decline-invite-btn rounded-circle p-0 ms-3"
+            @click="rejectInvite(false, invite)"
           >
             <svg
+              v-if="!invite.load_reject_btn"
               xmlns="http://www.w3.org/2000/svg"
               width="26"
               height="26"
@@ -143,6 +147,7 @@
                 d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"
               />
             </svg>
+            <div v-else class="loader"></div>
           </button>
         </div>
         <div v-else class="d-flex flex-row align-items-center">
@@ -199,13 +204,37 @@ export default {
         });
       return res;
     },
+    rejectInviteAPI: async function (invite) {
+      const response = await axios
+        .post(process.env.VUE_APP_REJECT_INVITE_API, invite, {
+          withCredentials: true,
+        })
+        .then((r) => {
+          return r.status;
+        })
+        .catch((e) => {
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+          } else {
+            // Server unreachable
+            return 503;
+          }
+        });
+      return response;
+    },
     getInvites: async function (retry) {
       this.loading = true;
       const response = await this.getInvitesAPI();
       if (response.status == 200) {
         this.invites = response.invites.invites;
         this.invites = this.invites.map((e) => {
-          return { ...e, load_btn: false, is_expired: false };
+          return {
+            ...e,
+            load_accept_btn: false,
+            load_reject_btn: false,
+            is_expired: false,
+          };
         });
         this.loading = false;
       } else if (response.status == 401) {
@@ -238,7 +267,7 @@ export default {
       },
       index = this.accept_invite.index
     ) {
-      invite.load_btn = true;
+      invite.load_accept_btn = true;
       this.load_accept_btn = true;
       const response = await this.gangStore.acceptInvite({
         gang_admin: invite.gang_admin,
@@ -246,7 +275,7 @@ export default {
       });
       if (response == 200) {
         this.load_accept_btn = false;
-        invite.load_btn = false;
+        invite.load_accept_btn = false;
         this.showWarnModal = false;
         this.invites.splice(index, 1);
         this.$parent.reloadDashboard();
@@ -267,6 +296,38 @@ export default {
         }
       } else if (response == 400) {
         // invite expired or invalid
+        invite.is_expired = true;
+      } else {
+        // Server error
+        this.showWarnModal = false;
+        this.$parent.$parent.$parent.srvErrModal();
+      }
+    },
+    rejectInvite: async function (retry, invite, index) {
+      invite.load_reject_btn = true;
+      const response = await this.rejectInviteAPI({
+        gang_admin: invite.gang_admin,
+        gang_name: invite.gang_name,
+      });
+      if (response == 200) {
+        this.invites.splice(index, 1);
+      } else if (response == 401) {
+        // Unauthorized
+        if (retry == false) {
+          // access_token expired, use refresh_token to refresh JWT
+          // Try again on success
+          const authStore = useAuthStore();
+          const ref_token_resp = await authStore.refreshToken();
+          if (ref_token_resp.status == 200) {
+            await this.rejectInvite(true, invite, index);
+          }
+        } else {
+          // Not able to create gang even after refreshing token
+          this.showWarnModal = false;
+          this.$parent.$parent.$parent.srvErrModal();
+        }
+      } else if (response == 400) {
+        // Invalid or rejected invite
         invite.is_expired = true;
       } else {
         // Server error
