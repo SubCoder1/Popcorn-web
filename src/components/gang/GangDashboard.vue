@@ -139,6 +139,7 @@ export default {
     },
     // used in GangList component to switch to create or join gang view
     toggleGangList: function () {
+      this.showCustomizePage = false;
       this.showGangList = !this.showGangList;
     },
     ErrPopUp: function (errMsg) {
