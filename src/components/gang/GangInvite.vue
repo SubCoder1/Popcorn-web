@@ -284,9 +284,11 @@ export default {
         invite.load_accept_btn = false;
         this.showWarnModal = false;
         this.invites.splice(index, 1);
-        setTimeout(() => {
-          this.showEmptyInvites = true;
-        }, 500);
+        if (this.invites.length == 0) {
+          setTimeout(() => {
+            this.showEmptyInvites = true;
+          }, 500);
+        }
         this.$parent.reloadDashboard();
       } else if (response == 401) {
         // Unauthorized
@@ -320,6 +322,11 @@ export default {
       });
       if (response == 200) {
         this.invites.splice(index, 1);
+        if (this.invites.length == 0) {
+          setTimeout(() => {
+            this.showEmptyInvites = true;
+          }, 500);
+        }
       } else if (response == 401) {
         // Unauthorized
         if (retry == false) {
