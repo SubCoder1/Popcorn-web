@@ -108,7 +108,7 @@
                   type="button"
                   class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle p-0"
                   v-bind:class="{ success: member.load_invite_btn == 2 }"
-                  @click="sendInvite(member, false)"
+                  @click="sendInvite(false, member)"
                   :disabled="
                     member.load_invite_btn == 1 || member.load_invite_btn == 2
                   "
@@ -212,7 +212,7 @@
         <input
           type="number"
           class="form-control text-sm rounded-md input-xsm me-3"
-          placeholder="Passkey"
+          placeholder="Limit"
           v-model.number="update.gang_member_limit"
           id="gangLimit"
           @click="removeErr()"
@@ -259,7 +259,7 @@
         <transition-group v-show="!loading_members_list" name="fade" tag="div">
           <div
             class="d-flex flex-row justify-content-between mb-3"
-            v-for="member in membersList"
+            v-for="(member, index) in membersList"
             :key="member"
           >
             <div class="d-flex flex-row align-items-center">
@@ -281,8 +281,10 @@
               v-if="gang.gang_admin != member.username"
               type="button"
               class="btn btn-circle d-flex align-items-center justify-content-center kick-member-btn rounded-circle p-0"
+              @click="bootMember(false, member, index)"
             >
               <svg
+                v-if="!member.load_boot_btn"
                 xmlns="http://www.w3.org/2000/svg"
                 width="26"
                 height="26"
@@ -294,6 +296,7 @@
                   d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"
                 />
               </svg>
+              <div v-else class="loader"></div>
             </button>
             <p
               v-else
@@ -392,8 +395,7 @@ export default {
       return res;
     },
     sendInviteAPI: async function () {
-      let res = {};
-      await axios
+      const response = await axios
         .post(
           process.env.VUE_APP_SEND_GANG_INVITES_API,
           {
@@ -405,18 +407,36 @@ export default {
           }
         )
         .then((response) => {
-          res.status = response.status;
+          return response.status;
         })
         .catch((e) => {
           if (e.response) {
             // Server sent a response
-            res.status = e.response.status;
+            return e.response.status;
           } else {
             // Server unreachable
-            res.status = 503;
+            return 503;
           }
         });
-      return res;
+      return response;
+    },
+    bootMemberAPI: async function (member) {
+      const response = await axios
+        .post(process.env.VUE_APP_BOOT_MEMBER_API, member, {
+          withCredentials: true,
+        })
+        .then((r) => {
+          return r.status;
+        })
+        .catch((e) => {
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+          } else {
+            return 503;
+          }
+        });
+      return response;
     },
     getGangMembers: async function (retry) {
       this.membersList = [];
@@ -425,6 +445,9 @@ export default {
       if (response.status == 200) {
         this.loading_members_list = false;
         this.membersList = response.membersList;
+        this.membersList = this.membersList.map((e) => {
+          return { ...e, load_boot_btn: false };
+        });
       } else if (response.status == 401) {
         // Unauthorized
         if (retry == false) {
@@ -485,16 +508,16 @@ export default {
         }
       }, 1000);
     },
-    sendInvite: async function (member, retry) {
+    sendInvite: async function (retry, member) {
       // loading icon on clicked invite btn
       member.load_invite_btn = 1;
       this.invite.invite_to = member.username;
       const response = await this.sendInviteAPI();
-      if (response.status == 200) {
+      if (response == 200) {
         // sent invite
         // sent success icon on clicked invite btn
         member.load_invite_btn = 2;
-      } else if (response.status == 401) {
+      } else if (response == 401) {
         // Unauthorized
         // set to default icon on clicked invite btn
         member.load_invite_btn = 0;
@@ -520,6 +543,35 @@ export default {
         this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
       this.invite.invite_to = "";
+    },
+    bootMember: async function (retry, member, index) {
+      member.load_boot_btn = true;
+      const response = await this.bootMemberAPI({
+        member_name: member.username,
+        gang_name: this.gang.gang_name,
+      });
+      if (response == 200 || response == 400) {
+        this.membersList.splice(index, 1);
+      } else if (response == 401) {
+        // Unauthorized
+        if (retry == false) {
+          // access_token expired, use refresh_token to refresh JWT
+          // Try again on success
+          const authStore = useAuthStore();
+          const ref_token_resp = await authStore.refreshToken();
+          if (ref_token_resp.status == 200) {
+            await this.searchWithDelay(true);
+          }
+        } else {
+          // Not able to search gang even after refreshing token
+          this.search.showAddMemberModal = false;
+          this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        }
+      } else {
+        // Server error
+        this.search.showAddMemberModal = false;
+        this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+      }
     },
     toggleAddGangMemberModal: function () {
       this.search.showAddMemberModal = !this.search.showAddMemberModal;
