@@ -274,6 +274,7 @@ export default {
             (x) => x.gang_admin == this.gang_join.gang_admin
           );
           this.searchResult[gangIndex].is_expired = true;
+          this.showPassKeyModal = false;
         } else if (response.status == 401) {
           if (response.error == "PassKey didn't match") {
             // passkey didn't match
