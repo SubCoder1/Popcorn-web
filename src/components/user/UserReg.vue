@@ -106,7 +106,7 @@ export default {
         this.formErr = "Full Name should only contain alphabets and spaces";
         this.showErr = true;
         return false;
-      } else if (this.username.length < 5 || this.username.length > 20) {
+      } else if (this.username.length < 5 || this.username.length > 30) {
         // username length should be between [5,20]
         this.formErr = "Username should be of 5 - 20 characters.";
         this.showErr = true;

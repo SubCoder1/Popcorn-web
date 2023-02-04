@@ -90,7 +90,7 @@ export default {
       this.formErr = "";
     },
     validateForm: function () {
-      if (this.username.length < 5 || this.username.length > 20) {
+      if (this.username.length < 5 || this.username.length > 30) {
         // username length should be between [5,20]
         this.formErr = "Username should be of 5 - 20 characters.";
         this.showErr = true;
