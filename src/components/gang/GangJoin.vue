@@ -28,7 +28,7 @@
               @click="gang_join.passKeyErr = false"
               placeholder="Passkey"
               id="gangPassKey"
-              v-model.trim="gang_join.gang_passkey"
+              v-model.trim="gang_join.gang_pass_key"
               minlength="5"
               autocomplete="off"
               required
@@ -182,7 +182,7 @@ export default {
       gang_join: {
         gang_name: "",
         gang_admin: "",
-        gang_passkey: "",
+        gang_pass_key: "",
         passKeyErr: false,
       },
       timeout: null,
