@@ -2,19 +2,21 @@
 // Updated during leaving or joining a gang, creating a gang etc.,
 
 import { defineStore } from "pinia";
+import { useUserStore } from "@/stores/user.store";
 import axios from "axios";
 
 export const useGangStore = defineStore("gang", {
   state: () => ({
     CreateGang: true,
     JoinGang: true,
-    userGang: [],
+    userGang: {},
     userGangInvites: [],
   }),
   getters: {
     canCreateGang: (state) => state.CreateGang,
     canJoinGang: (state) => state.JoinGang,
     getUserGang: (state) => state.userGang,
+    getUserGangInvites: (state) => state.userGangInvites,
   },
   actions: {
     // getGang API handler
@@ -24,7 +26,12 @@ export const useGangStore = defineStore("gang", {
           withCredentials: true,
         })
         .then((response) => {
+          let userStore = useUserStore();
           this.userGang = response.data.gang;
+          if (this.userGang.gang_admin === userStore.getUserName) {
+            // This will be filled up later from getGangMembersAPI
+            this.userGang.gang_members = [];
+          }
           this.CreateGang = response.data.canCreateGang;
           this.JoinGang = response.data.canJoinGang;
           return response.status;
@@ -106,6 +113,28 @@ export const useGangStore = defineStore("gang", {
           } else {
             // Server unreachable
             res.status = 503;
+          }
+        });
+      return res;
+    },
+    // getGangMembers API handler
+    async getGangMembers() {
+      const res = await axios
+        .get(process.env.VUE_APP_GET_GANG_MEMBERS_API, {
+          withCredentials: true,
+        })
+        .then((response) => {
+          this.userGang.gang_members = response.data.members;
+          return response.status;
+        })
+        .catch((e) => {
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+            // show the first validation issue received from server
+          } else {
+            // Server unreachable
+            return 503;
           }
         });
       return res;
