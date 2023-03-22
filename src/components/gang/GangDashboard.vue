@@ -84,6 +84,9 @@
 import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
 import { defineAsyncComponent } from "vue";
+import time2TimeAgo from "@/utils/timeago";
+
+let sseClient;
 
 export default {
   data() {
@@ -159,6 +162,51 @@ export default {
   },
   async mounted() {
     await this.getUserGang(false);
+
+    sseClient = await this.$sse.create({
+      url: process.env.VUE_APP_STREAM_API,
+      format: "json",
+      withCredentials: true,
+      polyfill: true,
+    });
+    sseClient.connect().catch((err) => {
+      // When this error is caught, it means the initial connection to the
+      // events server failed.  No automatic attempts to reconnect will be made.
+      console.error("Failed to connect to server", err);
+    });
+    // Handle incoming messages from server
+    sseClient.on("gangInvite", (msg) => {
+      // Values used in GangInvite frontend
+      msg.message.load_accept_btn = false;
+      msg.message.load_reject_btn = false;
+      msg.message.is_expired = false;
+      msg.message.invite_sent_timeago = time2TimeAgo(
+        msg.message.invite_sent_timeago
+      );
+      // Add the new invite in the array
+      let f = this.gangStore.userGangInvites.findIndex(
+        (e) => e.gang_admin == msg.message.gang_admin
+      );
+      if (f > -1) {
+        this.gangStore.userGangInvites[f] = msg.message;
+      } else {
+        this.gangStore.userGangInvites.unshift(msg.message);
+      }
+    });
+
+    // Catch any errors (ie. lost connections, etc.)
+    sseClient.on("error", (e) => {
+      console.error("lost connection or failed to parse!", e);
+
+      // If this error is due to an unexpected disconnection, EventSource will
+      // automatically attempt to reconnect indefinitely. You will _not_ need to
+      // re-add your handlers.
+    });
+  },
+  async beforeUnmount() {
+    // Make sure to close the connection with the events server
+    // when the component is destroyed, or we'll have ghost connections!
+    sseClient.disconnect();
   },
 };
 </script>
