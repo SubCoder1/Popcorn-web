@@ -9,6 +9,7 @@ export const useGangStore = defineStore("gang", {
     CreateGang: true,
     JoinGang: true,
     userGang: [],
+    userGangInvites: [],
   }),
   getters: {
     canCreateGang: (state) => state.CreateGang,
@@ -52,6 +53,7 @@ export const useGangStore = defineStore("gang", {
           // successfully created gang
           res.status = response.status;
           this.CreateGang = false;
+          this.JoinGang = false;
         })
         .catch((e) => {
           // error occured
@@ -86,6 +88,7 @@ export const useGangStore = defineStore("gang", {
         .then((response) => {
           res.status = response.status;
           this.JoinGang = false;
+          this.CreateGang = false;
         })
         .catch((e) => {
           if (e.response) {
@@ -107,6 +110,29 @@ export const useGangStore = defineStore("gang", {
         });
       return res;
     },
+    // getGangInvite API handler
+    async getGangInvites() {
+      const res = await axios
+        .get(process.env.VUE_APP_GET_INVITES_API, {
+          withCredentials: true,
+        })
+        .then((response) => {
+          this.userGangInvites = response.data.invites;
+          return response.status;
+        })
+        .catch((e) => {
+          // error occured
+          if (e.response) {
+            // Server sent a response
+            res.status = e.response.status;
+            // show the first validation issue received from server
+          } else {
+            // Server unreachable
+            res.status = 503;
+          }
+        });
+      return res;
+    },
     // acceptInvite API handler
     async acceptInvite(invite) {
       const res = await axios
@@ -115,6 +141,7 @@ export const useGangStore = defineStore("gang", {
         })
         .then((response) => {
           this.JoinGang = false;
+          this.CreateGang = false;
           return response.status;
         })
         .catch((e) => {
@@ -127,6 +154,26 @@ export const useGangStore = defineStore("gang", {
           }
         });
       return res;
+    },
+    // rejectInvite API handler
+    async rejectInvite(invite) {
+      const response = await axios
+        .post(process.env.VUE_APP_REJECT_INVITE_API, invite, {
+          withCredentials: true,
+        })
+        .then((r) => {
+          return r.status;
+        })
+        .catch((e) => {
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+          } else {
+            // Server unreachable
+            return 503;
+          }
+        });
+      return response;
     },
   },
 });
