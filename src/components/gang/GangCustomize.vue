@@ -236,7 +236,7 @@
         </router-link>
       </div>
       <div class="gang-members-box-md">
-        <div v-show="loading_members_list">
+        <div v-if="loading_members_list">
           <div class="d-flex flex-row mb-3">
             <div
               class="skeleton user-prof-skeleton-md rounded-circle me-3"
@@ -256,10 +256,10 @@
             </div>
           </div>
         </div>
-        <transition-group v-show="!loading_members_list" name="fade" tag="div">
+        <transition-group v-else name="fade" tag="div">
           <div
             class="d-flex flex-row justify-content-between mb-3"
-            v-for="(member, index) in membersList"
+            v-for="(member, index) in gangStore.getUserGang.gang_members"
             :key="member"
           >
             <div class="d-flex flex-row align-items-center">
@@ -315,6 +315,7 @@
 <script>
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth.store";
+import { useGangStore } from "@/stores/gang.store";
 
 export default {
   name: "GangCustomize",
@@ -339,7 +340,7 @@ export default {
         loading_members_search: false,
         showAddMemberModal: false,
       },
-      membersList: [],
+      gangStore: useGangStore(),
       loading_members_list: false,
       timeout: null,
     };
@@ -359,28 +360,6 @@ export default {
           res.status = response.status;
           res.searchResult = response.data.result;
           res.cursor = response.data.page;
-        })
-        .catch((e) => {
-          if (e.response) {
-            // Server sent a response
-            res.status = e.response.status;
-            // show the first validation issue received from server
-          } else {
-            // Server unreachable
-            res.status = 503;
-          }
-        });
-      return res;
-    },
-    getGangMembersAPI: async function () {
-      let res = {};
-      await axios
-        .get(process.env.VUE_APP_GET_GANG_MEMBERS_API, {
-          withCredentials: true,
-        })
-        .then((response) => {
-          res.status = response.status;
-          res.membersList = response.data.members;
         })
         .catch((e) => {
           if (e.response) {
@@ -439,16 +418,15 @@ export default {
       return response;
     },
     getGangMembers: async function (retry) {
-      this.membersList = [];
       this.loading_members_list = true;
-      const response = await this.getGangMembersAPI();
-      if (response.status == 200) {
+      const response = await this.gangStore.getGangMembers();
+      if (response == 200) {
+        this.gangStore.getUserGang.gang_members =
+          this.gangStore.getUserGang.gang_members.map((e) => {
+            return { ...e, load_boot_btn: false };
+          });
         this.loading_members_list = false;
-        this.membersList = response.membersList;
-        this.membersList = this.membersList.map((e) => {
-          return { ...e, load_boot_btn: false };
-        });
-      } else if (response.status == 401) {
+      } else if (response == 401) {
         // Unauthorized
         if (retry == false) {
           // access_token expired, use refresh_token to refresh JWT
@@ -551,7 +529,7 @@ export default {
         gang_name: this.gang.gang_name,
       });
       if (response == 200 || response == 400) {
-        this.membersList.splice(index, 1);
+        this.gangStore.getUserGang.gang_members.splice(index, 1);
       } else if (response == 401) {
         // Unauthorized
         if (retry == false) {
