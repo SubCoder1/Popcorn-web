@@ -79,7 +79,7 @@
               </p>
             </div>
             <transition-group
-              v-show="search.searchResult.length != 0"
+              v-if="search.searchResult.length != 0"
               name="fade"
               tag="div"
             >
