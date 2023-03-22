@@ -69,7 +69,7 @@
   </div>
   <div v-else>
     <div
-      v-show="gangStore.userGangInvites.length == 0"
+      v-show="gangStore.getUserGangInvites.length == 0"
       class="text-center fade-move"
     >
       <lottie-player
@@ -88,7 +88,7 @@
     <transition-group name="fade" tag="div">
       <div
         class="d-flex flex-column"
-        v-for="(invite, index) in gangStore.userGangInvites"
+        v-for="(invite, index) in gangStore.getUserGangInvites"
         :key="invite"
       >
         <div class="d-flex flex-row justify-content-between mb-3">
