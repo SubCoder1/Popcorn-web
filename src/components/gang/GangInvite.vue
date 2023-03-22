@@ -68,7 +68,10 @@
     </div>
   </div>
   <div v-else>
-    <div v-show="showEmptyInvites" class="text-center show">
+    <div
+      v-show="gangStore.userGangInvites.length == 0"
+      class="text-center fade-move"
+    >
       <lottie-player
         src="https://lottie.host/f088f560-cc3a-4726-9837-ddae25f3308f/2lDmiXa8JA.json"
         background="transparent"
@@ -85,7 +88,7 @@
     <transition-group name="fade" tag="div">
       <div
         class="d-flex flex-column"
-        v-for="(invite, index) in invites"
+        v-for="(invite, index) in gangStore.userGangInvites"
         :key="invite"
       >
         <div class="d-flex flex-row justify-content-between mb-3">
@@ -99,7 +102,7 @@
               <strong>{{ invite.gang_name }}</strong>
             </span>
             <span class="text-secondary text-xsm">
-              {{ invite.invite_sent_timeago }}
+              sent {{ invite.invite_sent_timeago }}
             </span>
           </div>
           <div
@@ -162,9 +165,9 @@
 </template>
 
 <script>
-import axios from "axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
+import time2TimeAgo from "@/utils/timeago";
 
 export default {
   data() {
@@ -172,8 +175,6 @@ export default {
       loading: true,
       load_accept_btn: false,
       showWarnModal: false,
-      showEmptyInvites: false,
-      invites: [],
       accept_invite: {
         gang_admin: "",
         gang_name: "",
@@ -184,66 +185,23 @@ export default {
   },
   name: "GangInvite",
   methods: {
-    getInvitesAPI: async function () {
-      let res = {};
-      await axios
-        .get(process.env.VUE_APP_GET_INVITES_API, {
-          withCredentials: true,
-        })
-        .then((response) => {
-          res.status = 200;
-          res.invites = response.data;
-        })
-        .catch((e) => {
-          // error occured
-          if (e.response) {
-            // Server sent a response
-            res.status = e.response.status;
-            // show the first validation issue received from server
-          } else {
-            // Server unreachable
-            res.status = 503;
-          }
-        });
-      return res;
-    },
-    rejectInviteAPI: async function (invite) {
-      const response = await axios
-        .post(process.env.VUE_APP_REJECT_INVITE_API, invite, {
-          withCredentials: true,
-        })
-        .then((r) => {
-          return r.status;
-        })
-        .catch((e) => {
-          if (e.response) {
-            // Server sent a response
-            return e.response.status;
-          } else {
-            // Server unreachable
-            return 503;
-          }
-        });
-      return response;
-    },
     getInvites: async function (retry) {
       this.loading = true;
-      const response = await this.getInvitesAPI();
-      if (response.status == 200) {
-        this.invites = response.invites.invites;
-        this.invites = this.invites.map((e) => {
-          return {
-            ...e,
-            load_accept_btn: false,
-            load_reject_btn: false,
-            is_expired: false,
-          };
-        });
-        if (this.invites.length == 0) {
-          this.showEmptyInvites = true;
-        }
+      const response = await this.gangStore.getGangInvites();
+      if (response == 200) {
+        this.gangStore.userGangInvites = this.gangStore.userGangInvites.map(
+          (e) => {
+            return {
+              ...e,
+              invite_sent_timeago: time2TimeAgo(e.invite_sent_timeago),
+              load_accept_btn: false,
+              load_reject_btn: false,
+              is_expired: false,
+            };
+          }
+        );
         this.loading = false;
-      } else if (response.status == 401) {
+      } else if (response == 401) {
         // Unauthorized
         if (retry == false) {
           // access_token expired, use refresh_token to refresh JWT
@@ -283,12 +241,7 @@ export default {
         this.load_accept_btn = false;
         invite.load_accept_btn = false;
         this.showWarnModal = false;
-        this.invites.splice(index, 1);
-        if (this.invites.length == 0) {
-          setTimeout(() => {
-            this.showEmptyInvites = true;
-          }, 500);
-        }
+        this.gangStore.userGangInvites.splice(index, 1);
         this.$parent.reloadDashboard();
       } else if (response == 401) {
         // Unauthorized
@@ -316,17 +269,12 @@ export default {
     },
     rejectInvite: async function (retry, invite, index) {
       invite.load_reject_btn = true;
-      const response = await this.rejectInviteAPI({
+      const response = await this.gangStore.rejectInvite({
         gang_admin: invite.gang_admin,
         gang_name: invite.gang_name,
       });
       if (response == 200) {
-        this.invites.splice(index, 1);
-        if (this.invites.length == 0) {
-          setTimeout(() => {
-            this.showEmptyInvites = true;
-          }, 500);
-        }
+        this.gangStore.userGangInvites.splice(index, 1);
       } else if (response == 401) {
         // Unauthorized
         if (retry == false) {
