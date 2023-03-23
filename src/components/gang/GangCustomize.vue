@@ -530,6 +530,7 @@ export default {
       });
       if (response == 200 || response == 400) {
         this.gangStore.getUserGang.gang_members.splice(index, 1);
+        this.gangStore.getUserGang.gang_members_count -= 1;
       } else if (response == 401) {
         // Unauthorized
         if (retry == false) {
