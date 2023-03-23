@@ -109,9 +109,11 @@ export default {
       const response = await gangStore.getGang();
       if (response == 200) {
         this.loading = false;
-        if (this.gangStore.getUserGang.length > 0) {
+        if (Object.keys(this.gangStore.getUserGang).length > 0) {
           this.showGangList = true;
-        } // else other options are shown
+        } else {
+          this.showGangList = false;
+        }
       } else if (response == 401) {
         // Unauthorized
         if (retry == false) {
@@ -174,7 +176,8 @@ export default {
       // events server failed.  No automatic attempts to reconnect will be made.
       console.error("Failed to connect to server", err);
     });
-    // Handle incoming messages from server
+
+    // Handle incoming gangInvite messages from server
     sseClient.on("gangInvite", (msg) => {
       // Values used in GangInvite frontend
       msg.message.load_accept_btn = false;
@@ -192,6 +195,16 @@ export default {
       } else {
         this.gangStore.userGangInvites.unshift(msg.message);
       }
+    });
+    // Handle incoming gangJoin messages from server
+    sseClient.on("gangJoin", (msg) => {
+      msg.message.load_boot_btn = false;
+      this.gangStore.getUserGang.gang_members.push(msg.message);
+      this.gangStore.getUserGang.gang_members_count += 1;
+    });
+    // Handle incoming gangBoot messages from server
+    sseClient.on("gangBoot", async () => {
+      await this.getUserGang(true);
     });
 
     // Catch any errors (ie. lost connections, etc.)
