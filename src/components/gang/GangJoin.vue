@@ -302,7 +302,7 @@ export default {
       }
     },
     validatePassKey: function () {
-      if (this.gang_join.gang_passkey.length < 5) {
+      if (this.gang_join.gang_pass_key.length < 5) {
         this.gang_join.passKeyErr = true;
         return false;
       }
