@@ -204,5 +204,29 @@ export const useGangStore = defineStore("gang", {
         });
       return response;
     },
+    // delGang API handler
+    async delGang() {
+      const response = await axios
+        .post(
+          process.env.VUE_APP_DEL_GANG_API,
+          {},
+          {
+            withCredentials: true,
+          }
+        )
+        .then((r) => {
+          return r.status;
+        })
+        .catch((e) => {
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+          } else {
+            // Server unreachable
+            return 503;
+          }
+        });
+      return response;
+    },
   },
 });
