@@ -110,6 +110,9 @@ export default {
       if (response == 200) {
         this.loading = false;
         if (Object.keys(this.gangStore.getUserGang).length > 0) {
+          this.gangStore.userGang.gang_created = time2TimeAgo(
+            this.gangStore.userGang.gang_created
+          );
           this.showGangList = true;
         } else {
           this.showGangList = false;
@@ -123,6 +126,29 @@ export default {
           const ref_token_resp = await authStore.refreshToken();
           if (ref_token_resp.status == 200) {
             await this.getUserGang(true);
+          }
+        } else {
+          // Not able to create gang even after refreshing token
+          this.$parent.$parent.$parent.srvErrModal();
+        }
+      } else {
+        // Server error
+        this.$parent.$parent.$parent.srvErrModal();
+      }
+    },
+    delUserCreatedGang: async function (retry) {
+      const response = await this.gangStore.delGang();
+      if (response == 200) {
+        await this.getUserGang(true);
+      } else if (response == 401) {
+        // Unauthorized
+        if (retry == false) {
+          // access_token expired, use refresh_token to refresh JWT
+          // Try again on success
+          const authStore = useAuthStore();
+          const ref_token_resp = await authStore.refreshToken();
+          if (ref_token_resp.status == 200) {
+            await this.delgang(true);
           }
         } else {
           // Not able to create gang even after refreshing token
