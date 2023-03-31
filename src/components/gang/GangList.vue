@@ -24,7 +24,30 @@
       <p class="text-xsm text-secondary text-end">
         {{ gangStore.getUserGang.gang_created }}
       </p>
-      <div class="d-flex flex-row justify-content-between">
+      <div class="d-flex flex-row justify-content-between gang-btn-set">
+        <button
+          type="button"
+          class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle join-gang-btn"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-camera-reels"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM1 3a2 2 0 1 0 4 0 2 2 0 0 0-4 0z"
+            />
+            <path
+              d="M9 6h.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 7.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 16H2a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h7zm6 8.73V7.27l-3.5 1.555v4.35l3.5 1.556zM1 8v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z"
+            />
+            <path
+              d="M9 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM7 3a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"
+            />
+          </svg>
+        </button>
         <button
           v-if="gangStore.getUserGang.is_admin"
           type="button"
@@ -46,13 +69,6 @@
           </svg>
         </button>
         <button
-          v-else
-          type="button"
-          class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle"
-        >
-          J
-        </button>
-        <button
           v-if="gangStore.getUserGang.is_admin"
           type="button"
           class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle delete-gang-btn"
@@ -60,6 +76,7 @@
           @click="delGang()"
         >
           <svg
+            v-if="!load_delete_gang_btn"
             xmlns="http://www.w3.org/2000/svg"
             width="26"
             height="26"
@@ -71,6 +88,7 @@
               d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"
             />
           </svg>
+          <div v-else class="loader"></div>
         </button>
         <button
           v-else
@@ -110,6 +128,7 @@ export default {
   data() {
     return {
       gangStore: useGangStore(),
+      load_delete_gang_btn: false,
     };
   },
   methods: {
@@ -120,8 +139,17 @@ export default {
       this.$parent.$parent.showCustomizeGangOnly(gang);
     },
     delGang: async function () {
+      this.load_delete_gang_btn = true;
       this.$parent.$parent.delUserCreatedGang(true);
+      this.load_delete_gang_btn = false;
     },
   },
 };
 </script>
+
+<style lang="css">
+.gang-btn-set {
+  max-width: 165px;
+  min-width: 105px;
+}
+</style>
