@@ -257,7 +257,7 @@ export default {
     });
     // Handle incoming gangLeave messages from server
     sseClient.on("gangLeave", (msg) => {
-      console.log(msg + " left the gang.");
+      console.log(msg.message + " left the gang.");
     });
 
     // Catch any errors (ie. lost connections, etc.)
