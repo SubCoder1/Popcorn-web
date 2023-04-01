@@ -159,6 +159,29 @@ export default {
         this.$parent.$parent.$parent.srvErrModal();
       }
     },
+    leaveUserJoinedGang: async function (retry) {
+      const response = await this.gangStore.leaveGang();
+      if (response == 200) {
+        await this.getUserGang(true);
+      } else if (response == 401) {
+        // Unauthorized
+        if (retry == false) {
+          // access_token expired, use refresh_token to refresh JWT
+          // Try again on success
+          const authStore = useAuthStore();
+          const ref_token_resp = await authStore.refreshToken();
+          if (ref_token_resp.status == 200) {
+            await this.leaveUserJoinedGang(true);
+          }
+        } else {
+          // Not able to create gang even after refreshing token
+          this.$parent.$parent.$parent.srvErrModal();
+        }
+      } else {
+        // Server error
+        this.$parent.$parent.$parent.srvErrModal();
+      }
+    },
     // used when user can create and join a gang
     toggleCreateOrJoinGang: function () {
       this.createOrJoin = !this.createOrJoin;
@@ -231,6 +254,10 @@ export default {
     // Handle incoming gangBoot messages from server
     sseClient.on("gangBoot", async () => {
       await this.getUserGang(true);
+    });
+    // Handle incoming gangLeave messages from server
+    sseClient.on("gangLeave", (msg) => {
+      console.log(msg + " left the gang.");
     });
 
     // Catch any errors (ie. lost connections, etc.)

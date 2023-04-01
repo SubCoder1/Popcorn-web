@@ -94,8 +94,10 @@
           v-else
           type="button"
           class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle leave-gang-btn"
+          @click="leaveGang()"
         >
           <svg
+            v-if="!load_leave_gang_btn"
             xmlns="http://www.w3.org/2000/svg"
             width="16"
             height="16"
@@ -108,6 +110,7 @@
               d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"
             />
           </svg>
+          <div v-else class="loader"></div>
         </button>
       </div>
     </div>
@@ -129,6 +132,7 @@ export default {
     return {
       gangStore: useGangStore(),
       load_delete_gang_btn: false,
+      load_leave_gang_btn: false,
     };
   },
   methods: {
@@ -142,6 +146,11 @@ export default {
       this.load_delete_gang_btn = true;
       this.$parent.$parent.delUserCreatedGang(true);
       this.load_delete_gang_btn = false;
+    },
+    leaveGang: async function () {
+      this.load_leave_gang_btn = true;
+      await this.$parent.$parent.leaveUserJoinedGang(true);
+      this.load_leave_gang_btn = false;
     },
   },
 };

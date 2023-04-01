@@ -228,5 +228,31 @@ export const useGangStore = defineStore("gang", {
         });
       return response;
     },
+    // leaveGang API handler
+    async leaveGang() {
+      const response = await axios
+        .post(
+          process.env.VUE_APP_LEAVE_GANG_API,
+          {},
+          {
+            withCredentials: true,
+          }
+        )
+        .then((r) => {
+          this.CreateGang = true;
+          this.JoinGang = true;
+          return r.status;
+        })
+        .catch((e) => {
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+          } else {
+            // Server unreachable
+            return 503;
+          }
+        });
+      return response;
+    },
   },
 });
