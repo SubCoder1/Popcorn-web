@@ -27,7 +27,7 @@
       <div class="d-flex flex-row justify-content-between gang-btn-set">
         <button
           type="button"
-          class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle join-gang-btn"
+          class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle join-gang-btn ms-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -51,7 +51,7 @@
         <button
           v-if="gangStore.getUserGang.is_admin"
           type="button"
-          class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle"
+          class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle ms-2"
           v-bind:class="{ 'admin-btn': gangStore.getUserGang.is_admin }"
           @click="showCustomizeGangOnly(gangStore.getUserGang)"
         >
@@ -71,7 +71,7 @@
         <button
           v-if="gangStore.getUserGang.is_admin"
           type="button"
-          class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle delete-gang-btn"
+          class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle delete-gang-btn ms-2"
           v-bind:class="{ 'admin-btn': gangStore.getUserGang.is_admin }"
           @click="delGang()"
         >
@@ -93,7 +93,7 @@
         <button
           v-else
           type="button"
-          class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle leave-gang-btn"
+          class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle leave-gang-btn ms-2"
           @click="leaveGang()"
         >
           <svg
@@ -155,10 +155,3 @@ export default {
   },
 };
 </script>
-
-<style lang="css">
-.gang-btn-set {
-  max-width: 165px;
-  min-width: 105px;
-}
-</style>
