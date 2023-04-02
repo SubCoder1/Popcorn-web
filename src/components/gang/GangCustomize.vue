@@ -425,6 +425,8 @@ export default {
           this.gangStore.getUserGang.gang_members.map((e) => {
             return { ...e, load_boot_btn: false };
           });
+        this.gangStore.gang_members_count =
+          this.gangStore.getUserGang.gang_members.length;
         this.loading_members_list = false;
       } else if (response == 401) {
         // Unauthorized
