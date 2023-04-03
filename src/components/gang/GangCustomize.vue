@@ -538,7 +538,7 @@ export default {
       member.load_boot_btn = true;
       const response = await this.bootMemberAPI({
         member_name: member.username,
-        gang_name: this.gang.gang_name,
+        gang_name: this.gangStore.getUserGang.gang_name,
       });
       if (response == 200 || response == 400) {
         this.gangStore.getUserGang.gang_members.splice(index, 1);
