@@ -104,7 +104,7 @@
                   </div>
                 </div>
                 <button
-                  v-if="gang.gang_admin != member.username"
+                  v-if="gangStore.getUserGang.gang_admin != member.username"
                   type="button"
                   class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle p-0"
                   v-bind:class="{ success: member.load_invite_btn == 2 }"
@@ -229,7 +229,9 @@
           to=""
           class="mt-2"
           @click="toggleAddGangMemberModal()"
-          v-if="gang.gang_members_count < update.gang_member_limit"
+          v-if="
+            gangStore.getUserGang.gang_members_count < update.gang_member_limit
+          "
         >
           Add members
         </router-link>
@@ -277,7 +279,7 @@
               </div>
             </div>
             <button
-              v-if="gang.gang_admin != member.username"
+              v-if="gangStore.getUserGang.gang_admin != member.username"
               type="button"
               class="btn btn-circle d-flex align-items-center justify-content-center kick-member-btn rounded-circle p-0"
               @click="bootMember(false, member, index)"
@@ -324,22 +326,22 @@ import axios from "axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
 
+let gangStore = useGangStore();
+
 export default {
   name: "GangCustomize",
-  props: {
-    gang: Object,
-  },
   data() {
     return {
+      gangStore: gangStore,
       update: {
-        gang_name: this.gang.gang_name,
+        gang_name: gangStore.getUserGang.gang_name,
         gang_pass_key: "",
-        gang_member_limit: this.gang.gang_member_limit,
+        gang_member_limit: gangStore.getUserGang.gang_member_limit,
         form_submitted: false,
         update_txt: "Update",
       },
       invite: {
-        gang_name: this.gang.gang_name,
+        gang_name: gangStore.getUserGang.gang_name,
         invite_to: "",
       },
       search: {
@@ -349,7 +351,6 @@ export default {
         loading_members_search: false,
         showAddMemberModal: false,
       },
-      gangStore: useGangStore(),
       loading_members_list: false,
       timeout: null,
     };
@@ -434,7 +435,7 @@ export default {
           this.gangStore.getUserGang.gang_members.map((e) => {
             return { ...e, load_boot_btn: false };
           });
-        this.gangStore.gang_members_count =
+        this.gangStore.getUserGang.gang_members_count =
           this.gangStore.getUserGang.gang_members.length;
         this.loading_members_list = false;
       } else if (response == 401) {
@@ -565,7 +566,7 @@ export default {
     },
     updateGang: async function (retry) {
       this.update.form_submitted = true;
-      if (this.validateForm) {
+      if (this.validateForm()) {
         let updateGangData = {
           gang_name: this.update.gang_name,
           gang_pass_key: this.update.gang_pass_key,
@@ -599,8 +600,8 @@ export default {
           // Maybe validation
           this.$parent.$parent.ErrPopUp(response.error);
         }
-        this.update.form_submitted = false;
       }
+      this.update.form_submitted = false;
     },
     toggleAddGangMemberModal: function () {
       this.search.showAddMemberModal = !this.search.showAddMemberModal;

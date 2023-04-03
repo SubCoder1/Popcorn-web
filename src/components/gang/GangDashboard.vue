@@ -76,7 +76,7 @@
           </div>
         </div>
       </template>
-      <GangCustomize :gang="customizeGangData" v-if="showCustomizePage" />
+      <GangCustomize v-if="showCustomizePage" />
       <GangJoin v-else-if="gangStore.canJoinGang && createOrJoin" />
       <GangCreate v-else />
     </div>
@@ -99,7 +99,6 @@ export default {
       createOrJoin: true, // true -> join, false -> create
       showGangList: false,
       showCustomizePage: false,
-      customizeGangData: {},
       showErr: false,
       formErr: "",
     };
@@ -139,7 +138,6 @@ export default {
     delUserCreatedGang: async function (retry) {
       const response = await this.gangStore.delGang();
       if (response == 200) {
-        this.customizeGangData = {};
         await this.getUserGang(false);
       } else if (response == 401) {
         // Unauthorized
@@ -159,6 +157,7 @@ export default {
         // Server error
         this.$parent.$parent.$parent.srvErrModal();
       }
+      return response;
     },
     leaveUserJoinedGang: async function (retry) {
       const response = await this.gangStore.leaveGang();
@@ -182,6 +181,7 @@ export default {
         // Server error
         this.$parent.$parent.$parent.srvErrModal();
       }
+      return response;
     },
     // used when user can create and join a gang
     toggleCreateOrJoinGang: function () {
@@ -189,7 +189,6 @@ export default {
     },
     showCustomizeGangOnly: function (gang) {
       this.showGangList = false;
-      this.customizeGangData = gang;
       this.showCustomizePage = true;
     },
     // used in GangList component to switch to create or join gang view
@@ -263,6 +262,10 @@ export default {
     // Handle incoming gangUpdate messages from server
     sseClient.on("gangUpdate", async () => {
       await this.gangStore.getGang();
+    });
+    // Handle incoming gangDelete messages from server
+    sseClient.on("gangDelete", async () => {
+      await this.getUserGang(false);
     });
 
     // Catch any errors (ie. lost connections, etc.)
