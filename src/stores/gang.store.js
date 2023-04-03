@@ -3,6 +3,7 @@
 
 import { defineStore } from "pinia";
 import { useUserStore } from "@/stores/user.store";
+import time2TimeAgo from "@/utils/timeago";
 import axios from "axios";
 
 export const useGangStore = defineStore("gang", {
@@ -25,12 +26,18 @@ export const useGangStore = defineStore("gang", {
         .get(process.env.VUE_APP_GET_GANG_API, {
           withCredentials: true,
         })
-        .then((response) => {
+        .then(async (response) => {
           let userStore = useUserStore();
           this.userGang = response.data.gang;
           if (this.userGang.gang_admin === userStore.getUserName) {
             // This will be filled up later from getGangMembersAPI
             this.userGang.gang_members = [];
+            await this.getGangMembers();
+          }
+          if (this.userGang.gang_admin != null) {
+            this.userGang.gang_created = time2TimeAgo(
+              this.userGang.gang_created
+            );
           }
           this.CreateGang = response.data.canCreateGang;
           this.JoinGang = response.data.canJoinGang;
@@ -109,6 +116,40 @@ export const useGangStore = defineStore("gang", {
               res.error = "PassKey didn't match";
             } else {
               res.error = "authToken expired";
+            }
+          } else {
+            // Server unreachable
+            res.status = 503;
+          }
+        });
+      return res;
+    },
+    // updateGang API handler
+    async updateGang(updateGangData) {
+      let res = {};
+      await axios
+        .post(process.env.VUE_APP_UPDATE_GANG_API, updateGangData, {
+          withCredentials: true,
+        })
+        .then(async (response) => {
+          // successfully updated gang
+          res.status = response.status;
+        })
+        .catch((e) => {
+          // error occured
+          if (e.response) {
+            // Server sent a response
+            res.status = e.response.status;
+            // show the first validation issue received from server
+            if (res.status == 422) {
+              // JSON bind error
+              res.error = "Invalid JSON provided.";
+            } else if (res.status == 400) {
+              // Validation error
+              res.error = e.response.data.details.errors[0].message;
+            } else {
+              // Server error
+              res.error = "Server error occured.";
             }
           } else {
             // Server unreachable

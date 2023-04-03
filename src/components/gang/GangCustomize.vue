@@ -174,7 +174,7 @@
       </div>
     </div>
   </div>
-  <form class="gang-update-form mt-4">
+  <form @submit.prevent="updateGang(false)" class="gang-update-form mt-4">
     <div
       class="d-flex align-items-center justify-content-between flex-wrap mb-3"
     >
@@ -201,7 +201,6 @@
         v-model="update.gang_pass_key"
         id="gangPassKey"
         @click="removeErr()"
-        required
       />
     </div>
     <div
@@ -308,6 +307,14 @@
         </transition-group>
       </div>
     </div>
+    <button
+      type="submit"
+      class="btn d-flex align-items-center justify-content-center btn-md rounded-md text-sm admin-btn mt-4"
+      :disabled="update.form_submitted"
+    >
+      <div class="loader" v-if="update.form_submitted"></div>
+      <span v-if="!update.form_submitted">{{ update.update_txt }}</span>
+    </button>
   </form>
   <div v-if="search.showAddMemberModal" class="modal-backdrop fade show"></div>
 </template>
@@ -328,6 +335,8 @@ export default {
         gang_name: this.gang.gang_name,
         gang_pass_key: "",
         gang_member_limit: this.gang.gang_member_limit,
+        form_submitted: false,
+        update_txt: "Update",
       },
       invite: {
         gang_name: this.gang.gang_name,
@@ -554,6 +563,45 @@ export default {
         this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
+    updateGang: async function (retry) {
+      this.update.form_submitted = true;
+      if (this.validateForm) {
+        let updateGangData = {
+          gang_name: this.update.gang_name,
+          gang_pass_key: this.update.gang_pass_key,
+          gang_member_limit: this.update.gang_member_limit,
+        };
+        const response = await this.gangStore.updateGang(updateGangData);
+        if (response.status == 200) {
+          await this.getGangMembers(false);
+          this.update.update_txt = "Updated!";
+          setTimeout(() => {
+            this.update.update_txt = "Update";
+          }, 3000);
+        } else if (response == 401) {
+          // Unauthorized
+          if (retry == false) {
+            // access_token expired, use refresh_token to refresh JWT
+            // Try again on success
+            const authStore = useAuthStore();
+            const ref_token_resp = await authStore.refreshToken();
+            if (ref_token_resp.status == 200) {
+              await this.updateGang(true);
+            }
+          } else {
+            // Not able to create gang even after refreshing token
+            this.$parent.$parent.$parent.$parent.srvErrModal();
+          }
+        } else if (response >= 500) {
+          // Server error
+          this.$parent.$parent.$parent.$parent.srvErrModal();
+        } else {
+          // Maybe validation
+          this.$parent.$parent.ErrPopUp(response.error);
+        }
+        this.update.form_submitted = false;
+      }
+    },
     toggleAddGangMemberModal: function () {
       this.search.showAddMemberModal = !this.search.showAddMemberModal;
     },
@@ -585,7 +633,10 @@ export default {
         error = "Gang name cannot contain only whitespaces";
         this.$parent.$parent.ErrPopUp(error);
         return false;
-      } else if (this.update.gang_pass_key.length < 5) {
+      } else if (
+        this.update.gang_pass_key.length > 1 &&
+        this.update.gang_pass_key.length < 5
+      ) {
         // gang_passkey length should be >= 5
         error = "Gang passkey should be of at least 5 characters.";
         this.$parent.$parent.ErrPopUp(error);

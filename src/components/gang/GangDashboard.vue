@@ -59,7 +59,10 @@
             <h4 v-if="showCustomizePage">Customize Gang</h4>
             <h4 v-else-if="gangStore.canCreateGang">Create a Gang</h4>
             <h4 v-else>Join a Gang</h4>
-            <router-link to="" @click="showGangList = true">
+            <router-link
+              to=""
+              @click="(showGangList = true), (showCustomizePage = false)"
+            >
               Go back
             </router-link>
           </div>
@@ -110,9 +113,6 @@ export default {
       if (response == 200) {
         this.loading = false;
         if (Object.keys(this.gangStore.getUserGang).length > 0) {
-          this.gangStore.userGang.gang_created = time2TimeAgo(
-            this.gangStore.userGang.gang_created
-          );
           this.showGangList = true;
         } else {
           this.showGangList = false;
@@ -139,7 +139,8 @@ export default {
     delUserCreatedGang: async function (retry) {
       const response = await this.gangStore.delGang();
       if (response == 200) {
-        await this.getUserGang(true);
+        this.customizeGangData = {};
+        await this.getUserGang(false);
       } else if (response == 401) {
         // Unauthorized
         if (retry == false) {
@@ -148,7 +149,7 @@ export default {
           const authStore = useAuthStore();
           const ref_token_resp = await authStore.refreshToken();
           if (ref_token_resp.status == 200) {
-            await this.delgang(true);
+            await this.delUserCreatedGang(true);
           }
         } else {
           // Not able to create gang even after refreshing token
@@ -162,7 +163,7 @@ export default {
     leaveUserJoinedGang: async function (retry) {
       const response = await this.gangStore.leaveGang();
       if (response == 200) {
-        await this.getUserGang(true);
+        await this.getUserGang(false);
       } else if (response == 401) {
         // Unauthorized
         if (retry == false) {
@@ -258,6 +259,10 @@ export default {
     // Handle incoming gangLeave messages from server
     sseClient.on("gangLeave", (msg) => {
       console.log(msg.message + " left the gang.");
+    });
+    // Handle incoming gangUpdate messages from server
+    sseClient.on("gangUpdate", async () => {
+      await this.gangStore.getGang();
     });
 
     // Catch any errors (ie. lost connections, etc.)
