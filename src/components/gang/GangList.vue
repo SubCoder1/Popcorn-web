@@ -144,12 +144,12 @@ export default {
     },
     delGang: async function () {
       this.load_delete_gang_btn = true;
-      this.$parent.$parent.delUserCreatedGang(true);
+      const response = await this.$parent.$parent.delUserCreatedGang(false);
       this.load_delete_gang_btn = false;
     },
     leaveGang: async function () {
       this.load_leave_gang_btn = true;
-      await this.$parent.$parent.leaveUserJoinedGang(true);
+      const response = await this.$parent.$parent.leaveUserJoinedGang(false);
       this.load_leave_gang_btn = false;
     },
   },
