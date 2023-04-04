@@ -28,6 +28,7 @@
         <button
           type="button"
           class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle join-gang-btn ms-2"
+          @click="showGangInteractOnly()"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -141,6 +142,9 @@ export default {
     },
     showCustomizeGangOnly: function (gang) {
       this.$parent.$parent.showCustomizeGangOnly(gang);
+    },
+    showGangInteractOnly: function () {
+      this.$parent.$parent.showGangInteractOnly();
     },
     delGang: async function () {
       this.load_delete_gang_btn = true;

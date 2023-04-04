@@ -55,13 +55,20 @@
       </template>
       <template v-else>
         <div class="d-flex align-items-center justify-content-between">
-          <div>
+          <div class="dashboard-header">
             <h4 v-if="showCustomizePage">Customize Gang</h4>
+            <h4 v-else-if="showGangInteract">
+              {{ gangStore.getUserGang.gang_name }}
+            </h4>
             <h4 v-else-if="gangStore.canCreateGang">Create a Gang</h4>
             <h4 v-else>Join a Gang</h4>
             <router-link
               to=""
-              @click="(showGangList = true), (showCustomizePage = false)"
+              @click="
+                (showGangList = true),
+                  (showCustomizePage = false),
+                  (showGangInteract = false)
+              "
             >
               Go back
             </router-link>
@@ -77,6 +84,7 @@
         </div>
       </template>
       <GangCustomize v-if="showCustomizePage" />
+      <GangInteract v-else-if="showGangInteract" />
       <GangJoin v-else-if="gangStore.canJoinGang && createOrJoin" />
       <GangCreate v-else />
     </div>
@@ -99,6 +107,7 @@ export default {
       createOrJoin: true, // true -> join, false -> create
       showGangList: false,
       showCustomizePage: false,
+      showGangInteract: false,
       showErr: false,
       formErr: "",
     };
@@ -191,6 +200,10 @@ export default {
       this.showGangList = false;
       this.showCustomizePage = true;
     },
+    showGangInteractOnly: function () {
+      this.showGangList = false;
+      this.showGangInteract = true;
+    },
     // used in GangList component to switch to create or join gang view
     toggleGangList: function () {
       this.showCustomizePage = false;
@@ -210,6 +223,7 @@ export default {
     GangCreate: defineAsyncComponent(() => import("./GangCreate.vue")),
     GangJoin: defineAsyncComponent(() => import("./GangJoin.vue")),
     GangCustomize: defineAsyncComponent(() => import("./GangCustomize.vue")),
+    GangInteract: defineAsyncComponent(() => import("./GangInteract.vue")),
   },
   async mounted() {
     await this.getUserGang(false);

@@ -12,6 +12,7 @@ export const useGangStore = defineStore("gang", {
     JoinGang: true,
     userGang: {},
     userGangInvites: [],
+    userGangInteract: [],
   }),
   getters: {
     canCreateGang: (state) => state.CreateGang,
