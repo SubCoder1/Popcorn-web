@@ -26,6 +26,7 @@
   </div>
   <div v-else class="d-flex flex-column">
     <GangList v-if="showGangList" />
+    <GangInteract v-else-if="showGangInteract" />
     <div class="h-auto" v-else>
       <template v-if="gangStore.canCreateGang && gangStore.canJoinGang">
         <div class="d-flex align-items-center justify-content-between">
@@ -57,21 +58,9 @@
         <div class="d-flex align-items-center justify-content-between">
           <div class="dashboard-header">
             <h4 v-if="showCustomizePage">Customize Gang</h4>
-            <h4 v-else-if="showGangInteract">
-              {{ gangStore.getUserGang.gang_name }}
-            </h4>
             <h4 v-else-if="gangStore.canCreateGang">Create a Gang</h4>
             <h4 v-else>Join a Gang</h4>
-            <router-link
-              to=""
-              @click="
-                (showGangList = true),
-                  (showCustomizePage = false),
-                  (showGangInteract = false)
-              "
-            >
-              Go back
-            </router-link>
+            <router-link to="" @click="goBack()">Go back</router-link>
           </div>
           <div class="mt-1 mb-1">
             <p
@@ -84,7 +73,6 @@
         </div>
       </template>
       <GangCustomize v-if="showCustomizePage" />
-      <GangInteract v-else-if="showGangInteract" />
       <GangJoin v-else-if="gangStore.canJoinGang && createOrJoin" />
       <GangCreate v-else />
     </div>
@@ -196,6 +184,11 @@ export default {
     toggleCreateOrJoinGang: function () {
       this.createOrJoin = !this.createOrJoin;
     },
+    goBack: function () {
+      this.showGangList = true;
+      this.showCustomizePage = false;
+      this.showGangInteract = false;
+    },
     showCustomizeGangOnly: function (gang) {
       this.showGangList = false;
       this.showCustomizePage = true;
@@ -263,24 +256,38 @@ export default {
     sseClient.on("gangJoin", (msg) => {
       msg.message.load_boot_btn = false;
       this.gangStore.getUserGang.gang_members.push(msg.message);
-      this.gangStore.getUserGang.gang_members_count += 1;
+      this.gangStore.getUserGang.gang_members_count =
+        this.gangStore.getUserGang.gang_members.length;
+      this.gangStore.getUserGang.gang_interact.push({
+        type: "gangJoin",
+        message: msg.message,
+      });
     });
     // Handle incoming gangBoot messages from server
     sseClient.on("gangBoot", async () => {
       await this.getUserGang(true);
     });
     // Handle incoming gangLeave messages from server
-    sseClient.on("gangLeave", (msg) => {
-      console.log(msg.message + " left the gang.");
+    sseClient.on("gangLeave", async (msg) => {
+      await this.getUserGang(true);
+      this.gangStore.getUserGang.gang_interact.push({
+        type: "gangLeave",
+        message: msg.message,
+      });
     });
     // Handle incoming gangUpdate messages from server
     sseClient.on("gangUpdate", async () => {
+      this.gangStore.getUserGang.gang_interact.push({
+        type: "gangUpdate",
+        message: "THE GANG HAS BEEN UPDATED",
+      });
       await this.gangStore.getGang();
     });
     // Handle incoming gangDelete messages from server
     sseClient.on("gangDelete", async () => {
       await this.getUserGang(false);
     });
+    // Handle incoming gangChat messages from servera
 
     // Catch any errors (ie. lost connections, etc.)
     sseClient.on("error", (e) => {
