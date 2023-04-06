@@ -12,7 +12,6 @@ export const useGangStore = defineStore("gang", {
     JoinGang: true,
     userGang: {},
     userGangInvites: [],
-    userGangInteract: [],
   }),
   getters: {
     canCreateGang: (state) => state.CreateGang,
@@ -23,6 +22,7 @@ export const useGangStore = defineStore("gang", {
   actions: {
     // getGang API handler
     async getGang() {
+      var gang_convo = this.userGang.gang_interact;
       const res = await axios
         .get(process.env.VUE_APP_GET_GANG_API, {
           withCredentials: true,
@@ -39,6 +39,11 @@ export const useGangStore = defineStore("gang", {
             this.userGang.gang_created = time2TimeAgo(
               this.userGang.gang_created
             );
+            if (gang_convo == null) {
+              this.userGang.gang_interact = [];
+            } else {
+              this.userGang.gang_interact = gang_convo;
+            }
           }
           this.CreateGang = response.data.canCreateGang;
           this.JoinGang = response.data.canJoinGang;
