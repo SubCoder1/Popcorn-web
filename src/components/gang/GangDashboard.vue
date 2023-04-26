@@ -288,6 +288,13 @@ export default {
       await this.getUserGang(false);
     });
     // Handle incoming gangChat messages from servera
+    sseClient.on("gangMessage", (msg) => {
+      this.gangStore.getUserGang.gang_interact.push({
+        type: "gangMessage",
+        message: msg.message.text,
+        user: msg.message.user,
+      });
+    });
 
     // Catch any errors (ie. lost connections, etc.)
     sseClient.on("error", (e) => {

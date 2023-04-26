@@ -301,5 +301,32 @@ export const useGangStore = defineStore("gang", {
         });
       return response;
     },
+    // sendMessage API handler
+    async sendGangMessage(idx, msg) {
+      const response = await axios
+        .post(
+          process.env.VUE_APP_SEND_GANG_MSG_API,
+          {
+            message: msg,
+          },
+          {
+            withCredentials: true,
+          }
+        )
+        .then((r) => {
+          this.getUserGang.gang_interact.at(idx).status = "sent";
+          return r.status;
+        })
+        .catch((e) => {
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+          } else {
+            // Server unreachable
+            return 503;
+          }
+        });
+      return response;
+    },
   },
 });
