@@ -307,7 +307,7 @@ export default {
     },
   },
   async mounted() {
-    this.getInvites(false);
+    await this.getInvites(false);
   },
 };
 </script>
