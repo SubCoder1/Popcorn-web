@@ -70,7 +70,10 @@
       required
     />
   </div>
-  <div class="h-auto d-flex flex-column justify-content-center pt-4">
+  <div
+    class="search-result-parent d-flex flex-column pt-4"
+    id="gang-search-parent"
+  >
     <div v-show="load_search">
       <div class="h-auto d-flex flex-column justify-content-center">
         <div class="d-flex flex-row mb-3">
@@ -96,10 +99,7 @@
         </div>
       </div>
     </div>
-    <div
-      v-show="!load_search && searchResult.length == 0"
-      class="text-center mt-2"
-    >
+    <div v-show="!load_search && searchResult.length == 0" class="text-center">
       <img
         class="empty-search-img m-auto"
         src="@/assets/misc/empty-search.png"
@@ -318,12 +318,31 @@ export default {
       }
     },
   },
+  async mounted() {
+    // Detect when scrolled to bottom.
+    const listElm = document.querySelector("#gang-search-parent");
+    listElm.addEventListener("scroll", async () => {
+      if (
+        listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight &&
+        this.gang_search.cursor != 0
+      ) {
+        await this.searchWithDelay(false);
+      }
+    });
+  },
 };
 </script>
 
 <style scoped lang="css">
-.search-box {
-  height: 288px;
+.search-result-parent {
+  height: 218px;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.search-result-parent::-webkit-scrollbar {
+  display: none;
 }
 
 .pass-key-err {

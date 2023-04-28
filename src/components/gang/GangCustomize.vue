@@ -29,7 +29,7 @@
             autocomplete="off"
           />
         </div>
-        <div class="modal-body">
+        <div class="modal-body" id="member-search-parent">
           <div v-show="search.loading_members_search">
             <div class="d-flex flex-column justify-content-center">
               <div class="d-flex flex-row mb-3">
@@ -648,6 +648,16 @@ export default {
   },
   async mounted() {
     this.getGangMembers(false);
+    // Detect when scrolled to bottom.
+    const listElm = document.querySelector("#member-search-parent");
+    listElm.addEventListener("scroll", async () => {
+      if (
+        listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight &&
+        this.search.cursor != 0
+      ) {
+        await this.searchWithDelay(false);
+      }
+    });
   },
 };
 </script>
@@ -659,5 +669,16 @@ export default {
 }
 .mb-1-5 {
   margin-bottom: 0.375rem;
+}
+
+.modal-body {
+  height: 236px;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.modal-body::-webkit-scrollbar {
+  display: none;
 }
 </style>
