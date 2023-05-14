@@ -666,7 +666,15 @@ export default {
 .gang-members-box-md {
   height: 250px;
   width: 350px;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
+
+.gang-members-box-md::-webkit-scrollbar {
+  display: none;
+}
+
 .mb-1-5 {
   margin-bottom: 0.375rem;
 }
