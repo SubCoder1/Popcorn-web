@@ -176,6 +176,63 @@
   </div>
   <form @submit.prevent="updateGang(false)" class="gang-update-form mt-4">
     <div
+      class="upload-content-container d-flex align-items-center justify-content-between flex-wrap mb-3"
+    >
+      <label for="gangContent" class="text-sm">Upload content to view:</label>
+      <div
+        v-if="gangStore.getUserGang.gang_content_name.length != 0"
+        class="content-box d-flex align-items-center justify-content-between"
+      >
+        <span class="content-txt text-sm text-break">
+          {{ gangStore.getUserGang.gang_content_name }}
+        </span>
+        <button
+          type="button"
+          class="btn btn-circle align-items-center justify-content-center rounded-circle delete-content-btn"
+        >
+          <svg
+            v-if="!upload.load_del_content_btn"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="26"
+            fill="currentColor"
+            class="bi bi-trash3"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"
+            />
+          </svg>
+          <div v-else class="loader"></div>
+        </button>
+      </div>
+      <div
+        v-else-if="!upload.uploading"
+        class="d-flex align-items-center justify-content-between flex-wrap"
+      >
+        <input
+          type="file"
+          class="input-md text-sm"
+          id="gangContent"
+          @change="uploadContent"
+          accept="video/mp4,video/x-m4v,video/x-matroska,video/*"
+        />
+      </div>
+      <div class="upload-box text-sm rounded-md input-md" v-else>
+        <div class="progress m-3">
+          <div
+            class="progress-bar"
+            role="progressbar"
+            :aria-valuenow="upload.percentage"
+            :style="{ width: upload.percentage + '%' }"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          ></div>
+        </div>
+        <div class="upload-text-progress text-center">{{ upload.status }}</div>
+      </div>
+    </div>
+    <div
       class="d-flex align-items-center justify-content-between flex-wrap mb-3"
     >
       <label for="gangName" class="text-sm">Name of the Gang:</label>
@@ -325,8 +382,23 @@
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
+import { useUserStore } from "@/stores/user.store";
 
 let gangStore = useGangStore();
+let userStore = useUserStore();
+var tus = require("tus-js-client");
+
+function formatBytes(bytes, decimals = 2) {
+  if (!+bytes) return "0 Bytes";
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
 
 export default {
   name: "GangCustomize",
@@ -350,6 +422,13 @@ export default {
         searchResult: [],
         loading_members_search: false,
         showAddMemberModal: false,
+      },
+      upload: {
+        uploading: false,
+        status: "Initializing . . .",
+        percentage: 0,
+        upload_paused: false,
+        load_del_content_btn: false,
       },
       loading_members_list: false,
       timeout: null,
@@ -603,6 +682,77 @@ export default {
       }
       this.update.form_submitted = false;
     },
+    uploadContent: function (e) {
+      this.upload.uploading = true;
+      var file = e.target.files[0];
+      var srverr = this.$parent.$parent.$parent.$parent.$parent;
+      // Create a new tus upload
+      var tus_upload = new tus.Upload(file, {
+        // Endpoint is the upload creation URL from your tus server
+        endpoint: process.env.VUE_APP_UPLOAD_API,
+        addRequestId: true,
+        chunkSize: 10485760,
+        // Retry delays will enable tus-js-client to automatically retry on errors
+        retryDelays: [0, 3000, 5000, 10000],
+        // Attach additional meta data about the file for the server
+        metadata: {
+          user: userStore.getUserName,
+          filename: file.name,
+          filetype: file.type,
+        },
+        onBeforeRequest: (req) => {
+          var xhr = req.getUnderlyingObject();
+          xhr.withCredentials = true;
+        },
+        // Callback for errors which cannot be fixed using retries
+        onError: (error) => {
+          console.log("Failed because: " + error);
+          tus_upload.abort();
+          this.upload.uploading = false;
+          this.upload.status = "";
+          srverr.srvErrModal();
+        },
+        // Callback for reporting upload progress
+        onProgress: (bytesUploaded, bytesTotal) => {
+          var percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
+          console.log(bytesUploaded, bytesTotal, percentage + "%");
+          this.upload.percentage = percentage;
+          this.upload.status = `Uploaded ${formatBytes(
+            bytesUploaded
+          )} of ${formatBytes(bytesTotal)} (${percentage}%)`;
+        },
+        // Callback for once the upload is completed
+        onSuccess: () => {
+          gangStore.getUserGang.gang_content_name = file.name;
+        },
+      });
+
+      var startOrResumeUpload = (tus_upload) => {
+        // Check if there are any previous uploads to continue.
+        tus_upload.findPreviousUploads().then(function (previousUploads) {
+          // Found previous uploads so we select the first one.
+          if (previousUploads.length) {
+            tus_upload.resumeFromPreviousUpload(previousUploads[0]);
+          }
+          // Start the upload
+          tus_upload.start();
+        });
+      };
+
+      // Add listeners for the pause and unpause button
+      // var pauseButton = document.querySelector("#pauseButton");
+      // var unpauseButton = document.querySelector("#unpauseButton");
+
+      // pauseButton.addEventListener("click", function () {
+      //   tus_upload.abort();
+      // });
+
+      // unpauseButton.addEventListener("click", function () {
+      //   startOrResumeUpload(tus_upload);
+      // });
+
+      startOrResumeUpload(tus_upload);
+    },
     toggleAddGangMemberModal: function () {
       this.search.showAddMemberModal = !this.search.showAddMemberModal;
     },
@@ -688,5 +838,45 @@ export default {
 
 .modal-body::-webkit-scrollbar {
   display: none;
+}
+
+input::file-selector-button {
+  cursor: pointer;
+  background: rgb(241, 133, 121);
+  color: white;
+  border-color: transparent;
+  box-shadow: none;
+  outline: none;
+  width: 150px;
+  padding: 0.75rem;
+  height: 48px;
+  border-radius: 0.375rem;
+  margin-right: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transition: all 0.2s ease-in;
+}
+
+input::file-selector-button:hover {
+  background: rgb(228, 77, 60);
+}
+
+.upload-box {
+  background-color: rgba(243, 246, 248, 1);
+  height: 80px;
+  border: 2px solid #efefef;
+}
+
+.progress-bar {
+  background-color: rgb(241, 133, 121);
+}
+
+.content-box {
+  width: 350px;
+  height: 48px;
+}
+
+.content-txt {
+  width: 300px;
 }
 </style>
