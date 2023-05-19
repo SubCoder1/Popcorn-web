@@ -75,6 +75,8 @@ html,
 body {
   height: 100%;
   background-color: rgb(248 246 243);
+  scrollbar-width: 10px;
+  scrollbar-color: rgb(240, 90, 73);
 }
 
 #app {
@@ -118,6 +120,11 @@ h4 {
 ::-moz-selection {
   color: white;
   background: rgb(241, 133, 121);
+}
+
+.text-xsm {
+  font-size: 0.775rem;
+  line-height: 1.25rem;
 }
 
 .text-sm {
@@ -384,6 +391,10 @@ h4 {
   width: 60px;
 }
 
+.profile-pic-xsm {
+  height: 32px;
+}
+
 .profile-pic-sm {
   height: 45px;
 }
@@ -403,6 +414,7 @@ h4 {
 .kick-member-btn,
 .decline-invite-btn,
 .leave-gang-btn,
+.delete-content-btn,
 .delete-gang-btn {
   background: palevioletred;
   border: 0;
@@ -417,11 +429,13 @@ h4 {
 .decline-invite-btn:hover,
 .leave-gang-btn:hover,
 .delete-gang-btn:hover,
+.delete-content-btn:hover,
 .modal-close-btn:focus,
 .kick-member-btn:focus,
 .decline-invite-btn:focus,
 .leave-gang-btn:focus,
-.delete-gang-btn:focus {
+.delete-gang-btn:focus,
+.delete-content-btn:focus {
   background: #d94072;
 }
 
