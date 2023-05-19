@@ -107,11 +107,11 @@ export default {
               }
             } else {
               // Not able to create gang even after refreshing token
-              this.$parent.$parent.$parent.$parent.srvErrModal();
+              this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
             }
           } else if (response.status >= 500) {
             // Server error
-            this.$parent.$parent.$parent.$parent.srvErrModal();
+            this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
           } else {
             // Maybe validation
             this.$parent.$parent.ErrPopUp(response.error);
