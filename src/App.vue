@@ -183,7 +183,6 @@ h4 {
 .btn {
   background-color: rgb(241, 133, 121);
   color: white;
-  padding: 0.75rem;
   height: 48px;
   -moz-transition: all 0.2s ease-in;
   -webkit-transition: all 0.2s ease-in;
