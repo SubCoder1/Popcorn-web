@@ -12,7 +12,18 @@
       class="gang-interact-body d-flex flex-column text-wrap"
       ref="gangChatBody"
     >
-      <transition-group name="fade" tag="div">
+      <div
+        v-if="gangStore.getUserGang.gang_interact.length == 0"
+        class="d-flex flex-column justify-content-center text-center m-auto"
+      >
+        <img
+          class="gang-interact-img m-auto"
+          src="@/assets/misc/gang-interact.png"
+          alt="Empty search"
+        />
+        <span class="mt-3 text-secondary">A place for gang discussions!</span>
+      </div>
+      <transition-group name="fade" tag="div" v-else>
         <div
           class="d-flex flex-column"
           v-for="(msg, index) in gangStore.getUserGang.gang_interact"
