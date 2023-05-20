@@ -188,7 +188,8 @@
         </span>
         <button
           type="button"
-          class="btn btn-circle align-items-center justify-content-center rounded-circle delete-content-btn"
+          class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle delete-content-btn"
+          @click="deleteContent(false)"
         >
           <svg
             v-if="!upload.load_del_content_btn"
@@ -723,6 +724,7 @@ export default {
         },
         // Callback for once the upload is completed
         onSuccess: () => {
+          this.upload.uploading = false;
           gangStore.getUserGang.gang_content_name = file.name;
         },
       });
@@ -752,6 +754,33 @@ export default {
       // });
 
       startOrResumeUpload(tus_upload);
+    },
+    deleteContent: async function (retry) {
+      this.upload.load_del_content_btn = true;
+      const response = await this.gangStore.delContent();
+      if (response != 200) {
+        if (response == 401) {
+          // Unauthorized
+          if (retry == false) {
+            // access_token expired, use refresh_token to refresh JWT
+            // Try again on success
+            const authStore = useAuthStore();
+            const ref_token_resp = await authStore.refreshToken();
+            if (ref_token_resp.status == 200) {
+              await this.deleteContent(true);
+            }
+          } else {
+            // Error even after refreshing token
+            this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          }
+        } else {
+          // Server error
+          this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        }
+      }
+      this.upload.percentage = 0;
+      this.upload.status = "Initializing . . .";
+      this.upload.load_del_content_btn = false;
     },
     toggleAddGangMemberModal: function () {
       this.search.showAddMemberModal = !this.search.showAddMemberModal;
