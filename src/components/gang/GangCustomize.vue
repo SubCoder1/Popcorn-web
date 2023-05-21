@@ -183,7 +183,7 @@
         v-if="gangStore.getUserGang.gang_content_name.length != 0"
         class="content-box d-flex align-items-center justify-content-between"
       >
-        <span class="content-txt text-sm text-break">
+        <span class="content-txt text-sm text-break text-secondary">
           {{ gangStore.getUserGang.gang_content_name }}
         </span>
         <button
@@ -692,7 +692,6 @@ export default {
         // Endpoint is the upload creation URL from your tus server
         endpoint: process.env.VUE_APP_UPLOAD_API,
         addRequestId: true,
-        chunkSize: 10485760,
         // Retry delays will enable tus-js-client to automatically retry on errors
         retryDelays: [0, 3000, 5000, 10000],
         // Attach additional meta data about the file for the server
