@@ -60,7 +60,7 @@ export default {
 
 .gang-invite-container {
   width: 410px;
-  height: 280px;
+  height: 286px;
   overflow: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
