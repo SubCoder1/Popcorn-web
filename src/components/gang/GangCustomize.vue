@@ -219,7 +219,10 @@
           accept="video/mp4,video/x-m4v,video/x-matroska,video/*"
         />
       </div>
-      <div class="upload-box text-sm rounded-md input-md" v-else>
+      <div
+        class="upload-box text-sm rounded-md input-md"
+        :class="{ show: upload.uploading, 'd-none': !upload.uploading }"
+      >
         <div class="progress m-3">
           <div
             class="progress-bar"
@@ -230,7 +233,41 @@
             aria-valuemax="100"
           ></div>
         </div>
-        <div class="upload-text-progress text-center">{{ upload.status }}</div>
+        <div class="upload-text-progress text-center text-secondary mb-2">
+          {{ upload.status }}
+        </div>
+        <button
+          type="button"
+          class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle content-pause-unpause-btn m-auto"
+          ref="pauseUpauseContent"
+        >
+          <svg
+            v-if="!upload.upload_paused"
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-pause"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M6 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zm4 0a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5z"
+            />
+          </svg>
+          <svg
+            v-else
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-play"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"
+            />
+          </svg>
+        </button>
       </div>
     </div>
     <div
@@ -511,12 +548,6 @@ export default {
       this.loading_members_list = true;
       const response = await this.gangStore.getGangMembers();
       if (response == 200) {
-        this.gangStore.getUserGang.gang_members =
-          this.gangStore.getUserGang.gang_members.map((e) => {
-            return { ...e, load_boot_btn: false };
-          });
-        this.gangStore.getUserGang.gang_members_count =
-          this.gangStore.getUserGang.gang_members.length;
         this.loading_members_list = false;
       } else if (response == 401) {
         // Unauthorized
@@ -693,7 +724,7 @@ export default {
         endpoint: process.env.VUE_APP_UPLOAD_API,
         addRequestId: true,
         // Retry delays will enable tus-js-client to automatically retry on errors
-        retryDelays: [0, 3000, 5000, 10000],
+        retryDelays: [0, 3000, 5000, 10000, 20000],
         // Attach additional meta data about the file for the server
         metadata: {
           user: userStore.getUserName,
@@ -709,7 +740,7 @@ export default {
           console.log("Failed because: " + error);
           tus_upload.abort();
           this.upload.uploading = false;
-          this.upload.status = "";
+          this.upload.status = "Initializing . . .";
           srverr.srvErrModal();
         },
         // Callback for reporting upload progress
@@ -722,9 +753,12 @@ export default {
           )} of ${formatBytes(bytesTotal)} (${percentage}%)`;
         },
         // Callback for once the upload is completed
-        onSuccess: () => {
+        onSuccess: async () => {
           this.upload.uploading = false;
-          gangStore.getUserGang.gang_content_name = file.name;
+          this.upload.upload_paused = false;
+          this.upload.percentage = 0;
+          this.upload.status = "Initializing . . .";
+          this.upload.load_del_content_btn = false;
         },
       });
 
@@ -741,42 +775,42 @@ export default {
       };
 
       // Add listeners for the pause and unpause button
-      // var pauseButton = document.querySelector("#pauseButton");
-      // var unpauseButton = document.querySelector("#unpauseButton");
+      var pauseUnpauseButton = this.$refs.pauseUpauseContent;
 
-      // pauseButton.addEventListener("click", function () {
-      //   tus_upload.abort();
-      // });
-
-      // unpauseButton.addEventListener("click", function () {
-      //   startOrResumeUpload(tus_upload);
-      // });
+      pauseUnpauseButton.addEventListener("click", () => {
+        this.upload.upload_paused = !this.upload.upload_paused;
+        if (this.upload.upload_paused) {
+          tus_upload.abort();
+        } else {
+          startOrResumeUpload(tus_upload);
+        }
+      });
 
       startOrResumeUpload(tus_upload);
     },
     deleteContent: async function (retry) {
       this.upload.load_del_content_btn = true;
       const response = await this.gangStore.delContent();
-      if (response != 200) {
-        if (response == 401) {
-          // Unauthorized
-          if (retry == false) {
-            // access_token expired, use refresh_token to refresh JWT
-            // Try again on success
-            const authStore = useAuthStore();
-            const ref_token_resp = await authStore.refreshToken();
-            if (ref_token_resp.status == 200) {
-              await this.deleteContent(true);
-            }
-          } else {
-            // Error even after refreshing token
-            this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+      if (response == 401) {
+        // Unauthorized
+        if (retry == false) {
+          // access_token expired, use refresh_token to refresh JWT
+          // Try again on success
+          const authStore = useAuthStore();
+          const ref_token_resp = await authStore.refreshToken();
+          if (ref_token_resp.status == 200) {
+            await this.deleteContent(false);
           }
         } else {
-          // Server error
+          // Error even after refreshing token
           this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
+      } else if (response >= 404) {
+        // Server error
+        this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
+      this.upload.uploading = false;
+      this.upload.upload_paused = false;
       this.upload.percentage = 0;
       this.upload.status = "Initializing . . .";
       this.upload.load_del_content_btn = false;
@@ -825,7 +859,7 @@ export default {
     },
   },
   async mounted() {
-    this.getGangMembers(false);
+    await this.getGangMembers(false);
     // Detect when scrolled to bottom.
     const listElm = document.querySelector("#member-search-parent");
     listElm.addEventListener("scroll", async () => {
@@ -891,8 +925,13 @@ input::file-selector-button:hover {
 
 .upload-box {
   background-color: rgba(243, 246, 248, 1);
-  height: 80px;
+  height: auto;
+  padding: 0.375rem;
   border: 2px solid #efefef;
+}
+
+.upload-text-progress {
+  font-size: 13px;
 }
 
 .progress-bar {
@@ -901,10 +940,10 @@ input::file-selector-button:hover {
 
 .content-box {
   width: 350px;
-  height: 48px;
 }
 
 .content-txt {
-  width: 300px;
+  font-size: 13px;
+  width: 290px;
 }
 </style>
