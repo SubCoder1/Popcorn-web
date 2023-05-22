@@ -171,7 +171,14 @@ export const useGangStore = defineStore("gang", {
           withCredentials: true,
         })
         .then((response) => {
-          this.userGang.gang_members = response.data.members;
+          this.getUserGang.gang_members = response.data.members;
+          this.getUserGang.gang_members = this.getUserGang.gang_members.map(
+            (e) => {
+              return { ...e, load_boot_btn: false };
+            }
+          );
+          this.getUserGang.gang_members_count =
+            this.getUserGang.gang_members.length;
           return response.status;
         })
         .catch((e) => {
@@ -331,11 +338,8 @@ export const useGangStore = defineStore("gang", {
     // deleteContent API handler
     async delContent() {
       const response = await axios
-        .post(
-          process.env.VUE_APP_DELETE_CONTENT_API,
-          {
-            gang_name: this.getUserGang.gang_name,
-          },
+        .delete(
+          process.env.VUE_APP_UPLOAD_API + "/" + this.userGang.gang_content_ID,
           {
             withCredentials: true,
           }
