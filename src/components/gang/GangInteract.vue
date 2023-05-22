@@ -1,11 +1,140 @@
 <!-- Gang Chat page component -->
 
 <template>
+  <div
+    class="modal fade"
+    v-show="showGangInfoModal"
+    v-bind:class="{
+      show: showGangInfoModal,
+      'd-block': showGangInfoModal,
+    }"
+    id="GangInfoModal"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="GangInfoModal"
+    aria-modal="true"
+  >
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+      <div class="modal-content border-0">
+        <div class="modal-header"></div>
+        <div class="modal-body">
+          <div class="d-flex justify-content-between flex-wrap mb-3">
+            <span class="text-sm">Content to be played:</span>
+            <span class="text-sm text-break text-secondary mt-2">
+              <span v-if="gangStore.getUserGang.gang_content_name.length != 0">
+                {{ gangStore.getUserGang.gang_content_name }}
+              </span>
+              <span v-else>Yet to be uploaded.</span>
+            </span>
+          </div>
+          <div class="d-flex justify-content-between flex-wrap mb-3">
+            <span class="text-sm mt-1">Members:</span>
+            <div class="gang-info-members-list">
+              <div v-if="loading_members_list">
+                <div class="d-flex flex-row mb-3">
+                  <div
+                    class="skeleton user-prof-skeleton-md rounded-circle me-3"
+                  ></div>
+                  <div class="d-flex flex-column justify-content-center">
+                    <div class="skeleton skeleton-text mb-3"></div>
+                    <div class="skeleton skeleton-text"></div>
+                  </div>
+                </div>
+                <div class="d-flex flex-row mb-3">
+                  <div
+                    class="skeleton user-prof-skeleton-md rounded-circle me-3"
+                  ></div>
+                  <div class="d-flex flex-column justify-content-center">
+                    <div class="skeleton skeleton-text mb-3"></div>
+                    <div class="skeleton skeleton-text"></div>
+                  </div>
+                </div>
+              </div>
+              <transition-group name="fade" tag="div" v-else>
+                <div
+                  class="d-flex flex-row justify-content-between mb-3"
+                  v-for="(member, index) in gangStore.getUserGang.gang_members"
+                  :key="member"
+                >
+                  <div class="d-flex flex-row align-items-center">
+                    <img
+                      v-bind:src="
+                        require(`@/assets/profile/${member.user_profile_pic}`)
+                      "
+                      class="me-3 profile-pic-sm"
+                      alt="User profile picture"
+                    />
+                    <div class="d-flex flex-column justify-content-center">
+                      <p class="mb-1 text-sm">{{ member.full_name }}</p>
+                      <p class="mb-0 text-sm text-secondary">
+                        @{{ member.username }}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    v-if="gangStore.getUserGang.gang_admin != member.username"
+                    type="button"
+                    class="btn btn-circle d-flex align-items-center justify-content-center kick-member-btn rounded-circle p-0"
+                    @click="bootMember(false, member, index)"
+                  >
+                    <svg
+                      v-if="!member.load_boot_btn"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="26"
+                      height="26"
+                      fill="currentColor"
+                      class="bi bi-x-lg"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"
+                      />
+                    </svg>
+                    <div v-else class="loader"></div>
+                  </button>
+                  <p
+                    v-else
+                    class="d-flex align-items-center text-sm text-secondary mb-0 me-1"
+                  >
+                    Admin
+                  </p>
+                </div>
+              </transition-group>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button
+            type="button"
+            class="btn modal-close-btn rounded-md text-sm mt-2 mb-2"
+            data-bs-dismiss="modal"
+            @click="toggleGangInfoModal()"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="gang-interact-parent">
-    <div class="gang-interact-header d-flex align-items-center">
-      <div class="gang-info">
-        <h4>{{ gangStore.getUserGang.gang_name }}</h4>
-        <router-link to="" @click="goBackToGangList()">Go back</router-link>
+    <div class="gang-interact-header d-flex">
+      <div
+        class="gang-info d-flex align-items-center justify-content-between w-100"
+      >
+        <div>
+          <h4>{{ gangStore.getUserGang.gang_name }}</h4>
+          <router-link to="" @click="goBackToGangList()">Go back</router-link>
+        </div>
+        <div>
+          <button
+            type="button"
+            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm gang-info-btn"
+            @click="toggleGangInfoModal()"
+          >
+            INFO
+          </button>
+        </div>
       </div>
     </div>
     <div
@@ -23,7 +152,7 @@
         />
         <span class="mt-3 text-secondary">A place for gang discussions!</span>
       </div>
-      <transition-group name="fade" tag="div" v-else>
+      <transition-group name="fade" tag="div">
         <div
           class="d-flex flex-column"
           v-for="(msg, index) in gangStore.getUserGang.gang_interact"
@@ -121,9 +250,11 @@
       </button>
     </div>
   </div>
+  <div v-if="showGangInfoModal" class="modal-backdrop fade show"></div>
 </template>
 
 <script>
+import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
 import { useUserStore } from "@/stores/user.store";
 
@@ -133,7 +264,10 @@ export default {
     return {
       gangStore: useGangStore(),
       userStore: useUserStore(),
+      authStore: useAuthStore(),
       message: "",
+      showGangInfoModal: false,
+      loading_members_list: false,
     };
   },
   methods: {
@@ -141,7 +275,6 @@ export default {
       this.$parent.$parent.goBack();
     },
     sendMessage: async function () {
-      var userStore = useUserStore();
       if (this.message.length > 0) {
         var idx = this.gangStore.getUserGang.gang_interact.length;
         this.gangStore.getUserGang.gang_interact.push({
@@ -149,8 +282,8 @@ export default {
           message: this.message,
           status: "sending",
           user: {
-            username: userStore.getUserName,
-            user_profile_pic: userStore.getUserProfPic,
+            username: this.userStore.getUserName,
+            user_profile_pic: this.userStore.getUserProfPic,
           },
         });
         const response = await this.gangStore.sendGangMessage(
@@ -163,13 +296,47 @@ export default {
         this.message = "";
       }
     },
-    scrollToBottomOfChatBody() {
+    getGangMembers: async function (retry) {
+      this.loading_members_list = true;
+      const response = await this.gangStore.getGangMembers();
+      if (response == 200) {
+        this.loading_members_list = false;
+      } else if (response == 401) {
+        // Unauthorized
+        if (retry == false) {
+          // access_token expired, use refresh_token to refresh JWT
+          // Try again on success
+          const ref_token_resp = await this.authStore.refreshToken();
+          if (ref_token_resp.status == 200) {
+            await this.getGangMembers(true);
+          }
+        } else {
+          // Error even after refreshing token
+          this.showAddMemberModal = false;
+          this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        }
+      } else {
+        // Server error
+        this.showAddMemberModal = false;
+        this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+      }
+    },
+    scrollToBottomOfChatBody: function () {
       const el = this.$refs.gangChatBody;
       el.scrollTop = el.scrollHeight;
     },
+    toggleGangInfoModal: function () {
+      this.showGangInfoModal = !this.showGangInfoModal;
+    },
   },
-  mounted() {
+  async mounted() {
     this.scrollToBottomOfChatBody();
+    await this.getGangMembers(true);
+  },
+  updated() {
+    this.$nextTick(() => {
+      this.scrollToBottomOfChatBody();
+    });
   },
 };
 </script>
@@ -231,5 +398,28 @@ export default {
 
 .sending {
   opacity: 0.5;
+}
+
+.modal-body {
+  height: 236px;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.modal-body::-webkit-scrollbar {
+  display: none;
+}
+
+.gang-info-btn {
+  background: mediumpurple;
+}
+
+.gang-info-btn:hover {
+  background: #7b56c7;
+}
+
+.gang-info-members-list {
+  width: 330px;
 }
 </style>
