@@ -378,6 +378,11 @@ h4 {
   }
 }
 
+.btn-xsm {
+  width: 60px;
+  height: 40px;
+}
+
 .btn-sm {
   width: 150px;
 }
