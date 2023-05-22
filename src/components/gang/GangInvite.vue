@@ -73,14 +73,13 @@
       class="text-center fade-move"
     >
       <lottie-player
-        src="https://lottie.host/f088f560-cc3a-4726-9837-ddae25f3308f/2lDmiXa8JA.json"
+        src="https://assets9.lottiefiles.com/datafiles/7fhdA6zZsyPRcTo/data.json"
         background="transparent"
-        speed="1"
+        speed="4"
         loop
         autoplay
         v-pre
-      >
-      </lottie-player>
+      ></lottie-player>
       <span class="text-secondary text-sm">
         Oops! You haven't got any invites
       </span>
