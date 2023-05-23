@@ -29,7 +29,9 @@
     <GangInteract v-else-if="showGangInteract" />
     <div class="h-auto" v-else>
       <template v-if="gangStore.canCreateGang && gangStore.canJoinGang">
-        <div class="d-flex align-items-center justify-content-between">
+        <div
+          class="d-flex flex-wrap align-items-center justify-content-between"
+        >
           <div>
             <h4 v-if="createOrJoin">Join a Gang</h4>
             <h4 v-else>Create a Gang</h4>
@@ -47,7 +49,7 @@
           <div class="mt-1 mb-1">
             <p
               class="form-errors rounded-md text-sm"
-              v-bind:class="{ 'show-error': showErr }"
+              v-bind:class="{ 'show-error': showErr, 'd-none': !showErr }"
             >
               {{ formErr }}
             </p>
@@ -55,7 +57,9 @@
         </div>
       </template>
       <template v-else>
-        <div class="d-flex align-items-center justify-content-between">
+        <div
+          class="d-flex flex-wrap align-items-center justify-content-between"
+        >
           <div class="dashboard-header">
             <h4 v-if="showCustomizePage">Customize Gang</h4>
             <h4 v-else-if="gangStore.canCreateGang">Create a Gang</h4>
@@ -65,7 +69,7 @@
           <div class="mt-1 mb-1">
             <p
               class="form-errors rounded-md text-sm"
-              v-bind:class="{ 'show-error': showErr }"
+              v-bind:class="{ 'show-error': showErr, 'd-none': !showErr }"
             >
               {{ formErr }}
             </p>

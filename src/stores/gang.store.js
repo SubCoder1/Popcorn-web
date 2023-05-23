@@ -39,7 +39,7 @@ export const useGangStore = defineStore("gang", {
             this.userGang.gang_created = time2TimeAgo(
               this.userGang.gang_created
             );
-            if (gang_convo == null) {
+            if (gang_convo == null || gang_convo == undefined) {
               this.userGang.gang_interact = [];
             } else {
               this.userGang.gang_interact = gang_convo;

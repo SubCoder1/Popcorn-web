@@ -457,4 +457,53 @@ strong {
 .fade-leave-to {
   opacity: 0;
 }
+
+@media only screen and (max-width: 1050px) {
+  .input-md {
+    width: 310px;
+  }
+
+  .form-errors {
+    width: 315px;
+  }
+
+  h4 {
+    font-size: 20px;
+  }
+
+  .text-sm {
+    font-size: 0.805rem;
+  }
+
+  .btn-md {
+    width: 180px;
+  }
+}
+
+@media only screen and (max-width: 955px) {
+  .form-errors {
+    width: 299px;
+  }
+}
+
+@media only screen and (max-width: 522px) {
+  .input-md {
+    width: 270px;
+  }
+}
+
+@media only screen and (max-width: 497px) {
+  .form-errors {
+    width: 224px;
+  }
+
+  label {
+    margin-top: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .input-md {
+    width: 100%;
+  }
+}
 </style>

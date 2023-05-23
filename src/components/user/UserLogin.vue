@@ -6,7 +6,7 @@
     <router-link to="/auth/register">or create a new one?</router-link>
     <p
       class="form-errors form-errors-md rounded-md text-sm mt-2"
-      v-bind:class="{ 'show-error': showErr }"
+      v-bind:class="{ 'show-error': showErr, 'd-none': !showErr }"
     >
       {{ formErr }}
     </p>

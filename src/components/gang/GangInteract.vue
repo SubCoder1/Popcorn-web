@@ -18,9 +18,9 @@
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
       <div class="modal-content border-0">
         <div class="modal-header"></div>
-        <div class="modal-body">
+        <div class="modal-body h-100">
           <div class="d-flex justify-content-between flex-wrap mb-3">
-            <span class="text-sm">Content to be played:</span>
+            <span class="text-sm mb-2">Content to be played:</span>
             <span class="text-sm text-break text-secondary mt-2">
               <span v-if="gangStore.getUserGang.gang_content_name.length != 0">
                 {{ gangStore.getUserGang.gang_content_name }}
@@ -150,7 +150,9 @@
           src="@/assets/misc/gang-interact.png"
           alt="Empty search"
         />
-        <span class="mt-3 text-secondary">A place for gang discussions!</span>
+        <span class="mt-3 text-sm text-secondary">
+          A place for gang discussions!
+        </span>
       </div>
       <transition-group name="fade" tag="div">
         <div
@@ -342,6 +344,10 @@ export default {
 </script>
 
 <style scoped lang="css">
+.gang-info {
+  height: fit-content;
+}
+
 .gang-interact-header {
   height: 109px;
 }
@@ -421,5 +427,30 @@ export default {
 
 .gang-info-members-list {
   width: 330px;
+  height: 250px;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.gang-info-members-list::-webkit-scrollbar {
+  display: none;
+}
+
+.modal-body {
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.modal-body::-webkit-scrollbar {
+  display: none;
+}
+
+@media only screen and (max-width: 497px) {
+  .gang-info-members-list {
+    margin-top: 0.8rem;
+    width: 100%;
+  }
 }
 </style>

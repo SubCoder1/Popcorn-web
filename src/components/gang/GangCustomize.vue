@@ -319,10 +319,9 @@
     </div>
     <div class="d-flex justify-content-between flex-wrap mb-3">
       <div class="d-flex flex-column">
-        <label for="gangMembers" class="text-sm">Gang Members:</label>
+        <label for="gangMembers" class="text-sm m-0">Gang Members:</label>
         <router-link
           to=""
-          class="mt-2"
           @click="toggleAddGangMemberModal()"
           v-if="
             gangStore.getUserGang.gang_members_count < update.gang_member_limit
@@ -945,5 +944,31 @@ input::file-selector-button:hover {
 .content-txt {
   font-size: 13px;
   width: 290px;
+}
+
+@media only screen and (max-width: 1050px) {
+  .content-box {
+    width: 100%;
+  }
+
+  .content-txt {
+    width: 360px;
+  }
+}
+
+@media only screen and (max-width: 497px) {
+  .gang-members-box-md {
+    height: 200px;
+    width: 100%;
+    margin-top: 0.8rem;
+  }
+
+  .content-box {
+    width: 100%;
+  }
+
+  .content-txt {
+    width: 360px;
+  }
 }
 </style>

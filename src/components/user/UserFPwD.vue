@@ -1,7 +1,7 @@
 <!-- User Forgot Password component rendered through AuthView -->
 
 <template>
-  <div class="reg-form">
+  <div class="forgot-pass-form">
     <h3>Forgot Password?</h3>
     <router-link to="/auth/login">back to login</router-link>
     <p class="mt-3 text-sm">

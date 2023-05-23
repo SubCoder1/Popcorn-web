@@ -64,5 +64,15 @@ export default {
   .page-info {
     display: none !important;
   }
+
+  .auth-form-container {
+    width: 395px;
+  }
+}
+
+@media only screen and (max-width: 552px) {
+  .auth-form-container {
+    width: 320px;
+  }
 }
 </style>
