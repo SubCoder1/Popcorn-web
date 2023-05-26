@@ -42,6 +42,7 @@ export const useGangStore = defineStore("gang", {
             if (gang_convo == null || gang_convo == undefined) {
               this.userGang.gang_interact = [];
             } else {
+              // Add older conversations
               this.userGang.gang_interact = gang_convo;
             }
           }
