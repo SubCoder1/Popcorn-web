@@ -106,7 +106,7 @@ export default {
         // Server error
         // Stop router navigation and show Server error modal
         this.loggingOut = false;
-        this.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
   },
