@@ -8,7 +8,7 @@ async function connectWithLivekitRoom(hostUrl, token) {
 }
 
 async function disconnectFromLivekitRoom() {
-  if (room.state() == "connected") {
+  if (room.state == "connected") {
     await room.disconnect();
   }
 }
