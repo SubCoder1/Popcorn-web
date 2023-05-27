@@ -8,9 +8,13 @@ import axios from "axios";
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user_auth: false,
+    stream_token: "",
+    stream_host: "",
   }),
   getters: {
     getUserAuth: (state) => state.user_auth,
+    getUserStreamToken: (state) => state.stream_token,
+    getStreamingHost: (state) => state.stream_host,
   },
   actions: {
     // Login API handler
@@ -111,7 +115,7 @@ export const useAuthStore = defineStore("auth", {
             withCredentials: true,
           }
         )
-        .then(() => {
+        .then(async () => {
           // logout successful
           this.user_auth = false;
           userStore.clearUserData();
@@ -192,6 +196,34 @@ export const useAuthStore = defineStore("auth", {
           }
         });
       return res;
+    },
+    // streamToken API handler
+    async getStreamingToken() {
+      const resp = await axios
+        .post(
+          process.env.VUE_APP_GET_STREAMING_TOKEN_API,
+          {},
+          {
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          this.stream_token = response.data.stream_token;
+          this.stream_host = response.data.stream_host;
+          return response.status;
+        })
+        .catch((e) => {
+          // error occured
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+            // show the first validation issue received from server
+          } else {
+            // Server unreachable
+            return 503;
+          }
+        });
+      return resp;
     },
   },
 });
