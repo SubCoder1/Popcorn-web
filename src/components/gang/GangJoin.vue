@@ -58,7 +58,9 @@
       </div>
     </div>
   </div>
-  <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
+  <div
+    class="d-flex align-items-center justify-content-between flex-wrap pe-4 ps-4 pb-4"
+  >
     <label for="gangName" class="text-sm">Search for a gang:</label>
     <input
       type="text"
@@ -71,7 +73,7 @@
     />
   </div>
   <div
-    class="search-result-parent d-flex flex-column pt-4"
+    class="search-result-parent d-flex flex-column p-4"
     id="gang-search-parent"
   >
     <div v-show="load_search">

@@ -46,7 +46,7 @@
       id="collapseDashboard"
     >
       <div
-        class="gang-dashboard-container h-auto container-style container-shadow text-left p-4"
+        class="gang-dashboard-container h-auto container-style container-shadow text-left"
       >
         <GangDashboard :key="reload" />
       </div>

@@ -1,7 +1,10 @@
 <!-- Create Gang form component rendered through HomeView -->
 
 <template>
-  <form @submit.prevent="createGang(false)" class="gang-create-form">
+  <form
+    @submit.prevent="createGang(false)"
+    class="gang-create-form pe-4 pb-4 ps-4"
+  >
     <div
       class="d-flex align-items-center justify-content-between flex-wrap mb-3"
     >

@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex justify-content-between">
+  <div class="d-flex justify-content-between p-4">
     <div
       class="d-flex br-left ps-3"
       v-bind:class="{
