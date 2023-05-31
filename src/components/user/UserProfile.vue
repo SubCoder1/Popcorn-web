@@ -44,7 +44,6 @@
 <script>
 import { useAuthStore } from "@/stores/auth.store";
 import { useUserStore } from "@/stores/user.store";
-import stream from "@/utils/stream";
 
 export default {
   name: "UserProfile",
@@ -98,7 +97,6 @@ export default {
     logout: async function () {
       this.loggingOut = true;
       const authStore = useAuthStore();
-      await stream.disconnectFromLivekitRoom();
       const resp = await authStore.logout();
       if (resp.status <= 500) {
         // logout successful or access_token already expired
