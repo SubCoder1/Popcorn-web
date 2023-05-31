@@ -21,11 +21,17 @@
         <div class="modal-body h-100">
           <div class="d-flex justify-content-between flex-wrap mb-3">
             <span class="text-sm mb-2">Content to be played:</span>
-            <span class="text-sm text-break text-secondary mt-2">
+            <span class="text-sm text-break text-secondary">
               <span v-if="gangStore.getUserGang.gang_content_name.length != 0">
                 {{ gangStore.getUserGang.gang_content_name }}
               </span>
               <span v-else>Yet to be uploaded.</span>
+            </span>
+          </div>
+          <div class="d-flex justify-content-between flex-wrap mb-3">
+            <span class="text-sm mb-2">Member limit:</span>
+            <span class="text-sm text-secondary">
+              {{ gangStore.getUserGang.gang_member_limit }}
             </span>
           </div>
           <div class="d-flex justify-content-between flex-wrap mb-3">
@@ -54,7 +60,7 @@
               <transition-group name="fade" tag="div" v-else>
                 <div
                   class="d-flex flex-row justify-content-between mb-3"
-                  v-for="(member, index) in gangStore.getUserGang.gang_members"
+                  v-for="member in gangStore.getUserGang.gang_members"
                   :key="member"
                 >
                   <div class="d-flex flex-row align-items-center">
@@ -72,30 +78,8 @@
                       </p>
                     </div>
                   </div>
-                  <button
-                    v-if="gangStore.getUserGang.gang_admin != member.username"
-                    type="button"
-                    class="btn btn-circle d-flex align-items-center justify-content-center kick-member-btn rounded-circle p-0"
-                    @click="bootMember(false, member, index)"
-                  >
-                    <svg
-                      v-if="!member.load_boot_btn"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="26"
-                      height="26"
-                      fill="currentColor"
-                      class="bi bi-x-lg"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"
-                      />
-                    </svg>
-                    <div v-else class="loader"></div>
-                  </button>
                   <p
-                    v-else
-                    class="d-flex align-items-center text-sm text-secondary mb-0 me-1"
+                    class="d-flex align-items-center text-sm text-secondary mb-0"
                   >
                     Admin
                   </p>
@@ -118,18 +102,40 @@
     </div>
   </div>
   <div class="gang-interact-parent">
+    <div class="stream-player" v-show="gangStore.getUserGang.gang_streaming">
+      <div ref="remoteMediaContainer"></div>
+    </div>
     <div class="gang-interact-header d-flex">
       <div
-        class="gang-info d-flex align-items-center justify-content-between w-100"
+        class="gang-info d-flex align-items-center justify-content-between w-100 p-4"
       >
         <div>
           <h4>{{ gangStore.getUserGang.gang_name }}</h4>
           <router-link to="" @click="goBackToGangList()">Go back</router-link>
         </div>
         <div>
+          <span class="text-secondary text-sm" v-if="loading_livekit_conn">
+            CONNECTING . . .
+          </span>
+        </div>
+        <div class="d-flex">
           <button
             type="button"
-            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm gang-info-btn"
+            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm admin-btn"
+            v-if="
+              gangStore.getUserGang.gang_content_ID.length != 0 &&
+              gangStore.getUserGang.is_admin &&
+              !gangStore.getUserGang.gang_streaming
+            "
+            :disabled="loading_play_btn"
+            @click="playContent(false)"
+          >
+            <div class="loader" v-if="loading_play_btn"></div>
+            <span v-else>PLAY</span>
+          </button>
+          <button
+            type="button"
+            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm gang-info-btn ms-2"
             @click="toggleGangInfoModal()"
           >
             INFO
@@ -138,11 +144,12 @@
       </div>
     </div>
     <div
-      class="gang-interact-body d-flex flex-column text-wrap"
+      class="gang-interact-body d-flex flex-column text-wrap ps-4 pe-4"
+      :class="{ 'shrink-for-stream': gangStore.getUserGang.gang_streaming }"
       ref="gangChatBody"
     >
       <div
-        v-if="gangStore.getUserGang.gang_interact.length == 0"
+        v-if="gangStore.getUserGangInteract.length == 0"
         class="d-flex flex-column justify-content-center text-center m-auto"
       >
         <img
@@ -157,7 +164,7 @@
       <transition-group name="fade" tag="div">
         <div
           class="d-flex flex-column"
-          v-for="(msg, index) in gangStore.getUserGang.gang_interact"
+          v-for="(msg, index) in gangStore.getUserGangInteract"
           :key="index"
         >
           <div v-if="msg.type == 'gangJoin'">
@@ -224,7 +231,7 @@
         </div>
       </transition-group>
     </div>
-    <div class="gang-interact-footer d-flex">
+    <div class="gang-interact-footer d-flex ps-4 pe-4 pb-3">
       <input
         type="text"
         class="form-control text-sm rounded-md input-lg"
@@ -259,6 +266,17 @@
 import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
 import { useUserStore } from "@/stores/user.store";
+import { Room, RoomEvent } from "livekit-client";
+import { ref } from "vue";
+import axios from "axios";
+
+let room = new Room({
+  // automatically manage subscribed video quality
+  adaptiveStream: true,
+  dynacast: true,
+});
+
+const remoteMediaContainer = ref();
 
 export default {
   name: "GangInteract",
@@ -269,7 +287,9 @@ export default {
       authStore: useAuthStore(),
       message: "",
       showGangInfoModal: false,
+      loading_livekit_conn: false,
       loading_members_list: false,
+      loading_play_btn: false,
     };
   },
   methods: {
@@ -278,8 +298,8 @@ export default {
     },
     sendMessage: async function () {
       if (this.message.length > 0) {
-        var idx = this.gangStore.getUserGang.gang_interact.length;
-        this.gangStore.getUserGang.gang_interact.push({
+        var idx = this.gangStore.getUserGangInteract.length;
+        this.gangStore.getUserGangInteract.push({
           type: "gangMessage",
           message: this.message,
           status: "sending",
@@ -293,7 +313,7 @@ export default {
           this.message
         );
         if (response >= 500) {
-          this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
         this.message = "";
       }
@@ -315,13 +335,112 @@ export default {
         } else {
           // Error even after refreshing token
           this.showAddMemberModal = false;
-          this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
       } else {
         // Server error
         this.showAddMemberModal = false;
-        this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
+    },
+    handleLiveKitEvents: async function (retry) {
+      this.loading_livekit_conn = true;
+      // Check initial connection with livekit server
+      await room
+        .prepareConnection(process.env.VUE_APP_LIVEKIT_HOST_URL)
+        .catch(() => {
+          this.loading_livekit_conn = false;
+          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        });
+      // Fetch livekit client token from popcorn server if not present
+      if (!this.authStore.getUserStreamToken.length) {
+        const response = await this.authStore.getStreamingToken();
+        if (response != 200 || !this.authStore.getUserStreamToken.length) {
+          if (response == 401) {
+            // Unauthorized
+            if (retry == false) {
+              // access_token expired, use refresh_token to refresh JWT
+              // Try again on success
+              const ref_token_resp = await this.authStore.refreshToken();
+              if (ref_token_resp.status == 200) {
+                await this.getStreamToken(true);
+              }
+            } else {
+              // Not able to create gang even after refreshing token
+              this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+            }
+          } else {
+            // Server error
+            this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          }
+        }
+      }
+      // Connect with livekit room using the fetched token
+      await room
+        .connect(
+          process.env.VUE_APP_LIVEKIT_HOST_URL,
+          this.authStore.getUserStreamToken
+        )
+        .then(() => {
+          console.log("connected to room - ", room.name);
+          this.loading_livekit_conn = false;
+        })
+        .catch(() => {
+          this.loading_livekit_conn = false;
+          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        });
+    },
+    playContentAPI: async function () {
+      const resp = await axios
+        .post(
+          process.env.VUE_APP_PLAY_CONTENT_API,
+          {},
+          {
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          return response.status;
+        })
+        .catch((e) => {
+          // error occured
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+            // show the first validation issue received from server
+          } else {
+            // Server unreachable
+            return 503;
+          }
+        });
+      return resp;
+    },
+    playContent: async function (retry) {
+      this.loading_play_btn = true;
+      const response = await this.playContentAPI();
+      if (response != 200) {
+        if (response == 401) {
+          // Unauthorized
+          if (retry == false) {
+            // access_token expired, use refresh_token to refresh JWT
+            // Try again on success
+            const authStore = useAuthStore();
+            const ref_token_resp = await authStore.refreshToken();
+            if (ref_token_resp.status == 200) {
+              await this.playContent(true);
+            }
+          } else {
+            // Error even after refreshing token
+            this.showAddMemberModal = false;
+            this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          }
+        } else {
+          // Server error
+          this.showAddMemberModal = false;
+          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        }
+      }
+      this.loading_play_btn = false;
     },
     scrollToBottomOfChatBody: function () {
       const el = this.$refs.gangChatBody;
@@ -332,13 +451,29 @@ export default {
     },
   },
   async mounted() {
+    room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
+      //console.log(track, publication);
+      const media = publication.track.attach();
+      if (publication.kind == "video") {
+        media.controls = true;
+        media.classList.add("stream-br");
+        media.classList.add("h-100");
+        media.classList.add("w-100");
+      }
+      this.$refs.remoteMediaContainer.appendChild(media);
+    });
+    room.on(RoomEvent.TrackUnpublished, () => {});
+    await this.handleLiveKitEvents(false);
     this.scrollToBottomOfChatBody();
-    await this.getGangMembers(true);
+    await this.getGangMembers(false);
   },
   updated() {
     this.$nextTick(() => {
       this.scrollToBottomOfChatBody();
     });
+  },
+  async beforeUnmount() {
+    await room.disconnect();
   },
 };
 </script>
@@ -356,6 +491,22 @@ export default {
   overflow: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  transition: all 0.2s ease-in;
+}
+
+.stream-player {
+  height: 405px;
+  width: 720px;
+  background: rgb(43, 42, 51);
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.stream-br {
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.shrink-for-stream {
+  height: 185px;
 }
 
 .gang-interact-body::-webkit-scrollbar {
@@ -451,6 +602,11 @@ export default {
   .gang-info-members-list {
     margin-top: 0.8rem;
     width: 100%;
+  }
+
+  .stream-player {
+    height: 285px;
+    width: auto;
   }
 }
 </style>
