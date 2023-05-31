@@ -3,6 +3,62 @@
 <template>
   <div
     class="modal fade"
+    v-show="upload.showUploadSuccessModal"
+    v-bind:class="{
+      show: upload.showUploadSuccessModal,
+      'd-block': upload.showUploadSuccessModal,
+    }"
+    id="UploadSuccessModal"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="UploadSuccessModal"
+    aria-modal="true"
+  >
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+      <div class="modal-content border-0">
+        <div class="modal-body h-auto">
+          <span class="text-secondary">
+            Great! Now you can live-stream this content by visiting
+            <strong>
+              Gang conversation tab (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="26"
+                height="26"
+                fill="currentColor"
+                class="bi bi-camera-reels ms-1"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM1 3a2 2 0 1 0 4 0 2 2 0 0 0-4 0z"
+                />
+                <path
+                  d="M9 6h.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 7.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 16H2a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h7zm6 8.73V7.27l-3.5 1.555v4.35l3.5 1.556zM1 8v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z"
+                />
+                <path
+                  d="M9 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM7 3a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"
+                />
+              </svg>
+              ) > Play button
+            </strong>
+          </span>
+        </div>
+        <div class="modal-footer border-0">
+          <button
+            type="button"
+            class="btn modal-close-btn rounded-md text-sm mt-2 mb-2"
+            data-bs-dismiss="modal"
+            @click="toggleUploadSuccessModal()"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="modal fade"
     v-show="search.showAddMemberModal"
     v-bind:class="{
       show: search.showAddMemberModal,
@@ -174,7 +230,7 @@
       </div>
     </div>
   </div>
-  <form @submit.prevent="updateGang(false)" class="gang-update-form mt-4">
+  <form @submit.prevent="updateGang(false)" class="gang-update-form p-4">
     <div
       class="upload-content-container d-flex align-items-center justify-content-between flex-wrap mb-3"
     >
@@ -412,7 +468,10 @@
       <span v-if="!update.form_submitted">{{ update.update_txt }}</span>
     </button>
   </form>
-  <div v-if="search.showAddMemberModal" class="modal-backdrop fade show"></div>
+  <div
+    v-if="search.showAddMemberModal || upload.showUploadSuccessModal"
+    class="modal-backdrop fade show"
+  ></div>
 </template>
 
 <script>
@@ -466,6 +525,7 @@ export default {
         percentage: 0,
         upload_paused: false,
         load_del_content_btn: false,
+        showUploadSuccessModal: false,
       },
       loading_members_list: false,
       timeout: null,
@@ -752,7 +812,8 @@ export default {
           )} of ${formatBytes(bytesTotal)} (${percentage}%)`;
         },
         // Callback for once the upload is completed
-        onSuccess: async () => {
+        onSuccess: () => {
+          this.upload.showUploadSuccessModal = true;
           this.upload.uploading = false;
           this.upload.upload_paused = false;
           this.upload.percentage = 0;
@@ -806,7 +867,7 @@ export default {
         }
       } else if (response >= 404) {
         // Server error
-        this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
       this.upload.uploading = false;
       this.upload.upload_paused = false;
@@ -816,6 +877,9 @@ export default {
     },
     toggleAddGangMemberModal: function () {
       this.search.showAddMemberModal = !this.search.showAddMemberModal;
+    },
+    toggleUploadSuccessModal: function () {
+      this.upload.showUploadSuccessModal = !this.upload.showUploadSuccessModal;
     },
     removeErr: function () {
       this.$parent.$parent.removeErr();
