@@ -9,12 +9,10 @@ export const useAuthStore = defineStore("auth", {
   state: () => ({
     user_auth: false,
     stream_token: "",
-    stream_host: "",
   }),
   getters: {
     getUserAuth: (state) => state.user_auth,
     getUserStreamToken: (state) => state.stream_token,
-    getStreamingHost: (state) => state.stream_host,
   },
   actions: {
     // Login API handler
@@ -209,7 +207,6 @@ export const useAuthStore = defineStore("auth", {
         )
         .then((response) => {
           this.stream_token = response.data.stream_token;
-          this.stream_host = response.data.stream_host;
           return response.status;
         })
         .catch((e) => {
