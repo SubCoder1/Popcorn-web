@@ -132,7 +132,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="css">
 .gang-dashboard-container {
-  width: 700px;
+  width: 720px;
   margin-right: 1.5rem;
 }
 
