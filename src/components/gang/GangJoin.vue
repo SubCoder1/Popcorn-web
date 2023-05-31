@@ -107,7 +107,7 @@
         src="@/assets/misc/empty-search.png"
         alt="Empty search"
       />
-      <p class="text-secondary text-sm mt-4">
+      <p class="text-secondary text-sm mt-3">
         Your searches will show up here.
       </p>
     </div>
@@ -337,7 +337,7 @@ export default {
 
 <style scoped lang="css">
 .search-result-parent {
-  height: 218px;
+  height: 228px;
   overflow: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
