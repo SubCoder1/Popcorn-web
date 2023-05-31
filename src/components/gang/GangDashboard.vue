@@ -1,7 +1,7 @@
 <!-- Gang Dashboard sub-view of Popcorn, rendered through HomeView. -->
 
 <template>
-  <div v-if="loading" class="d-flex flex-column">
+  <div v-if="loading" class="d-flex flex-column p-4">
     <div class="d-flex flex-row mb-3">
       <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
       <div class="d-flex flex-column justify-content-center">
@@ -16,7 +16,7 @@
         <div class="skeleton skeleton-text"></div>
       </div>
     </div>
-    <div class="d-flex flex-row mb-3">
+    <div class="d-flex flex-row">
       <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
       <div class="d-flex flex-column justify-content-center">
         <div class="skeleton skeleton-text mb-3"></div>
@@ -30,7 +30,7 @@
     <div class="h-auto" v-else>
       <template v-if="gangStore.canCreateGang && gangStore.canJoinGang">
         <div
-          class="d-flex flex-wrap align-items-center justify-content-between"
+          class="d-flex flex-wrap align-items-center justify-content-between p-4"
         >
           <div>
             <h4 v-if="createOrJoin">Join a Gang</h4>
@@ -58,7 +58,7 @@
       </template>
       <template v-else>
         <div
-          class="d-flex flex-wrap align-items-center justify-content-between"
+          class="d-flex flex-wrap align-items-center justify-content-between p-4"
         >
           <div class="dashboard-header">
             <h4 v-if="showCustomizePage">Customize Gang</h4>
@@ -91,6 +91,8 @@ import time2TimeAgo from "@/utils/timeago";
 
 let sseClient;
 
+let authStore = useAuthStore();
+
 export default {
   data() {
     return {
@@ -108,8 +110,7 @@ export default {
   methods: {
     getUserGang: async function (retry) {
       this.loading = true;
-      const gangStore = useGangStore();
-      const response = await gangStore.getGang();
+      const response = await this.gangStore.getGang();
       if (response == 200) {
         this.loading = false;
         if (Object.keys(this.gangStore.getUserGang).length > 0) {
@@ -122,7 +123,6 @@ export default {
         if (retry == false) {
           // access_token expired, use refresh_token to refresh JWT
           // Try again on success
-          const authStore = useAuthStore();
           const ref_token_resp = await authStore.refreshToken();
           if (ref_token_resp.status == 200) {
             await this.getUserGang(true);
@@ -145,7 +145,6 @@ export default {
         if (retry == false) {
           // access_token expired, use refresh_token to refresh JWT
           // Try again on success
-          const authStore = useAuthStore();
           const ref_token_resp = await authStore.refreshToken();
           if (ref_token_resp.status == 200) {
             await this.delUserCreatedGang(true);
@@ -169,7 +168,6 @@ export default {
         if (retry == false) {
           // access_token expired, use refresh_token to refresh JWT
           // Try again on success
-          const authStore = useAuthStore();
           const ref_token_resp = await authStore.refreshToken();
           if (ref_token_resp.status == 200) {
             await this.leaveUserJoinedGang(true);
@@ -226,7 +224,7 @@ export default {
     await this.getUserGang(false);
 
     sseClient = await this.$sse.create({
-      url: process.env.VUE_APP_STREAM_API,
+      url: process.env.VUE_APP_SSE_API,
       format: "json",
       withCredentials: true,
       polyfill: true,
@@ -262,7 +260,7 @@ export default {
       this.gangStore.getUserGang.gang_members.push(msg.message);
       this.gangStore.getUserGang.gang_members_count =
         this.gangStore.getUserGang.gang_members.length;
-      this.gangStore.getUserGang.gang_interact.push({
+      this.gangStore.getUserGangInteract.push({
         type: "gangJoin",
         message: msg.message,
       });
@@ -274,14 +272,14 @@ export default {
     // Handle incoming gangLeave messages from server
     sseClient.on("gangLeave", async (msg) => {
       await this.getUserGang(true);
-      this.gangStore.getUserGang.gang_interact.push({
+      this.gangStore.getUserGangInteract.push({
         type: "gangLeave",
         message: msg.message,
       });
     });
     // Handle incoming gangUpdate messages from server
     sseClient.on("gangUpdate", async () => {
-      this.gangStore.getUserGang.gang_interact.push({
+      this.gangStore.getUserGangInteract.push({
         type: "gangUpdate",
         message: "THE GANG HAS BEEN UPDATED",
       });
@@ -291,13 +289,25 @@ export default {
     sseClient.on("gangDelete", async () => {
       await this.getUserGang(false);
     });
-    // Handle incoming gangChat messages from servera
+    // Handle incoming gangChat messages from server
     sseClient.on("gangMessage", (msg) => {
-      this.gangStore.getUserGang.gang_interact.push({
+      this.gangStore.getUserGangInteract.push({
         type: "gangMessage",
         message: msg.message.text,
         user: msg.message.user,
       });
+    });
+    // Handle incoming gangPlayContent messages from server
+    sseClient.on("gangPlayContent", () => {
+      this.gangStore.getUserGang.gang_streaming = true;
+    });
+    // Handle incoming gangEndContent messages from server
+    sseClient.on("gangEndContent", async () => {
+      this.gangStore.getUserGangInteract.push({
+        type: "gangUpdate",
+        message: "THE STREAM HAS ENDED",
+      });
+      await this.gangStore.getGang();
     });
 
     // Catch any errors (ie. lost connections, etc.)
