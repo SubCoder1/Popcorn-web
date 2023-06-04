@@ -458,6 +458,13 @@ strong {
   opacity: 0;
 }
 
+video {
+  border-radius: 0.5rem 0.5rem 0 0;
+  height: 405px;
+  width: 720px;
+  background: rgb(43, 42, 51);
+}
+
 @media only screen and (max-width: 1050px) {
   .input-md {
     width: 310px;
@@ -504,6 +511,11 @@ strong {
 
   .input-md {
     width: 100%;
+  }
+
+  video {
+    height: 285px;
+    width: auto;
   }
 }
 </style>
