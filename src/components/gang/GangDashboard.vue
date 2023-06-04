@@ -1,6 +1,7 @@
 <!-- Gang Dashboard sub-view of Popcorn, rendered through HomeView. -->
 
 <template>
+  <div ref="remoteMediaContainer"></div>
   <div v-if="loading" class="d-flex flex-column p-4">
     <div class="d-flex flex-row mb-3">
       <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
@@ -88,10 +89,13 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
 import { defineAsyncComponent } from "vue";
 import time2TimeAgo from "@/utils/timeago";
+import { ref } from "vue";
 
 let sseClient;
 
 let authStore = useAuthStore();
+
+const remoteMediaContainer = ref(null);
 
 export default {
   data() {
@@ -104,6 +108,8 @@ export default {
       showGangInteract: false,
       showErr: false,
       formErr: "",
+      load_audio: false,
+      load_video: false,
     };
   },
   name: "GangDashboard",
@@ -151,11 +157,11 @@ export default {
           }
         } else {
           // Not able to create gang even after refreshing token
-          this.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.srvErrModal();
         }
       } else {
         // Server error
-        this.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.srvErrModal();
       }
       return response;
     },
@@ -211,6 +217,20 @@ export default {
     removeErr: function () {
       this.showErr = false;
       this.formErr = "";
+    },
+    showStream: function (media, type) {
+      if (type == "video" && !this.load_video) {
+        this.load_video = true;
+        this.$refs.remoteMediaContainer.appendChild(media);
+      } else if (type == "audio" && !this.load_audio) {
+        this.load_audio = true;
+        this.$refs.remoteMediaContainer.appendChild(media);
+      }
+    },
+    clearStream: function () {
+      this.$refs.remoteMediaContainer.innerHTML = "";
+      this.load_video = false;
+      this.load_audio = false;
     },
   },
   components: {

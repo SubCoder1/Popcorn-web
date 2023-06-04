@@ -102,9 +102,6 @@
     </div>
   </div>
   <div class="gang-interact-parent">
-    <div class="stream-player" v-show="gangStore.getUserGang.gang_streaming">
-      <div ref="remoteMediaContainer"></div>
-    </div>
     <div class="gang-interact-header d-flex">
       <div
         class="gang-info d-flex align-items-center justify-content-between w-100 p-4"
@@ -114,8 +111,8 @@
           <router-link to="" @click="goBackToGangList()">Go back</router-link>
         </div>
         <div>
-          <span class="text-secondary text-sm" v-if="loading_livekit_conn">
-            CONNECTING . . .
+          <span class="text-secondary text-sm">
+            {{ streaming_status }}
           </span>
         </div>
         <div class="d-flex">
@@ -270,7 +267,7 @@ import { Room, RoomEvent } from "livekit-client";
 import { ref } from "vue";
 import axios from "axios";
 
-let room = new Room({
+const room = new Room({
   // automatically manage subscribed video quality
   adaptiveStream: true,
   dynacast: true,
@@ -287,13 +284,14 @@ export default {
       authStore: useAuthStore(),
       message: "",
       showGangInfoModal: false,
-      loading_livekit_conn: false,
       loading_members_list: false,
       loading_play_btn: false,
+      streaming_status: "",
     };
   },
   methods: {
     goBackToGangList: function () {
+      this.$parent.$parent.clearStream();
       this.$parent.$parent.goBack();
     },
     sendMessage: async function () {
@@ -344,7 +342,7 @@ export default {
       }
     },
     handleLiveKitEvents: async function (retry) {
-      this.loading_livekit_conn = true;
+      this.streaming_status = "CONNECTING . . .";
       // Check initial connection with livekit server
       await room
         .prepareConnection(process.env.VUE_APP_LIVEKIT_HOST_URL)
@@ -354,6 +352,7 @@ export default {
         });
       // Fetch livekit client token from popcorn server if not present
       if (!this.authStore.getUserStreamToken.length) {
+        this.streaming_status = "FETCHING TOKEN . . .";
         const response = await this.authStore.getStreamingToken();
         if (response != 200 || !this.authStore.getUserStreamToken.length) {
           if (response == 401) {
@@ -363,7 +362,7 @@ export default {
               // Try again on success
               const ref_token_resp = await this.authStore.refreshToken();
               if (ref_token_resp.status == 200) {
-                await this.getStreamToken(true);
+                await this.handleLiveKitEvents(true);
               }
             } else {
               // Not able to create gang even after refreshing token
@@ -375,6 +374,7 @@ export default {
           }
         }
       }
+      this.streaming_status = "LOADING STREAM . . .";
       // Connect with livekit room using the fetched token
       await room
         .connect(
@@ -383,10 +383,12 @@ export default {
         )
         .then(() => {
           console.log("connected to room - ", room.name);
-          this.loading_livekit_conn = false;
+          if (!this.gangStore.getUserGang.gang_streaming) {
+            this.streaming_status = "";
+          }
         })
         .catch(() => {
-          this.loading_livekit_conn = false;
+          this.streaming_status = "";
           this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         });
     },
@@ -416,7 +418,7 @@ export default {
       return resp;
     },
     playContent: async function (retry) {
-      this.loading_play_btn = true;
+      this.streaming_status = "LOADING STREAM . . .";
       const response = await this.playContentAPI();
       if (response != 200) {
         if (response == 401) {
@@ -440,7 +442,6 @@ export default {
           this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
       }
-      this.loading_play_btn = false;
     },
     scrollToBottomOfChatBody: function () {
       const el = this.$refs.gangChatBody;
@@ -449,19 +450,17 @@ export default {
     toggleGangInfoModal: function () {
       this.showGangInfoModal = !this.showGangInfoModal;
     },
-  },
-  async mounted() {
-    room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
-      //console.log(track, publication);
+    handleTrackSubscribed: function (track, publication, participant) {
+      this.streaming_status = "";
       const media = publication.track.attach();
       if (publication.kind == "video") {
         media.controls = true;
-        media.classList.add("stream-br");
-        media.classList.add("h-100");
-        media.classList.add("w-100");
       }
-      this.$refs.remoteMediaContainer.appendChild(media);
-    });
+      this.$parent.$parent.showStream(media, publication.kind);
+    },
+  },
+  async mounted() {
+    room.on(RoomEvent.TrackSubscribed, this.handleTrackSubscribed);
     room.on(RoomEvent.TrackUnpublished, () => {});
     await this.handleLiveKitEvents(false);
     this.scrollToBottomOfChatBody();
@@ -492,17 +491,6 @@ export default {
   -ms-overflow-style: none;
   scrollbar-width: none;
   transition: all 0.2s ease-in;
-}
-
-.stream-player {
-  height: 405px;
-  width: 720px;
-  background: rgb(43, 42, 51);
-  border-radius: 0.5rem 0.5rem 0 0;
-}
-
-.stream-br {
-  border-radius: 0.5rem 0.5rem 0 0;
 }
 
 .shrink-for-stream {
@@ -602,11 +590,6 @@ export default {
   .gang-info-members-list {
     margin-top: 0.8rem;
     width: 100%;
-  }
-
-  .stream-player {
-    height: 285px;
-    width: auto;
   }
 }
 </style>
