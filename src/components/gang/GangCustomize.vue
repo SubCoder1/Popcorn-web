@@ -20,14 +20,13 @@
         <div class="modal-body h-auto">
           <span class="text-secondary">
             Great! Now you can live-stream this content by visiting
-            <strong>
-              Gang conversation tab (
+            <button type="button" class="btn btn-circle rounded-circle pe-none">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="26"
+                width="23"
                 height="26"
                 fill="currentColor"
-                class="bi bi-camera-reels ms-1"
+                class="bi bi-camera-reels"
                 viewBox="0 0 16 16"
               >
                 <path
@@ -40,7 +39,14 @@
                   d="M9 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM7 3a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"
                 />
               </svg>
-              ) > Play button
+            </button>
+            and press
+            <button class="btn btn-xsm rounded-md text-sm admin-btn pe-none">
+              PLAY
+            </button>
+            <br /><br />
+            <strong>
+              Remember: You cannot change content while you're streaming.
             </strong>
           </span>
         </div>
@@ -246,6 +252,7 @@
           type="button"
           class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle delete-content-btn"
           @click="deleteContent(false)"
+          :disabled="gangStore.getUserGang.gang_streaming"
         >
           <svg
             v-if="!upload.load_del_content_btn"
