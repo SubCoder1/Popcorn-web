@@ -75,6 +75,7 @@
           class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle delete-gang-btn ms-2"
           v-bind:class="{ 'admin-btn': gangStore.getUserGang.is_admin }"
           @click="delGang()"
+          :disabled="load_delete_gang_btn"
         >
           <svg
             v-if="!load_delete_gang_btn"
