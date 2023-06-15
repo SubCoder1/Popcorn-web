@@ -328,6 +328,7 @@ export default {
         message: "THE STREAM HAS ENDED",
       });
       await this.gangStore.getGang();
+      this.clearStream();
     });
 
     // Catch any errors (ie. lost connections, etc.)

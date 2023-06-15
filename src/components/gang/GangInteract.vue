@@ -132,6 +132,19 @@
           </button>
           <button
             type="button"
+            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm delete-content-btn"
+            v-else-if="
+              gangStore.getUserGang.gang_content_ID.length != 0 &&
+              gangStore.getUserGang.is_admin &&
+              gangStore.getUserGang.gang_streaming
+            "
+            :disabled="loading_stop_btn"
+            @click="stopContent(false)"
+          >
+            STOP
+          </button>
+          <button
+            type="button"
             class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm gang-info-btn ms-2"
             @click="toggleGangInfoModal()"
           >
@@ -286,6 +299,7 @@ export default {
       showGangInfoModal: false,
       loading_members_list: false,
       loading_play_btn: false,
+      loading_stop_btn: false,
       streaming_status: "",
     };
   },
@@ -419,6 +433,7 @@ export default {
     },
     playContent: async function (retry) {
       this.streaming_status = "LOADING STREAM . . .";
+      this.loading_play_btn = true;
       const response = await this.playContentAPI();
       if (response != 200) {
         if (response == 401) {
@@ -442,6 +457,59 @@ export default {
           this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
       }
+      this.loading_play_btn = false;
+    },
+    stopContentAPI: async function () {
+      const resp = await axios
+        .post(
+          process.env.VUE_APP_STOP_CONTENT_API,
+          {},
+          {
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          return response.status;
+        })
+        .catch((e) => {
+          // error occured
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+            // show the first validation issue received from server
+          } else {
+            // Server unreachable
+            return 503;
+          }
+        });
+      return resp;
+    },
+    stopContent: async function (retry) {
+      this.loading_stop_btn = true;
+      const response = await this.stopContentAPI();
+      if (response != 200) {
+        if (response == 401) {
+          // Unauthorized
+          if (retry == false) {
+            // access_token expired, use refresh_token to refresh JWT
+            // Try again on success
+            const authStore = useAuthStore();
+            const ref_token_resp = await authStore.refreshToken();
+            if (ref_token_resp.status == 200) {
+              await this.stopContent(true);
+            }
+          } else {
+            // Error even after refreshing token
+            this.showAddMemberModal = false;
+            this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          }
+        } else {
+          // Server error
+          this.showAddMemberModal = false;
+          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        }
+      }
+      this.loading_stop_btn = false;
     },
     scrollToBottomOfChatBody: function () {
       const el = this.$refs.gangChatBody;
