@@ -1,6 +1,12 @@
 <!-- Gang Dashboard sub-view of Popcorn, rendered through HomeView. -->
 
 <template>
+  <div
+    class="stream-player-loader d-flex align-items-center justify-content-center"
+    v-if="gang_stream_loading"
+  >
+    <div class="loader"></div>
+  </div>
   <div ref="remoteMediaContainer"></div>
   <div v-if="loading" class="d-flex flex-column p-4">
     <div class="d-flex flex-row mb-3">
@@ -108,6 +114,7 @@ export default {
       showGangInteract: false,
       showErr: false,
       formErr: "",
+      gang_stream_loading: false,
       load_audio: false,
       load_video: false,
     };
@@ -219,6 +226,7 @@ export default {
       this.formErr = "";
     },
     showStream: function (media, type) {
+      this.gang_stream_loading = false;
       if (type == "video" && !this.load_video) {
         this.load_video = true;
         this.$refs.remoteMediaContainer.appendChild(media);
@@ -320,6 +328,7 @@ export default {
     // Handle incoming gangPlayContent messages from server
     sseClient.on("gangPlayContent", () => {
       this.gangStore.getUserGang.gang_streaming = true;
+      this.gang_stream_loading = true;
     });
     // Handle incoming gangEndContent messages from server
     sseClient.on("gangEndContent", async () => {
@@ -380,5 +389,12 @@ export default {
 
 .btn-sm {
   width: 150px;
+}
+
+.stream-player-loader {
+  height: 405px;
+  border-radius: 0.5rem 0.5rem 0 0;
+  width: auto;
+  background: rgb(43, 42, 51);
 }
 </style>

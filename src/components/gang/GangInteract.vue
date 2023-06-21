@@ -277,7 +277,6 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
 import { useUserStore } from "@/stores/user.store";
 import { Room, RoomEvent } from "livekit-client";
-import { ref } from "vue";
 import axios from "axios";
 
 const room = new Room({
@@ -285,8 +284,6 @@ const room = new Room({
   adaptiveStream: true,
   dynacast: true,
 });
-
-const remoteMediaContainer = ref();
 
 export default {
   name: "GangInteract",
@@ -388,7 +385,6 @@ export default {
           }
         }
       }
-      this.streaming_status = "LOADING STREAM . . .";
       // Connect with livekit room using the fetched token
       await room
         .connect(
@@ -397,6 +393,10 @@ export default {
         )
         .then(() => {
           console.log("connected to room - ", room.name);
+          this.streaming_status = "CONNECTED";
+          setTimeout(() => {
+            this.streaming_status = "";
+          }, 2000);
           if (!this.gangStore.getUserGang.gang_streaming) {
             this.streaming_status = "";
           }
@@ -432,7 +432,6 @@ export default {
       return resp;
     },
     playContent: async function (retry) {
-      this.streaming_status = "LOADING STREAM . . .";
       this.loading_play_btn = true;
       const response = await this.playContentAPI();
       if (response != 200) {
@@ -513,13 +512,14 @@ export default {
     },
     scrollToBottomOfChatBody: function () {
       const el = this.$refs.gangChatBody;
-      el.scrollTop = el.scrollHeight;
+      if (el != null || el != undefined) {
+        el.scrollTop = el.scrollHeight;
+      }
     },
     toggleGangInfoModal: function () {
       this.showGangInfoModal = !this.showGangInfoModal;
     },
     handleTrackSubscribed: function (track, publication, participant) {
-      this.streaming_status = "";
       const media = publication.track.attach();
       if (publication.kind == "video") {
         media.controls = true;
