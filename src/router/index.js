@@ -83,14 +83,9 @@ router.beforeEach(async (to) => {
       }
     }
   } else {
-    // User can't access noAuth pages like login, logout... if they're already authenticated
-    if (await authStore.isUserAuth()) {
+    // User can't access noAuth pages like login, register... if they're already authenticated
+    if (authStore.getUserAuth) {
       return { name: "home" };
-    } else {
-      await authStore.refreshToken();
-      if (authStore.getUserAuth) {
-        return { name: "home" };
-      }
     }
   }
 });
