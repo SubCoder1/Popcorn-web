@@ -172,6 +172,7 @@ export const useAuthStore = defineStore("auth", {
         )
         .then(() => {
           // Successfully refreshed token
+          this.user_auth = true;
           res.status = 200;
         })
         .catch((e) => {
