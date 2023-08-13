@@ -74,7 +74,7 @@ export default {
         this.fillUserData();
       } else if (get_user_resp.status >= 500) {
         // Server error
-        this.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.srvErrModal();
       } else if (get_user_resp.status == 401) {
         if (retry == false) {
           // access_token expired, use refresh_token to refresh JWT
@@ -86,12 +86,12 @@ export default {
           }
         } else {
           // Even after refreshing, can't fetch user data from server
-          this.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.srvErrModal();
         }
       } else {
         // Unknown error
         // Better to logout
-        this.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
     logout: async function () {

@@ -213,12 +213,12 @@ export default {
         } else {
           // Not able to create gang even after refreshing token
           this.showWarnModal = false;
-          this.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.srvErrModal();
         }
       } else {
         // Server error
         this.showWarnModal = false;
-        this.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
     acceptInvite: async function (
@@ -255,7 +255,7 @@ export default {
         } else {
           // Not able to create gang even after refreshing token
           this.showWarnModal = false;
-          this.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.srvErrModal();
         }
       } else if (response == 400) {
         // invite expired or invalid
@@ -263,7 +263,7 @@ export default {
       } else {
         // Server error
         this.showWarnModal = false;
-        this.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
     rejectInvite: async function (retry, invite, index) {
@@ -287,7 +287,7 @@ export default {
         } else {
           // Not able to create gang even after refreshing token
           this.showWarnModal = false;
-          this.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.srvErrModal();
         }
       } else if (response == 400) {
         // Invalid or rejected invite
@@ -295,7 +295,7 @@ export default {
       } else {
         // Server error
         this.showWarnModal = false;
-        this.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
     toggleWarnModal: function (gang_admin, gang_name, index) {

@@ -142,11 +142,11 @@ export default {
           }
         } else {
           // Not able to create gang even after refreshing token
-          this.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.srvErrModal();
         }
       } else {
         // Server error
-        this.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
     delUserCreatedGang: async function (retry) {
@@ -187,11 +187,11 @@ export default {
           }
         } else {
           // Not able to create gang even after refreshing token
-          this.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.srvErrModal();
         }
       } else {
         // Server error
-        this.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.srvErrModal();
       }
       return response;
     },
