@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  popcorn-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: popcorn-web-docker:latest
+    container_name: popcorn-web
+    env_file:
+      .env
+    ports:
+      - "4040:4040"
+    restart: always
+    command: nginx -g 'daemon off;'
