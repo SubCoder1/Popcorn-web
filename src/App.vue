@@ -159,7 +159,7 @@ h4 {
 }
 
 .form-errors {
-  height: 85px;
+  max-height: 85px;
   width: 350px;
   overflow-wrap: break-word;
   color: rgb(241, 133, 121);
@@ -465,6 +465,12 @@ video {
   background: rgb(43, 42, 51);
 }
 
+@media only screen and (max-width: 1200px) {
+  video {
+    width: 583px;
+  }
+}
+
 @media only screen and (max-width: 1050px) {
   .input-md {
     width: 310px;
@@ -489,7 +495,8 @@ video {
 
 @media only screen and (max-width: 955px) {
   .form-errors {
-    width: 299px;
+    width: 100%;
+    height: auto;
   }
 }
 
@@ -500,10 +507,6 @@ video {
 }
 
 @media only screen and (max-width: 497px) {
-  .form-errors {
-    width: 224px;
-  }
-
   label {
     margin-top: 0.8rem;
     margin-bottom: 0.8rem;

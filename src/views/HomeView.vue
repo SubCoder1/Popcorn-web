@@ -133,6 +133,8 @@ export default {
 <style scoped lang="css">
 .gang-dashboard-container {
   width: 720px;
+  max-height: 710px;
+  overflow: auto;
   margin-right: 1.5rem;
 }
 
@@ -181,6 +183,7 @@ export default {
 @media only screen and (max-width: 1180px) {
   .gang-dashboard-container {
     width: 600px;
+    margin-top: 5px;
   }
 
   .gang-invite-container {
@@ -191,8 +194,6 @@ export default {
 @media only screen and (max-width: 1000px) {
   .gang-dashboard-container {
     width: 510px;
-    max-height: 725px;
-    overflow: auto;
   }
 
   .gang-invite-container {

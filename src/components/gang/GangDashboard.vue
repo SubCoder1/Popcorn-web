@@ -37,7 +37,7 @@
     <div class="h-auto" v-else>
       <template v-if="gangStore.canCreateGang && gangStore.canJoinGang">
         <div
-          class="d-flex flex-wrap align-items-center justify-content-between p-4"
+          class="d-flex flex-wrap align-items-center justify-content-between p-4 pb-0"
         >
           <div>
             <h4 v-if="createOrJoin">Join a Gang</h4>
@@ -55,7 +55,7 @@
           </div>
           <div class="mt-1 mb-1">
             <p
-              class="form-errors rounded-md text-sm"
+              class="form-errors rounded-md text-sm mb-0"
               v-bind:class="{ 'show-error': showErr, 'd-none': !showErr }"
             >
               {{ formErr }}
@@ -65,7 +65,7 @@
       </template>
       <template v-else>
         <div
-          class="d-flex flex-wrap align-items-center justify-content-between p-4"
+          class="d-flex flex-wrap align-items-center justify-content-between p-4 pb-0"
         >
           <div class="dashboard-header">
             <h4 v-if="showCustomizePage">Customize Gang</h4>

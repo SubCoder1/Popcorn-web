@@ -141,7 +141,8 @@
             :disabled="loading_stop_btn"
             @click="stopContent(false)"
           >
-            STOP
+            <div class="loader" v-if="loading_stop_btn"></div>
+            <span v-else>STOP</span>
           </button>
           <button
             type="button"
@@ -281,8 +282,8 @@ import axios from "axios";
 
 const room = new Room({
   // automatically manage subscribed video quality
-  adaptiveStream: true,
-  dynacast: true,
+  // adaptiveStream: true,
+  // dynacast: true,
 });
 
 export default {
@@ -508,7 +509,9 @@ export default {
           this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
       }
-      this.loading_stop_btn = false;
+      setTimeout(() => {
+        this.loading_stop_btn = false;
+      }, 2500);
     },
     scrollToBottomOfChatBody: function () {
       const el = this.$refs.gangChatBody;

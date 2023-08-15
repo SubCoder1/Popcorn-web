@@ -40,7 +40,7 @@
     <div
       class="d-flex align-items-center justify-content-between flex-wrap mb-3"
     >
-      <label for="gangLimit" class="text-sm">Gang Members limit:</label>
+      <label for="gangLimit" class="text-sm">Members:</label>
       <div class="input-md d-flex align-items-center text-secondary text-sm">
         <input
           type="number"
