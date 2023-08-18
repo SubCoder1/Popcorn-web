@@ -946,7 +946,7 @@ export default {
 
 <style scoped lang="css">
 .gang-members-box-md {
-  height: 250px;
+  max-height: 250px;
   width: 350px;
   overflow: auto;
   -ms-overflow-style: none;
@@ -1029,7 +1029,7 @@ input::file-selector-button:hover {
 
 @media only screen and (max-width: 1000px) {
   .gang-members-box-md {
-    height: 200px;
+    max-height: 200px;
     width: 100%;
     margin-top: 0.8rem;
   }
