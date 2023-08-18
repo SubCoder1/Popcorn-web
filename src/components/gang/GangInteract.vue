@@ -282,8 +282,8 @@ import axios from "axios";
 
 const room = new Room({
   // automatically manage subscribed video quality
-  // adaptiveStream: true,
-  // dynacast: true,
+  adaptiveStream: true,
+  dynacast: true,
 });
 
 export default {
