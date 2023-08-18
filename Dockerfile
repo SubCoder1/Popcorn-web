@@ -4,7 +4,7 @@ FROM node:lts-alpine3.18 as build-stage
 RUN npm install -g http-server
 
 # make the 'app' folder the current working directory
-WORKDIR /app
+WORKDIR /Popcorn-web
 
 # copy both 'package.json' and 'package-lock.json' (if available)
 COPY package*.json ./
@@ -26,7 +26,13 @@ COPY ./nginx.conf /etc/nginx/nginx.conf
 # Remove default nginx index page
 RUN rm -rf /usr/share/nginx/html/*
 
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY --from=build-stage /Popcorn-web/dist /usr/share/nginx/html
+
+RUN apk add --no-cache tzdata
+
+ENV TZ Asia/Kolkata
+
+RUN cp /usr/share/zoneinfo/$TZ /etc/localtime
 
 EXPOSE 4040
 
