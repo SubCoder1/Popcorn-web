@@ -7,7 +7,7 @@
   >
     <div class="loader"></div>
   </div>
-  <div ref="remoteMediaContainer"></div>
+  <div ref="remoteMediaContainer" @dblclick="toggleFullScreen"></div>
   <div v-if="loading" class="d-flex flex-column p-4">
     <div class="d-flex flex-row mb-3">
       <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
@@ -240,6 +240,20 @@ export default {
       this.load_video = false;
       this.load_audio = false;
     },
+    toggleFullScreen: function (event) {
+      const playerElement = event.target;
+      if (!document.fullscreenElement) {
+        playerElement.requestFullscreen();
+      } else if (!document.mozFullScreenElement) {
+        playerElement.mozRequestFullScreen();
+      } else if (document.exitFullScreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    },
   },
   components: {
     GangList: defineAsyncComponent(() => import("./GangList.vue")),
@@ -262,7 +276,6 @@ export default {
       // events server failed.  No automatic attempts to reconnect will be made.
       console.error("Failed to connect to server", err);
     });
-
     // Handle incoming gangInvite messages from server
     sseClient.on("gangInvite", (msg) => {
       // Values used in GangInvite frontend
@@ -339,7 +352,6 @@ export default {
       await this.gangStore.getGang();
       this.clearStream();
     });
-
     // Catch any errors (ie. lost connections, etc.)
     sseClient.on("error", (e) => {
       console.error("lost connection or failed to parse!", e);
