@@ -20,7 +20,7 @@
         <div class="modal-header"></div>
         <div class="modal-body h-100">
           <div class="d-flex justify-content-between flex-wrap mb-3">
-            <span class="text-sm mb-2">Content to be played:</span>
+            <span class="text-sm mb-2">Content:</span>
             <span class="text-sm text-break text-secondary">
               <span v-if="gangStore.getUserGang.gang_content_name.length != 0">
                 {{ gangStore.getUserGang.gang_content_name }}
@@ -29,12 +29,12 @@
             </span>
           </div>
           <div class="d-flex justify-content-between flex-wrap mb-3">
-            <span class="text-sm mb-2">Member limit:</span>
+            <span class="text-sm mb-2">Members limit:</span>
             <span class="text-sm text-secondary">
-              {{ gangStore.getUserGang.gang_member_limit }}
+              {{ gangStore.getUserGang.gang_member_limit }} / 10
             </span>
           </div>
-          <div class="d-flex justify-content-between flex-wrap mb-3">
+          <div class="d-flex justify-content-between flex-wrap">
             <span class="text-sm mt-1">Members:</span>
             <div class="gang-info-members-list">
               <div v-if="loading_members_list">
@@ -524,9 +524,6 @@ export default {
     },
     handleTrackSubscribed: function (track, publication, participant) {
       const media = publication.track.attach();
-      if (publication.kind == "video") {
-        media.controls = true;
-      }
       this.$parent.$parent.showStream(media, publication.kind);
     },
   },
