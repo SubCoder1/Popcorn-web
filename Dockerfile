@@ -21,7 +21,7 @@ RUN npm run build
 # production stage
 FROM nginx:stable-alpine3.17 as production-stage
 
-COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 
 # Remove default nginx index page
 RUN rm -rf /usr/share/nginx/html/*
@@ -34,6 +34,6 @@ ENV TZ Asia/Kolkata
 
 RUN cp /usr/share/zoneinfo/$TZ /etc/localtime
 
-EXPOSE 4040
+EXPOSE 8081
 
 CMD ["nginx", "-g", "daemon off;"]
