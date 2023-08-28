@@ -52,8 +52,8 @@
       </div>
     </div>
     <div
-      class="flex-column"
       :class="{ collapse: small_screen, 'd-flex': !small_screen }"
+      class="flex-column ms-4"
       id="collapseExtras"
     >
       <div
@@ -135,7 +135,6 @@ export default {
   width: 720px;
   max-height: 710px;
   overflow: auto;
-  margin-right: 1.5rem;
 }
 
 .gang-invite-container {

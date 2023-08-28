@@ -244,14 +244,8 @@ export default {
       const playerElement = event.target;
       if (!document.fullscreenElement) {
         playerElement.requestFullscreen();
-      } else if (!document.mozFullScreenElement) {
-        playerElement.mozRequestFullScreen();
       } else if (document.exitFullScreen) {
         document.exitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
       }
     },
   },
