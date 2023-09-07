@@ -201,7 +201,7 @@ export default {
 
   .gang-invite-container {
     height: 270px;
-    width: 370px;
+    width: 365px;
   }
 }
 

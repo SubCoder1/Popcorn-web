@@ -469,7 +469,7 @@ video {
 
 @media only screen and (max-width: 1200px) {
   video {
-    width: 583px;
+    width: 100%;
   }
 }
 
@@ -520,7 +520,7 @@ video {
 
   video {
     height: 285px;
-    width: auto;
+    width: 100%;
   }
 }
 </style>
