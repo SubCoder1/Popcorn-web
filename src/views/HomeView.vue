@@ -52,7 +52,11 @@
       </div>
     </div>
     <div
-      :class="{ collapse: small_screen, 'd-flex': !small_screen }"
+      :class="{
+        collapse: small_screen,
+        'd-flex': !small_screen,
+        'me-4': !small_screen,
+      }"
       class="flex-column ms-4"
       id="collapseExtras"
     >
