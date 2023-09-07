@@ -659,5 +659,9 @@ export default {
     margin-top: 0.8rem;
     width: 100%;
   }
+
+  .shrink-for-stream {
+    height: 100px;
+  }
 }
 </style>
