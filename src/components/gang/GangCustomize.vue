@@ -783,7 +783,7 @@ export default {
     uploadContent: function (e) {
       this.upload.uploading = true;
       var file = e.target.files[0];
-      var srverr = this.$parent.$parent.$parent.$parent.$parent;
+      var srverr = this.$parent.$parent.$parent.$parent.$parent.$parent;
       // Create a new tus upload
       var tus_upload = new tus.Upload(file, {
         // Endpoint is the upload creation URL from your tus server
