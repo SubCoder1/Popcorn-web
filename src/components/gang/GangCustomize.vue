@@ -628,12 +628,12 @@ export default {
         } else {
           // Error even after refreshing token
           this.showAddMemberModal = false;
-          this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
       } else {
         // Server error
         this.showAddMemberModal = false;
-        this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
     searchWithDelay: async function (retry) {
