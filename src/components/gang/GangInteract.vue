@@ -378,11 +378,11 @@ export default {
               }
             } else {
               // Not able to create gang even after refreshing token
-              this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+              this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
             }
           } else {
             // Server error
-            this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+            this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
           }
         }
       }
@@ -449,7 +449,7 @@ export default {
           } else {
             // Error even after refreshing token
             this.showAddMemberModal = false;
-            this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+            this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
           }
         } else {
           // Server error
@@ -501,7 +501,7 @@ export default {
           } else {
             // Error even after refreshing token
             this.showAddMemberModal = false;
-            this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+            this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
           }
         } else {
           // Server error
