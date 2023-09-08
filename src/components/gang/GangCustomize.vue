@@ -279,7 +279,7 @@
           class="input-md text-sm"
           id="gangContent"
           @change="uploadContent"
-          accept="video/mp4,video/x-m4v,video/x-matroska,video/*"
+          accept="video/mp4,video/x-matroska,video/*"
         />
       </div>
       <div
