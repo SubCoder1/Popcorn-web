@@ -201,7 +201,7 @@ export default {
 
   .gang-invite-container {
     height: 270px;
-    width: 365px;
+    width: 370px;
   }
 }
 
@@ -214,6 +214,10 @@ export default {
 
   .adjust-dashboard {
     width: 100%;
+  }
+
+  .gang-invite-container {
+    width: 340px;
   }
 }
 </style>
