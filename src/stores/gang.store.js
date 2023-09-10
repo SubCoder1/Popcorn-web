@@ -65,6 +65,7 @@ export const useGangStore = defineStore("gang", {
           res.status = response.status;
           this.CreateGang = false;
           this.JoinGang = false;
+          this.userGangInteract = [];
         })
         .catch((e) => {
           // error occured
