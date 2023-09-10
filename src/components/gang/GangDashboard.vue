@@ -126,10 +126,10 @@ export default {
       const response = await this.gangStore.getGang();
       if (response == 200) {
         this.loading = false;
-        if (Object.keys(this.gangStore.getUserGang).length > 0) {
-          this.showGangList = true;
-        } else {
+        if (this.gangStore.canCreateGang && this.gangStore.canJoinGang) {
           this.showGangList = false;
+        } else {
+          this.showGangList = true;
         }
       } else if (response == 401) {
         // Unauthorized
@@ -152,6 +152,7 @@ export default {
     delUserCreatedGang: async function (retry) {
       const response = await this.gangStore.delGang();
       if (response == 200) {
+        authStore.stream_token = "";
         await this.getUserGang(false);
       } else if (response == 401) {
         // Unauthorized
@@ -175,6 +176,7 @@ export default {
     leaveUserJoinedGang: async function (retry) {
       const response = await this.gangStore.leaveGang();
       if (response == 200) {
+        authStore.stream_token = "";
         await this.getUserGang(false);
       } else if (response == 401) {
         // Unauthorized
@@ -292,21 +294,23 @@ export default {
     // Handle incoming gangJoin messages from server
     sseClient.on("gangJoin", (msg) => {
       msg.message.load_boot_btn = false;
-      this.gangStore.getUserGang.gang_members.push(msg.message);
-      this.gangStore.getUserGang.gang_members_count =
-        this.gangStore.getUserGang.gang_members.length;
-      this.gangStore.getUserGangInteract.push({
-        type: "gangJoin",
-        message: msg.message,
-      });
+      if (this.gangStore.getUserGang.gang_members != undefined) {
+        this.gangStore.getUserGang.gang_members.push(msg.message);
+        this.gangStore.getUserGang.gang_members_count =
+          this.gangStore.getUserGang.gang_members.length;
+        this.gangStore.getUserGangInteract.push({
+          type: "gangJoin",
+          message: msg.message,
+        });
+      }
     });
     // Handle incoming gangBoot messages from server
     sseClient.on("gangBoot", async () => {
-      await this.getUserGang(true);
+      this.$parent.$parent.reloadDashboard();
     });
     // Handle incoming gangLeave messages from server
     sseClient.on("gangLeave", async (msg) => {
-      await this.getUserGang(true);
+      await this.gangStore.getGang();
       this.gangStore.getUserGangInteract.push({
         type: "gangLeave",
         message: msg.message,
@@ -322,7 +326,7 @@ export default {
     });
     // Handle incoming gangDelete messages from server
     sseClient.on("gangDelete", async () => {
-      await this.getUserGang(false);
+      this.$parent.$parent.reloadDashboard();
     });
     // Handle incoming gangChat messages from server
     sseClient.on("gangMessage", (msg) => {
@@ -345,6 +349,10 @@ export default {
       });
       await this.gangStore.getGang();
       this.clearStream();
+    });
+    // Handle incoming tokenRefresh requests from server
+    sseClient.on("tokenRefresh", async () => {
+      await authStore.getStreamingToken();
     });
     // Catch any errors (ie. lost connections, etc.)
     sseClient.on("error", (e) => {
