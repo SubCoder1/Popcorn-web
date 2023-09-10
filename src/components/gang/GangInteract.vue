@@ -80,6 +80,7 @@
                   </div>
                   <p
                     class="d-flex align-items-center text-sm text-secondary mb-0"
+                    v-if="gangStore.getUserGang.gang_admin == member.username"
                   >
                     Admin
                   </p>
