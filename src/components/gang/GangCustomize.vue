@@ -666,12 +666,12 @@ export default {
           } else {
             // Not able to search gang even after refreshing token
             this.search.showAddMemberModal = false;
-            this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+            this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
           }
         } else {
           // Server error
           this.search.showAddMemberModal = false;
-          this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
       }, 1000);
     },
@@ -701,13 +701,13 @@ export default {
           // set to default icon on clicked invite btn
           member.load_invite_btn = 0;
           this.search.showAddMemberModal = false;
-          this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
       } else {
         // Server error
         member.load_invite_btn = 0;
         this.search.showAddMemberModal = false;
-        this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
       this.invite.invite_to = "";
     },
@@ -733,12 +733,14 @@ export default {
         } else {
           // Not able to search gang even after refreshing token
           this.search.showAddMemberModal = false;
-          this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          member.load_boot_btn = false;
+          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
       } else {
         // Server error
+        member.load_boot_btn = false;
         this.search.showAddMemberModal = false;
-        this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
     updateGang: async function (retry) {
@@ -870,7 +872,7 @@ export default {
           }
         } else {
           // Error even after refreshing token
-          this.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
       } else if (response >= 404) {
         // Server error
