@@ -2,7 +2,6 @@
 // Updated during leaving or joining a gang, creating a gang etc.,
 
 import { defineStore } from "pinia";
-import { useUserStore } from "@/stores/user.store";
 import time2TimeAgo from "@/utils/timeago";
 import axios from "axios";
 
@@ -29,13 +28,9 @@ export const useGangStore = defineStore("gang", {
           withCredentials: true,
         })
         .then(async (response) => {
-          let userStore = useUserStore();
           this.userGang = response.data.gang;
-          if (this.userGang.gang_admin === userStore.getUserName) {
-            // This will be filled up later from getGangMembersAPI
-            this.userGang.gang_members = [];
-            await this.getGangMembers();
-          }
+          this.userGang.gang_members = [];
+          await this.getGangMembers();
           if (this.userGang.gang_admin != null) {
             this.userGang.gang_created = time2TimeAgo(
               this.userGang.gang_created
@@ -70,6 +65,7 @@ export const useGangStore = defineStore("gang", {
           res.status = response.status;
           this.CreateGang = false;
           this.JoinGang = false;
+          this.userGangInteract = [];
         })
         .catch((e) => {
           // error occured
@@ -105,6 +101,7 @@ export const useGangStore = defineStore("gang", {
           res.status = response.status;
           this.JoinGang = false;
           this.CreateGang = false;
+          this.userGangInteract = [];
         })
         .catch((e) => {
           if (e.response) {
@@ -221,6 +218,7 @@ export const useGangStore = defineStore("gang", {
         .then((response) => {
           this.JoinGang = false;
           this.CreateGang = false;
+          this.userGangInteract = [];
           return response.status;
         })
         .catch((e) => {

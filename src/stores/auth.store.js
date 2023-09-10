@@ -116,6 +116,7 @@ export const useAuthStore = defineStore("auth", {
         .then(async () => {
           // logout successful
           this.user_auth = false;
+          this.stream_token = "";
           userStore.clearUserData();
           res.status = 200;
         })

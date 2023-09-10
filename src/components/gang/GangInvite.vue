@@ -241,7 +241,7 @@ export default {
         invite.load_accept_btn = false;
         this.showWarnModal = false;
         this.gangStore.userGangInvites.splice(index, 1);
-        this.$parent.reloadDashboard();
+        this.$parent.$parent.reloadDashboard();
       } else if (response == 401) {
         // Unauthorized
         if (retry == false) {
