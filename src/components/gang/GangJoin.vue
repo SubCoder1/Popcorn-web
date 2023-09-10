@@ -33,8 +33,6 @@
               autocomplete="off"
               required
             />
-            This will make you leave your current gang. You can rejoin your
-            current gang through gang invites or searches.
           </div>
           <div class="modal-footer border-0">
             <button
