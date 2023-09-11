@@ -170,7 +170,7 @@
           alt="Empty search"
         />
         <span class="mt-3 text-sm text-secondary">
-          A place for gang discussions!
+          Have a chat with the members
         </span>
       </div>
       <transition-group name="fade" tag="div">
@@ -663,6 +663,10 @@ export default {
 
   .shrink-for-stream {
     height: 100px;
+  }
+
+  .gang-interact-img {
+    height: 95px;
   }
 }
 </style>

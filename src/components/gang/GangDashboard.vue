@@ -306,6 +306,7 @@ export default {
     });
     // Handle incoming gangBoot messages from server
     sseClient.on("gangBoot", async () => {
+      authStore.stream_token = "";
       this.$parent.$parent.reloadDashboard();
     });
     // Handle incoming gangLeave messages from server
