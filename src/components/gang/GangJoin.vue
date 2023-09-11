@@ -145,7 +145,7 @@
                 (gang.is_expired == null || !gang.is_expired)
               "
               type="button"
-              class="btn d-flex align-items-center justify-content-center position-relative btn-sm rounded-md text-sm"
+              class="btn d-flex align-items-center justify-content-center position-relative btn-sm rounded-md text-sm join-btn"
               :disabled="load_btn"
               @click="togglePassKeyModal(gang.gang_name, gang.gang_admin)"
             >
@@ -352,5 +352,11 @@ export default {
 
 .mb-2-5 {
   margin-bottom: 0.875rem;
+}
+
+@media only screen and (max-width: 497px) {
+  .join-btn {
+    width: 90px;
+  }
 }
 </style>

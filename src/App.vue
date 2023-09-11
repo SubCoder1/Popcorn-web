@@ -522,5 +522,22 @@ video {
     height: 285px;
     width: 100%;
   }
+
+  .btn-circle {
+    height: 44px;
+    width: 44px;
+  }
+
+  .profile-pic-sm {
+    height: 40px;
+  }
+
+  .profile-pic-lg {
+    height: 50px;
+  }
+
+  .empty-search-img {
+    height: 90px;
+  }
 }
 </style>
