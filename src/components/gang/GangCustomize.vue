@@ -240,7 +240,10 @@
     <div
       class="upload-content-container d-flex align-items-center justify-content-between flex-wrap mb-3"
     >
-      <label for="gangContent" class="text-sm">Content:</label>
+      <label for="gangContentFile" class="text-sm">
+        Content File <br />
+        <span class="text-secondary">(MP4 Or MKV Format only):</span>
+      </label>
       <div
         v-if="gangStore.getUserGang.gang_content_name.length != 0"
         class="content-box d-flex align-items-center justify-content-between"
@@ -277,9 +280,10 @@
         <input
           type="file"
           class="input-md text-sm"
-          id="gangContent"
+          id="gangContentFile"
           @change="uploadContent"
-          accept="video/mp4,video/x-matroska,video/*"
+          accept="video/mp4,video/x-matroska"
+          :disabled="update.gang_content_url.length != 0"
         />
       </div>
       <div
@@ -332,6 +336,29 @@
           </svg>
         </button>
       </div>
+    </div>
+    <span
+      class="d-flex justify-content-center text-secondary text-sm"
+      style="margin-bottom: 0.78rem"
+    >
+      --- OR ---
+    </span>
+    <div
+      class="d-flex align-items-center justify-content-between flex-wrap mb-3"
+    >
+      <label for="gangContentURL" class="text-sm">Content URL:</label>
+      <input
+        type="url"
+        class="form-control text-sm rounded-md input-md"
+        placeholder="Content URL"
+        v-model="update.gang_content_url"
+        id="gangContentURL"
+        @click="removeErr()"
+        :disabled="
+          upload.uploading == true ||
+          gangStore.getUserGang.gang_content_name.length != 0
+        "
+      />
     </div>
     <div
       class="d-flex align-items-center justify-content-between flex-wrap mb-3"
@@ -512,6 +539,7 @@ export default {
         gang_name: gangStore.getUserGang.gang_name,
         gang_pass_key: "",
         gang_member_limit: gangStore.getUserGang.gang_member_limit,
+        gang_content_url: gangStore.getUserGang.gang_content_url,
         form_submitted: false,
         update_txt: "Update",
       },
@@ -747,6 +775,7 @@ export default {
       this.update.form_submitted = true;
       if (this.validateForm()) {
         let updateGangData = {
+          gang_content_url: this.update.gang_content_url,
           gang_name: this.update.gang_name,
           gang_pass_key: this.update.gang_pass_key,
           gang_member_limit: this.update.gang_member_limit,
@@ -993,6 +1022,11 @@ input::file-selector-button {
 
 input::file-selector-button:hover {
   background: rgb(228, 77, 60);
+}
+
+input:disabled::file-selector-button {
+  background: grey;
+  cursor: auto;
 }
 
 .upload-box {

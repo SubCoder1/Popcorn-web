@@ -121,7 +121,8 @@
             type="button"
             class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm admin-btn"
             v-if="
-              gangStore.getUserGang.gang_content_ID.length != 0 &&
+              (gangStore.getUserGang.gang_content_ID.length != 0 ||
+                gangStore.getUserGang.gang_content_url.length != 0) &&
               gangStore.getUserGang.is_admin &&
               !gangStore.getUserGang.gang_streaming
             "
