@@ -173,30 +173,6 @@ export default {
       }
       return response;
     },
-    leaveUserJoinedGang: async function (retry) {
-      const response = await this.gangStore.leaveGang();
-      if (response == 200) {
-        authStore.stream_token = "";
-        await this.getUserGang(false);
-      } else if (response == 401) {
-        // Unauthorized
-        if (retry == false) {
-          // access_token expired, use refresh_token to refresh JWT
-          // Try again on success
-          const ref_token_resp = await authStore.refreshToken();
-          if (ref_token_resp.status == 200) {
-            await this.leaveUserJoinedGang(true);
-          }
-        } else {
-          // Not able to create gang even after refreshing token
-          this.$parent.$parent.$parent.$parent.srvErrModal();
-        }
-      } else {
-        // Server error
-        this.$parent.$parent.$parent.$parent.srvErrModal();
-      }
-      return response;
-    },
     // used when user can create and join a gang
     toggleCreateOrJoinGang: function () {
       this.createOrJoin = !this.createOrJoin;
