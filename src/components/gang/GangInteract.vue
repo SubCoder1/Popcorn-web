@@ -109,7 +109,13 @@
       >
         <div>
           <h4>{{ gangStore.getUserGang.gang_name }}</h4>
-          <router-link to="" @click="goBackToGangList()">Go back</router-link>
+          <router-link
+            :class="{ disabled: streaming_status != '' }"
+            to=""
+            @click="goBackToGangList()"
+          >
+            Go back
+          </router-link>
         </div>
         <div>
           <span class="text-secondary text-sm">
@@ -145,6 +151,15 @@
           >
             <div class="loader" v-if="loading_stop_btn"></div>
             <span v-else>STOP</span>
+          </button>
+          <button
+            type="button"
+            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm leave-gang-btn"
+            v-if="!gangStore.getUserGang.is_admin"
+            @click="leaveGang(false)"
+          >
+            <div class="loader" v-if="loading_leave_btn"></div>
+            <span v-else>LEAVE</span>
           </button>
           <button
             type="button"
@@ -300,6 +315,7 @@ export default {
       loading_members_list: false,
       loading_play_btn: false,
       loading_stop_btn: false,
+      loading_leave_btn: false,
       streaming_status: "",
     };
   },
@@ -495,8 +511,7 @@ export default {
           if (retry == false) {
             // access_token expired, use refresh_token to refresh JWT
             // Try again on success
-            const authStore = useAuthStore();
-            const ref_token_resp = await authStore.refreshToken();
+            const ref_token_resp = await this.authStore.refreshToken();
             if (ref_token_resp.status == 200) {
               await this.stopContent(true);
             }
@@ -527,6 +542,31 @@ export default {
     handleTrackSubscribed: function (track, publication, participant) {
       const media = publication.track.attach();
       this.$parent.$parent.showStream(media, publication.kind);
+    },
+    leaveGang: async function (retry) {
+      this.loading_leave_btn = true;
+      const response = await this.gangStore.leaveGang();
+      if (response == 200) {
+        this.authStore.stream_token = "";
+        this.$parent.$parent.$parent.$parent.reloadDashboard();
+      } else if (response == 401) {
+        // Unauthorized
+        if (retry == false) {
+          // access_token expired, use refresh_token to refresh JWT
+          // Try again on success
+          const ref_token_resp = await this.authStore.refreshToken();
+          if (ref_token_resp.status == 200) {
+            await this.leaveGang(true);
+          }
+        } else {
+          // Not able to create gang even after refreshing token
+          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        }
+      } else {
+        // Server error
+        this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+      }
+      this.loading_leave_btn = false;
     },
   },
   async mounted() {
