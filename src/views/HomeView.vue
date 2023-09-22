@@ -136,14 +136,14 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="css">
 .gang-dashboard-container {
-  width: 720px;
+  width: 760px;
   max-height: 710px;
   overflow: auto;
 }
 
 .gang-invite-container {
-  width: 410px;
-  height: 286px;
+  width: 460px;
+  height: 320px;
   overflow: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -191,6 +191,7 @@ export default {
 
   .gang-invite-container {
     width: 390px;
+    height: 280px;
   }
 }
 
