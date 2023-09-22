@@ -2,8 +2,15 @@
 
 <template>
   <form @submit.prevent="login" class="login-form">
-    <h3>Login.</h3>
-    <router-link to="/auth/register">or create a new one?</router-link>
+    <div class="d-flex align-items-start justify-content-between">
+      <div>
+        <h3>Login.</h3>
+        <router-link to="/auth/register">or create a new one?</router-link>
+      </div>
+      <a href="https://github.com/SubCoder1/Popcorn" target="_blank">
+        <img src="@/assets/logo/github-32x32.png" />
+      </a>
+    </div>
     <p
       class="form-errors form-errors-md rounded-md text-sm mt-2"
       v-bind:class="{ 'show-error': showErr, 'd-none': !showErr }"
