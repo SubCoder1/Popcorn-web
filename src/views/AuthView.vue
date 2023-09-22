@@ -21,6 +21,7 @@
         <img
           class="auth-page-logo mb-2 ms-2"
           src="@/assets/logo/logo-128x128.png"
+          alt="Popcorn logo"
         />
       </div>
     </div>

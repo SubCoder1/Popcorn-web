@@ -8,7 +8,7 @@
         <router-link to="/auth/register">or create a new one?</router-link>
       </div>
       <a href="https://github.com/SubCoder1/Popcorn" target="_blank">
-        <img src="@/assets/logo/github-32x32.png" />
+        <img src="@/assets/logo/github-32x32.png" alt="Github logo" />
       </a>
     </div>
     <p
