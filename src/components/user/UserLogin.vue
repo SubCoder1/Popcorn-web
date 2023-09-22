@@ -8,7 +8,11 @@
         <router-link to="/auth/register">or create a new one?</router-link>
       </div>
       <a href="https://github.com/SubCoder1/Popcorn" target="_blank">
-        <img src="@/assets/logo/github-32x32.png" alt="Github logo" />
+        <img
+          src="@/assets/logo/github-128x128.png"
+          class="git-icon"
+          alt="Github logo"
+        />
       </a>
     </div>
     <p
@@ -120,3 +124,8 @@ export default {
   },
 };
 </script>
+<style scoped lang="css">
+.git-icon {
+  height: 38px;
+}
+</style>
