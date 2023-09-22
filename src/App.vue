@@ -87,6 +87,7 @@ body {
   color: rgba(32 39 44 1);
   height: 100%;
   background-image: url("~@/assets/background/bg-1.png");
+  background-size: cover;
 }
 
 .container-style {
@@ -95,7 +96,7 @@ body {
 }
 
 .container-shadow {
-  box-shadow: rgb(0 0 0 / 5%) 0px 4px 12px;
+  box-shadow: rgb(0 0 0 / 8%) 4px 2px 30px 8px;
 }
 
 a {
