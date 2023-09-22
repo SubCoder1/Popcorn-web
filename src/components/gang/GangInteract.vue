@@ -110,7 +110,7 @@
         <div>
           <h4>{{ gangStore.getUserGang.gang_name }}</h4>
           <router-link
-            :class="{ disabled: streaming_status != '' }"
+            :class="{ disabled: streaming_status.length != 0 }"
             to=""
             @click="goBackToGangList()"
           >
@@ -694,6 +694,11 @@ export default {
 
 .modal-body::-webkit-scrollbar {
   display: none;
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 @media only screen and (max-width: 497px) {
