@@ -324,8 +324,8 @@ export default {
         type: "gangUpdate",
         message: "THE STREAM HAS ENDED",
       });
-      await this.gangStore.getGang();
       this.clearStream();
+      await this.gangStore.getGang();
     });
     // Handle incoming tokenRefresh requests from server
     sseClient.on("tokenRefresh", async () => {
