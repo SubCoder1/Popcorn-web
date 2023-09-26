@@ -346,7 +346,10 @@
     <div
       class="d-flex align-items-center justify-content-between flex-wrap mb-3"
     >
-      <label for="gangContentURL" class="text-sm">Content URL:</label>
+      <label for="gangContentURL" class="text-sm">
+        Content URL <br />
+        <span class="text-secondary">Downloadable:</span>
+      </label>
       <input
         type="url"
         class="form-control text-sm rounded-md input-md"
