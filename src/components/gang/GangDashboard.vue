@@ -2,12 +2,16 @@
 
 <template>
   <div
-    class="stream-player-loader d-flex align-items-center justify-content-center"
+    class="stream-player d-flex align-items-center justify-content-center"
     v-if="gang_stream_loading"
   >
     <div class="loader"></div>
   </div>
-  <div ref="remoteMediaContainer" @dblclick="toggleFullScreen"></div>
+  <div
+    ref="remoteMediaContainer"
+    :class="{ 'stream-player': load_video }"
+    @dblclick="toggleFullScreen"
+  ></div>
   <div v-if="loading" class="d-flex flex-column p-4">
     <div class="d-flex flex-row mb-3">
       <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
@@ -382,10 +386,16 @@ export default {
   width: 150px;
 }
 
-.stream-player-loader {
-  height: 405px;
+.stream-player {
+  height: 480px;
   border-radius: 0.5rem 0.5rem 0 0;
   width: auto;
   background: rgb(43, 42, 51);
+}
+
+@media only screen and (max-width: 497px) {
+  .stream-player {
+    height: 285px;
+  }
 }
 </style>

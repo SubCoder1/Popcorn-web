@@ -462,9 +462,8 @@ strong {
 
 video {
   border-radius: 0.5rem 0.5rem 0 0;
-  height: 405px;
-  width: auto;
-  max-width: 705px;
+  height: 100%;
+  width: 100%;
   background: rgb(43, 42, 51);
 }
 
