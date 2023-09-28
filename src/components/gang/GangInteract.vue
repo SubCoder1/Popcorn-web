@@ -118,7 +118,7 @@
           </router-link>
         </div>
         <div>
-          <span class="text-secondary text-sm">
+          <span class="text-secondary text-xsm">
             {{ streaming_status }}
           </span>
         </div>
