@@ -16,7 +16,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0">
         <div class="modal-body">
-          Looks like its houseful at the moment, Please try again after
+          Looks like its houseful at the moment, Please refresh or try again after
           sometime.
         </div>
         <div class="modal-footer border-0">
