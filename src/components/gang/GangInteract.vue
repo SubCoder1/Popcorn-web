@@ -109,18 +109,7 @@
       >
         <div>
           <h4>{{ gangStore.getUserGang.gang_name }}</h4>
-          <router-link
-            :class="{ disabled: streaming_status.length != 0 }"
-            to=""
-            @click="goBackToGangList()"
-          >
-            Go back
-          </router-link>
-        </div>
-        <div>
-          <span class="text-secondary text-xsm">
-            {{ streaming_status }}
-          </span>
+          <router-link to="" @click="goBackToGangList()">Go back</router-link>
         </div>
         <div class="d-flex">
           <button
@@ -294,14 +283,7 @@
 import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
 import { useUserStore } from "@/stores/user.store";
-import { Room, RoomEvent } from "livekit-client";
 import axios from "axios";
-
-const room = new Room({
-  // automatically manage subscribed video quality
-  adaptiveStream: true,
-  dynacast: true,
-});
 
 export default {
   name: "GangInteract",
@@ -316,7 +298,6 @@ export default {
       loading_play_btn: false,
       loading_stop_btn: false,
       loading_leave_btn: false,
-      streaming_status: "",
     };
   },
   methods: {
@@ -370,60 +351,6 @@ export default {
         this.showAddMemberModal = false;
         this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
-    },
-    handleLiveKitEvents: async function (retry) {
-      this.streaming_status = "CONNECTING . . .";
-      // Check initial connection with livekit server
-      await room
-        .prepareConnection(process.env.VUE_APP_LIVEKIT_HOST_URL)
-        .catch(() => {
-          this.loading_livekit_conn = false;
-          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
-        });
-      // Fetch livekit client token from popcorn server if not present
-      if (!this.authStore.getUserStreamToken.length) {
-        this.streaming_status = "FETCHING TOKEN . . .";
-        const response = await this.authStore.getStreamingToken();
-        if (response != 200 || !this.authStore.getUserStreamToken.length) {
-          if (response == 401) {
-            // Unauthorized
-            if (retry == false) {
-              // access_token expired, use refresh_token to refresh JWT
-              // Try again on success
-              const ref_token_resp = await this.authStore.refreshToken();
-              if (ref_token_resp.status == 200) {
-                await this.handleLiveKitEvents(true);
-              }
-            } else {
-              // Not able to create gang even after refreshing token
-              this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
-            }
-          } else {
-            // Server error
-            this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
-          }
-        }
-      }
-      // Connect with livekit room using the fetched token
-      await room
-        .connect(
-          process.env.VUE_APP_LIVEKIT_HOST_URL,
-          this.authStore.getUserStreamToken
-        )
-        .then(() => {
-          console.log("connected to room - ", room.name);
-          this.streaming_status = "CONNECTED";
-          setTimeout(() => {
-            this.streaming_status = "";
-          }, 2000);
-          if (!this.gangStore.getUserGang.gang_streaming) {
-            this.streaming_status = "";
-          }
-        })
-        .catch(() => {
-          this.streaming_status = "";
-          this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
-        });
     },
     playContentAPI: async function () {
       const resp = await axios
@@ -539,10 +466,6 @@ export default {
     toggleGangInfoModal: function () {
       this.showGangInfoModal = !this.showGangInfoModal;
     },
-    handleTrackSubscribed: function (track, publication, participant) {
-      const media = publication.track.attach();
-      this.$parent.$parent.showStream(media, publication.kind);
-    },
     leaveGang: async function (retry) {
       this.loading_leave_btn = true;
       const response = await this.gangStore.leaveGang();
@@ -570,19 +493,12 @@ export default {
     },
   },
   async mounted() {
-    room.on(RoomEvent.TrackSubscribed, this.handleTrackSubscribed);
-    room.on(RoomEvent.TrackUnpublished, () => {});
-    await this.handleLiveKitEvents(false);
     this.scrollToBottomOfChatBody();
-    await this.getGangMembers(false);
   },
   updated() {
     this.$nextTick(() => {
       this.scrollToBottomOfChatBody();
     });
-  },
-  async beforeUnmount() {
-    await room.disconnect();
   },
 };
 </script>

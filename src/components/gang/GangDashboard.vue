@@ -99,6 +99,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
 import { defineAsyncComponent } from "vue";
 import time2TimeAgo from "@/utils/timeago";
+import { Room, RoomEvent } from "livekit-client";
 import { ref } from "vue";
 
 let sseClient;
@@ -106,6 +107,12 @@ let sseClient;
 let authStore = useAuthStore();
 
 const remoteMediaContainer = ref(null);
+
+const room = new Room({
+  // automatically manage subscribed video quality
+  adaptiveStream: true,
+  dynacast: true,
+});
 
 export default {
   data() {
@@ -207,20 +214,66 @@ export default {
       this.showErr = false;
       this.formErr = "";
     },
-    showStream: function (media, type) {
+    handleLiveKitEvents: async function (retry) {
+      // Check initial connection with livekit server
+      await room
+        .prepareConnection(process.env.VUE_APP_LIVEKIT_HOST_URL)
+        .catch(() => {
+          this.$parent.$parent.$parent.$parent.srvErrModal();
+        });
+      // Fetch livekit client token from popcorn server if not present
+      if (!authStore.getUserStreamToken.length) {
+        this.streaming_status = "FETCHING TOKEN . . .";
+        const response = await authStore.getStreamingToken();
+        if (response != 200 || !authStore.getUserStreamToken.length) {
+          if (response == 401) {
+            // Unauthorized
+            if (retry == false) {
+              // access_token expired, use refresh_token to refresh JWT
+              // Try again on success
+              const ref_token_resp = await this.authStore.refreshToken();
+              if (ref_token_resp.status == 200) {
+                await this.handleLiveKitEvents(true);
+              }
+            } else {
+              // Not able to create gang even after refreshing token
+              this.$parent.$parent.$parent.$parent.srvErrModal();
+            }
+          } else {
+            // Server error
+            this.$parent.$parent.$parent.$parent.srvErrModal();
+          }
+        }
+      }
+      // Connect with livekit room using the fetched token
+      await room
+        .connect(
+          process.env.VUE_APP_LIVEKIT_HOST_URL,
+          authStore.getUserStreamToken
+        )
+        .then(() => {
+          console.log("connected to room - ", room.name);
+        })
+        .catch(() => {
+          this.$parent.$parent.$parent.$parent.srvErrModal();
+        });
+    },
+    handleTrackSubscribed: function (track, publication, participant) {
+      const media = publication.track.attach();
       this.gang_stream_loading = false;
-      if (type == "video" && !this.load_video) {
+      if (publication.kind == "video" && !this.load_video) {
         this.load_video = true;
         this.$refs.remoteMediaContainer.appendChild(media);
-      } else if (type == "audio" && !this.load_audio) {
+      } else if (publication.kind == "audio" && !this.load_audio) {
         this.load_audio = true;
         this.$refs.remoteMediaContainer.appendChild(media);
       }
     },
     clearStream: function () {
-      this.$refs.remoteMediaContainer.innerHTML = "";
       this.load_video = false;
       this.load_audio = false;
+      this.gang_stream_loading = false;
+      this.$refs.remoteMediaContainer.innerHTML = "";
     },
     toggleFullScreen: function (event) {
       const playerElement = event.target;
@@ -239,7 +292,9 @@ export default {
     GangInteract: defineAsyncComponent(() => import("./GangInteract.vue")),
   },
   async mounted() {
+    room.on(RoomEvent.TrackSubscribed, this.handleTrackSubscribed);
     await this.getUserGang(false);
+    await this.handleLiveKitEvents(false);
 
     sseClient = await this.$sse.create({
       url: process.env.VUE_APP_SSE_API,
@@ -345,6 +400,7 @@ export default {
     });
   },
   async beforeUnmount() {
+    await room.disconnect();
     // Make sure to close the connection with the events server
     // when the component is destroyed, or we'll have ghost connections!
     sseClient.disconnect();
