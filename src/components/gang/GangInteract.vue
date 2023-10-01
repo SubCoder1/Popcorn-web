@@ -302,7 +302,6 @@ export default {
   },
   methods: {
     goBackToGangList: function () {
-      this.$parent.$parent.clearStream();
       this.$parent.$parent.goBack();
     },
     sendMessage: async function () {
@@ -512,7 +511,7 @@ export default {
   height: 109px;
 }
 .gang-interact-body {
-  height: 490px;
+  height: 370px;
   overflow: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -580,14 +579,6 @@ export default {
 
 .modal-body::-webkit-scrollbar {
   display: none;
-}
-
-.gang-info-btn {
-  background: mediumpurple;
-}
-
-.gang-info-btn:hover {
-  background: #7b56c7;
 }
 
 .gang-info-members-list {
