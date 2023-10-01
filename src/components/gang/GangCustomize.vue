@@ -242,7 +242,7 @@
     >
       <label for="gangContentFile" class="text-sm">
         Content File <br />
-        <span class="text-secondary">(MP4 Or MKV Format only):</span>
+        <span class="text-secondary">(MP4 Or MKV only):</span>
       </label>
       <div
         v-if="gangStore.getUserGang.gang_content_name.length != 0"
