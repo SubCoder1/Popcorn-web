@@ -12,7 +12,6 @@
     :class="{ 'stream-player': load_video }"
     @dblclick="toggleFullScreen"
   ></div>
-  <div ref="remoteUserContainer"></div>
   <div
     class="gang-users p-4"
     v-if="!this.gangStore.canCreateGang || !this.gangStore.canJoinGang"
@@ -26,15 +25,20 @@
     </div>
     <transition-group
       v-else
-      class="d-flex flex-row justify-content-between"
+      ref="memberActivity"
+      class="d-flex flex-row justify-content-evenly"
       name="fade"
       tag="div"
     >
-      <div v-for="member in gangStore.getUserGang.gang_members" :key="member">
-        <div class="d-flex flex-row">
-          <div class="member">
+      <div
+        v-for="member in gangStore.getUserGang.gang_members"
+        ref="memberRef"
+        :key="member"
+        :id="member.username"
+      >
+        <div class="member d-flex flex-row justify-content-between">
+          <div>
             <div
-              ref="memberActivity"
               class="d-flex align-items-center justify-content-center member-view rounded-circle"
               :class="{ speaking: isParticipantSpeaking(member.username) }"
             >
@@ -190,7 +194,7 @@ import { ref } from "vue";
 let sseClient;
 
 const remoteMediaContainer = ref(null);
-const remoteUserContainer = ref(null);
+const memberRef = ref([]);
 const memberActivity = ref(0);
 
 const room = new Room({
@@ -344,9 +348,9 @@ export default {
     },
     handleTrackSubscribed: function (track, publication, participant) {
       const media = publication.track.attach();
-      this.gang_stream_loading = false;
       if (participant.identity == "gang_admin") {
         // Stream
+        this.gang_stream_loading = false;
         if (publication.kind == "video" && !this.load_video) {
           this.load_video = true;
           this.$refs.remoteMediaContainer.appendChild(media);
@@ -355,8 +359,10 @@ export default {
           this.$refs.remoteMediaContainer.appendChild(media);
         }
       } else {
-        // User
-        this.$refs.remoteUserContainer.appendChild(media);
+        // User video or audio
+        this.$refs.memberRef
+          .find((x) => x.id == participant.identity)
+          .appendChild(media);
       }
     },
     handleActiveSpeakers: function (speakers) {
@@ -407,16 +413,16 @@ export default {
     GangInteract: defineAsyncComponent(() => import("./GangInteract.vue")),
   },
   async mounted() {
-    // Load Livekit room event handlers
-    room.on(RoomEvent.TrackSubscribed, this.handleTrackSubscribed);
-    room.on(RoomEvent.ActiveSpeakersChanged, this.handleActiveSpeakers);
-    room.on(RoomEvent.TrackUnpublished, this.clearStream);
     const r = await this.getUserGang(false);
     // Start livekit event only if user has joined or created a gang
     if (!(this.gangStore.canCreateGang && this.gangStore.canJoinGang)) {
       this.loading_members = true;
       await this.handleLiveKitEvents(false);
     }
+    // Load Livekit room event handlers
+    room.on(RoomEvent.TrackSubscribed, this.handleTrackSubscribed);
+    room.on(RoomEvent.ActiveSpeakersChanged, this.handleActiveSpeakers);
+    room.on(RoomEvent.TrackUnpublished, this.clearStream);
 
     sseClient = await this.$sse.create({
       url: process.env.VUE_APP_SSE_API,
@@ -574,6 +580,23 @@ export default {
 
 .speaking {
   border: 3.55px solid mediumaquamarine;
+}
+
+.member {
+  animation: shift-left 0.3s ease-in forwards;
+  -moz-transition: all 0.3s ease-in;
+  -webkit-transition: all 0.3s ease-in;
+  -o-transition: all 0.3s ease-in;
+  transition: all 0.3s ease-in;
+}
+
+@keyframes shift-left {
+  0% {
+    margin-left: 2rem;
+  }
+  100% {
+    margin-left: 0;
+  }
 }
 
 @media only screen and (max-width: 497px) {
