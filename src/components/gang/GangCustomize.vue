@@ -282,7 +282,7 @@
           class="input-md text-sm"
           id="gangContentFile"
           @change="uploadContent"
-          accept="video/mp4,video/x-matroska"
+          accept="video/mp4,video/x-matroska,video/*"
           :disabled="update.gang_content_url.length != 0"
         />
       </div>
