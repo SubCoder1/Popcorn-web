@@ -25,6 +25,13 @@
               <span v-if="gangStore.getUserGang.gang_content_name.length != 0">
                 {{ gangStore.getUserGang.gang_content_name }}
               </span>
+              <a
+                v-else-if="gangStore.getUserGang.gang_content_url.length != 0"
+                :href="gangStore.getUserGang.gang_content_url"
+                target="_blank"
+              >
+                {{ gangStore.getUserGang.gang_content_url }}
+              </a>
               <span v-else>Yet to be uploaded.</span>
             </span>
           </div>
@@ -131,7 +138,8 @@
             type="button"
             class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm delete-content-btn"
             v-else-if="
-              gangStore.getUserGang.gang_content_ID.length != 0 &&
+              (gangStore.getUserGang.gang_content_ID.length != 0 ||
+                gangStore.getUserGang.gang_content_url.length != 0) &&
               gangStore.getUserGang.is_admin &&
               gangStore.getUserGang.gang_streaming
             "
@@ -209,7 +217,9 @@
             <div
               v-if="userStore.getUserName == msg.user.username"
               class="d-flex align-items-center justify-content-start mb-3"
-              :class="{ sending: msg.status == 'sending' }"
+              :class="{
+                sending: msg.status == 'sending' || msg.status == 'error',
+              }"
             >
               <img
                 v-bind:src="
@@ -221,6 +231,9 @@
               <div class="message-body">
                 <span class="mb-1 text-xsm text-secondary">
                   @{{ msg.user.username }}
+                  <span v-if="msg.status == 'error'" class="not-sent">
+                    | ERROR
+                  </span>
                 </span>
                 <div class="bubble text-wrap">
                   <span class="text-sm">{{ msg.message }}</span>
@@ -302,7 +315,6 @@ export default {
   },
   methods: {
     goBackToGangList: function () {
-      this.$parent.$parent.clearStream();
       this.$parent.$parent.goBack();
     },
     sendMessage: async function () {
@@ -323,6 +335,8 @@ export default {
         );
         if (response >= 500) {
           this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        } else if (response == 400) {
+          this.gangStore.getUserGangInteract[idx].status = "error";
         }
         this.message = "";
       }
@@ -378,6 +392,7 @@ export default {
       return resp;
     },
     playContent: async function (retry) {
+      const r = await this.$parent.$parent.handleLiveKitEvents();
       this.loading_play_btn = true;
       const response = await this.playContentAPI();
       if (response != 200) {
@@ -512,7 +527,7 @@ export default {
   height: 109px;
 }
 .gang-interact-body {
-  height: 490px;
+  height: 370px;
   overflow: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -553,22 +568,24 @@ export default {
   width: 10px;
 }
 
-.bubble::-webkit-scrollbar-track,
-.bubble-reverse::-webkit-scrollbar-track {
-  background: transparent;
+.bubble::-webkit-scrollbar-thumb,
+.bubble-reverse::-webkit-scrollbar-thumb {
+  background-color: rgb(233 126 114);
+  border-radius: 25px;
   background-clip: content-box;
 }
 
-.bubble::-webkit-scrollbar-thumb,
-.bubble-reverse::-webkit-scrollbar-thumb {
-  background: rgb(240, 90, 73);
-  border-radius: 20px;
-  border: 3px solid rgb(240, 90, 73);
-  height: 8px;
+.bubble::-webkit-scrollbar-thumb:hover,
+.bubble-reverse::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(231, 116, 103);
 }
 
 .sending {
   opacity: 0.5;
+}
+
+.not-sent {
+  color: rgb(250, 71, 51);
 }
 
 .modal-body {
@@ -580,14 +597,6 @@ export default {
 
 .modal-body::-webkit-scrollbar {
   display: none;
-}
-
-.gang-info-btn {
-  background: mediumpurple;
-}
-
-.gang-info-btn:hover {
-  background: #7b56c7;
 }
 
 .gang-info-members-list {

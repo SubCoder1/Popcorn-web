@@ -24,7 +24,13 @@
       <p class="text-xsm text-secondary text-end">
         {{ gangStore.getUserGang.gang_created }}
       </p>
-      <div class="d-flex flex-row justify-content-between gang-btn-set">
+      <div
+        class="d-flex flex-row gang-btn-set"
+        :class="{
+          'justify-content-between': gangStore.getUserGang.is_admin,
+          'justify-content-center': !gangStore.getUserGang.is_admin,
+        }"
+      >
         <button
           type="button"
           class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle join-gang-btn ms-2"
@@ -32,7 +38,7 @@
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="26"
+            width="23"
             height="26"
             fill="currentColor"
             class="bi bi-camera-reels"
@@ -58,7 +64,7 @@
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="26"
+            width="23"
             height="26"
             fill="currentColor"
             class="bi bi-pencil"
@@ -80,7 +86,7 @@
           <svg
             v-if="!load_delete_gang_btn"
             xmlns="http://www.w3.org/2000/svg"
-            width="26"
+            width="23"
             height="26"
             fill="currentColor"
             class="bi bi-trash3"

@@ -76,8 +76,6 @@ html,
 body {
   height: 100%;
   background-color: rgb(248 246 243);
-  scrollbar-width: 10px;
-  scrollbar-color: rgb(240, 90, 73);
 }
 
 #app {
@@ -97,6 +95,25 @@ body {
 
 .container-shadow {
   box-shadow: rgb(0 0 0 / 8%) 4px 2px 30px 8px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+  border-radius: 25px;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8bbbf;
 }
 
 a {
@@ -193,6 +210,9 @@ h4 {
 }
 
 .admin-btn,
+.play-btn,
+.update-btn,
+.allow-play-perm,
 .success {
   background-color: mediumaquamarine;
 }
@@ -210,8 +230,19 @@ h4 {
   width: 48px;
 }
 
+.btn-circle-md {
+  height: 38px;
+  width: 38px;
+}
+
 .admin-btn:hover,
 .admin-btn:focus,
+.play-btn:hover,
+.play-btn:focus,
+.update-btn:hover,
+.update-btn:focus,
+.allow-play-perm:hover,
+.allow-play-perm:focus,
 .success:hover,
 .success:focus {
   background-color: #0cc183;
@@ -300,6 +331,19 @@ h4 {
   width: 135px;
   height: 0.7rem;
   border-radius: 0.25rem;
+}
+
+.skeleton-text-sm {
+  width: 85px;
+}
+
+.skeleton-text-xsm {
+  width: 50px;
+}
+
+.user-prof-skeleton-lg {
+  height: 80px;
+  width: 80px;
 }
 
 .user-prof-skeleton-md {
@@ -421,7 +465,8 @@ h4 {
 .decline-invite-btn,
 .leave-gang-btn,
 .delete-content-btn,
-.delete-gang-btn {
+.delete-gang-btn,
+.mic-off-btn {
   background: palevioletred;
   border: 0;
   -moz-transition: all 0.2s ease-in;
@@ -435,13 +480,15 @@ h4 {
 .decline-invite-btn:hover,
 .leave-gang-btn:hover,
 .delete-gang-btn:hover,
+.mic-off-btn:hover,
 .delete-content-btn:hover,
 .modal-close-btn:focus,
 .kick-member-btn:focus,
 .decline-invite-btn:focus,
 .leave-gang-btn:focus,
 .delete-gang-btn:focus,
-.delete-content-btn:focus {
+.delete-content-btn:focus,
+.mic-off-btn:focus {
   background: #d94072;
 }
 
@@ -465,6 +512,21 @@ video {
   height: 100%;
   width: 100%;
   background: rgb(43, 42, 51);
+}
+
+.gang-info-btn,
+.mic-btn,
+.vid-btn {
+  background: mediumpurple;
+}
+
+.gang-info-btn:hover,
+.gang-info-btn:focus,
+.mic-btn:hover,
+.vid-btn:hover,
+.mic-btn:focus,
+.vid-btn:focus {
+  background: #7b56c7;
 }
 
 @media only screen and (max-width: 1200px) {

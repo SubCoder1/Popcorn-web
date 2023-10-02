@@ -200,11 +200,11 @@ export const useGangStore = defineStore("gang", {
           // error occured
           if (e.response) {
             // Server sent a response
-            res.status = e.response.status;
+            return e.response.status;
             // show the first validation issue received from server
           } else {
             // Server unreachable
-            res.status = 503;
+            return 503;
           }
         });
       return res;
