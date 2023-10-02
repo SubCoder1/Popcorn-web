@@ -25,6 +25,13 @@
               <span v-if="gangStore.getUserGang.gang_content_name.length != 0">
                 {{ gangStore.getUserGang.gang_content_name }}
               </span>
+              <a
+                v-else-if="gangStore.getUserGang.gang_content_url.length != 0"
+                :href="gangStore.getUserGang.gang_content_url"
+                target="_blank"
+              >
+                {{ gangStore.getUserGang.gang_content_url }}
+              </a>
               <span v-else>Yet to be uploaded.</span>
             </span>
           </div>
