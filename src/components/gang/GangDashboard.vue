@@ -82,7 +82,7 @@
           :class="{ expanded: expand_members }"
           viewBox="0 0 16 16"
           @click="expand_members = !expand_members"
-          v-if="gangStore.getUserGang.gang_members.length > 4"
+          v-if="gangStore.getUserGang.gang_members.length > 3"
         >
           <path
             fill-rule="evenodd"
@@ -90,22 +90,19 @@
           />
         </svg>
       </div>
-      <div
-        v-if="loading_members"
-        class="d-flex flex-row justify-content-around w-100"
-      >
-        <div class="d-flex flex-column align-items-center">
-          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-1"></div>
+      <div v-if="loading_members" class="d-flex flex-row">
+        <div class="d-flex flex-column align-items-center me-3 ms-3">
+          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
           <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
           <div class="skeleton skeleton-text skeleton-text-xsm"></div>
         </div>
-        <div class="d-flex flex-column align-items-center">
-          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-1"></div>
+        <div class="d-flex flex-column align-items-center me-3 ms-3">
+          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
           <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
           <div class="skeleton skeleton-text skeleton-text-xsm"></div>
         </div>
-        <div class="d-flex flex-column align-items-center">
-          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-1"></div>
+        <div class="d-flex flex-column align-items-center me-3 ms-3">
+          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
           <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
           <div class="skeleton skeleton-text skeleton-text-xsm"></div>
         </div>
@@ -123,7 +120,7 @@
           :id="member.username"
           class="ms-4 me-4"
         >
-          <div class="member">
+          <div class="member d-flex flex-column align-items-center">
             <div
               class="d-flex align-items-center justify-content-center member-view rounded-circle"
               :class="{ speaking: isParticipantSpeaking(member.username) }"

@@ -601,5 +601,14 @@ video {
   .empty-search-img {
     height: 90px;
   }
+
+  .user-prof-skeleton-lg {
+    height: 50px;
+    width: 50px;
+  }
+
+  .skeleton-text-sm {
+    width: 55px;
+  }
 }
 </style>
