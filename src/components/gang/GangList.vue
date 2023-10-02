@@ -38,7 +38,7 @@
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="26"
+            width="23"
             height="26"
             fill="currentColor"
             class="bi bi-camera-reels"
@@ -64,7 +64,7 @@
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="26"
+            width="23"
             height="26"
             fill="currentColor"
             class="bi bi-pencil"
@@ -86,7 +86,7 @@
           <svg
             v-if="!load_delete_gang_btn"
             xmlns="http://www.w3.org/2000/svg"
-            width="26"
+            width="23"
             height="26"
             fill="currentColor"
             class="bi bi-trash3"
