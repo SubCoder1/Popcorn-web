@@ -30,71 +30,91 @@
       click here to allow voice or video interactions
     </button>
     <div v-else class="d-flex justify-content-between">
-      <button
-        type="button"
-        class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
-        :class="{ 'mic-btn': speaking, 'mic-off-btn': !speaking }"
-        :disabled="loading_members"
-        @click="toggleMic"
+      <div
+        class="d-flex flex-column align-items-center justify-content-between"
       >
+        <button
+          type="button"
+          class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
+          :class="{ 'mic-btn': speaking, 'mic-off-btn': !speaking }"
+          :disabled="loading_members"
+          @click="toggleMic"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="23"
+            fill="currentColor"
+            class="bi bi-mic"
+            viewBox="0 0 16 16"
+            v-if="speaking"
+          >
+            <path
+              d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"
+            />
+            <path
+              d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0v5zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"
+            />
+          </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="23"
+            fill="currentColor"
+            class="bi bi-mic-mute"
+            viewBox="0 0 16 16"
+            v-else
+          >
+            <path
+              d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0v1zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4zm3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3z"
+            />
+            <path
+              d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607zm-7.84-9.253 12 12 .708-.708-12-12-.708.708z"
+            />
+          </svg>
+        </button>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="23"
+          width="23"
+          height="26"
           fill="currentColor"
-          class="bi bi-mic"
+          class="bi bi-arrow-down"
+          :class="{ expanded: expand_members }"
           viewBox="0 0 16 16"
-          v-if="speaking"
+          @click="expand_members = !expand_members"
         >
           <path
-            d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"
-          />
-          <path
-            d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0v5zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"
+            fill-rule="evenodd"
+            d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"
           />
         </svg>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="23"
-          fill="currentColor"
-          class="bi bi-mic-mute"
-          viewBox="0 0 16 16"
-          v-else
-        >
-          <path
-            d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0v1zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4zm3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3z"
-          />
-          <path
-            d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607zm-7.84-9.253 12 12 .708-.708-12-12-.708.708z"
-          />
-        </svg>
-      </button>
+      </div>
       <div
         v-if="loading_members"
         class="d-flex flex-row justify-content-around w-100"
       >
         <div class="d-flex flex-column align-items-center">
-          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
-          <div class="skeleton skeleton-text skeleton-text-sm mb-2"></div>
+          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-1"></div>
+          <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
           <div class="skeleton skeleton-text skeleton-text-xsm"></div>
         </div>
         <div class="d-flex flex-column align-items-center">
-          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
-          <div class="skeleton skeleton-text skeleton-text-sm mb-2"></div>
+          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-1"></div>
+          <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
           <div class="skeleton skeleton-text skeleton-text-xsm"></div>
         </div>
         <div class="d-flex flex-column align-items-center">
-          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
-          <div class="skeleton skeleton-text skeleton-text-sm mb-2"></div>
+          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-1"></div>
+          <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
           <div class="skeleton skeleton-text skeleton-text-xsm"></div>
         </div>
       </div>
-      <transition-group
+      <div
         v-else
         ref="memberActivity"
         class="d-flex flex-row w-100 ps-3 pe-3 overflow-auto"
-        tag="div"
+        :class="{ 'expand-members-tab': expand_members }"
+        v-if="gangStore.getUserGang.gang_members.length > 4"
       >
         <div
           v-for="member in gangStore.getUserGang.gang_members"
@@ -119,7 +139,7 @@
             <span class="text-secondary text-xsm">@{{ member.username }}</span>
           </div>
         </div>
-      </transition-group>
+      </div>
     </div>
   </div>
   <div v-if="loading" class="d-flex flex-column p-4">
@@ -245,6 +265,7 @@ export default {
       play_permission: false,
       active_speakers: [],
       speaking: false,
+      expand_members: false,
     };
   },
   name: "GangDashboard",
@@ -626,6 +647,34 @@ export default {
   100% {
     margin-left: 0;
   }
+}
+
+.expand-members-tab {
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.bi-arrow-down {
+  position: relative;
+  color: grey;
+  cursor: pointer;
+  top: 0;
+  -moz-transition: all 0.2s ease-in;
+  -webkit-transition: all 0.2s ease-in;
+  -o-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
+}
+
+.bi-arrow-down.expanded {
+  transform: rotate(180deg);
+}
+
+.bi-arrow-down:hover {
+  top: 5px;
+}
+
+.bi-arrow-down.expanded:hover {
+  top: -5px;
 }
 
 @media only screen and (max-width: 497px) {
