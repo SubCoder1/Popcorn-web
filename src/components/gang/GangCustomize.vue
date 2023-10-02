@@ -41,7 +41,7 @@
               </svg>
             </button>
             and press
-            <button class="btn btn-xsm rounded-md text-sm admin-btn pe-none">
+            <button class="btn btn-xsm rounded-md text-sm play-btn pe-none">
               PLAY
             </button>
             <br /><br />
@@ -498,7 +498,7 @@
     </div>
     <button
       type="submit"
-      class="btn d-flex align-items-center justify-content-center btn-md rounded-md text-sm admin-btn mt-4"
+      class="btn d-flex align-items-center justify-content-center btn-md rounded-md text-sm update-btn mt-4"
       :disabled="update.form_submitted"
     >
       <div class="loader" v-if="update.form_submitted"></div>
@@ -963,7 +963,6 @@ export default {
     },
   },
   async mounted() {
-    await this.getGangMembers(false);
     // Detect when scrolled to bottom.
     const listElm = document.querySelector("#member-search-parent");
     listElm.addEventListener("scroll", async () => {
