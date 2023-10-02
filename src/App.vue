@@ -193,6 +193,9 @@ h4 {
 }
 
 .admin-btn,
+.play-btn,
+.update-btn,
+.allow-play-perm,
 .success {
   background-color: mediumaquamarine;
 }
@@ -210,13 +213,19 @@ h4 {
   width: 48px;
 }
 
-.btn-circle-sm {
-  height: 30px;
-  width: 30px;
+.btn-circle-md {
+  height: 40px;
+  width: 40px;
 }
 
 .admin-btn:hover,
 .admin-btn:focus,
+.play-btn:hover,
+.play-btn:focus,
+.update-btn:hover,
+.update-btn:focus,
+.allow-play-perm:hover,
+.allow-play-perm:focus,
 .success:hover,
 .success:focus {
   background-color: #0cc183;
@@ -305,6 +314,14 @@ h4 {
   width: 135px;
   height: 0.7rem;
   border-radius: 0.25rem;
+}
+
+.skeleton-text-sm {
+  width: 85px;
+}
+
+.skeleton-text-xsm {
+  width: 50px;
 }
 
 .user-prof-skeleton-lg {
