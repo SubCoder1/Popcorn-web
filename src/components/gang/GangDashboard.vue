@@ -90,7 +90,10 @@
           />
         </svg>
       </div>
-      <div v-if="loading_members" class="d-flex flex-row">
+      <div
+        v-if="loading_members"
+        class="d-flex flex-row justify-content-between w-100"
+      >
         <div class="d-flex flex-column align-items-center me-3 ms-3">
           <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
           <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
