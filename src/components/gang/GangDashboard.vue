@@ -29,18 +29,18 @@
     >
       click here to allow voice or video interactions
     </button>
-    <div v-else>
+    <div v-else class="d-flex justify-content-between">
       <button
         type="button"
-        class="btn btn-circle-md position-fixed d-flex align-items-center justify-content-center rounded-circle p-0"
+        class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
         :class="{ 'mic-btn': speaking, 'mic-off-btn': !speaking }"
         :disabled="loading_members"
         @click="toggleMic"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="23"
-          height="26"
+          width="20"
+          height="23"
           fill="currentColor"
           class="bi bi-mic"
           viewBox="0 0 16 16"
@@ -55,8 +55,8 @@
         </svg>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="23"
-          height="26"
+          width="20"
+          height="23"
           fill="currentColor"
           class="bi bi-mic-mute"
           viewBox="0 0 16 16"
@@ -72,7 +72,7 @@
       </button>
       <div
         v-if="loading_members"
-        class="d-flex flex-row justify-content-around"
+        class="d-flex flex-row justify-content-around w-100"
       >
         <div class="d-flex flex-column align-items-center">
           <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
@@ -93,7 +93,7 @@
       <transition-group
         v-else
         ref="memberActivity"
-        class="d-flex flex-row justify-content-evenly"
+        class="d-flex flex-row w-100 ps-3 pe-3 overflow-auto"
         tag="div"
       >
         <div
@@ -101,6 +101,7 @@
           ref="memberRef"
           :key="member"
           :id="member.username"
+          class="ms-4 me-4"
         >
           <div class="member">
             <div
