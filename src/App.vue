@@ -76,8 +76,6 @@ html,
 body {
   height: 100%;
   background-color: rgb(248 246 243);
-  scrollbar-width: 10px;
-  scrollbar-color: rgb(240, 90, 73);
 }
 
 #app {
@@ -97,6 +95,25 @@ body {
 
 .container-shadow {
   box-shadow: rgb(0 0 0 / 8%) 4px 2px 30px 8px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+  border-radius: 25px;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8bbbf;
 }
 
 a {
@@ -214,7 +231,7 @@ h4 {
 }
 
 .btn-circle-md {
-  height: 40px;
+  height: 38px;
   width: 40px;
 }
 
