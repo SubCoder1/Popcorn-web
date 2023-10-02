@@ -232,7 +232,7 @@ h4 {
 
 .btn-circle-md {
   height: 38px;
-  width: 40px;
+  width: 38px;
 }
 
 .admin-btn:hover,
