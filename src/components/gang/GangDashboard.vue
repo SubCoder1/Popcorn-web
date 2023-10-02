@@ -82,6 +82,7 @@
           :class="{ expanded: expand_members }"
           viewBox="0 0 16 16"
           @click="expand_members = !expand_members"
+          v-if="gangStore.getUserGang.gang_members.length > 4"
         >
           <path
             fill-rule="evenodd"
@@ -114,7 +115,6 @@
         ref="memberActivity"
         class="d-flex flex-row w-100 ps-3 pe-3 overflow-auto"
         :class="{ 'expand-members-tab': expand_members }"
-        v-if="gangStore.getUserGang.gang_members.length > 4"
       >
         <div
           v-for="member in gangStore.getUserGang.gang_members"
