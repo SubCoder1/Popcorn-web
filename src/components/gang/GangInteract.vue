@@ -210,7 +210,9 @@
             <div
               v-if="userStore.getUserName == msg.user.username"
               class="d-flex align-items-center justify-content-start mb-3"
-              :class="{ sending: msg.status == 'sending' }"
+              :class="{
+                sending: msg.status == 'sending' || msg.status == 'error',
+              }"
             >
               <img
                 v-bind:src="
@@ -222,6 +224,9 @@
               <div class="message-body">
                 <span class="mb-1 text-xsm text-secondary">
                   @{{ msg.user.username }}
+                  <span v-if="msg.status == 'error'" class="not-sent">
+                    | ERROR
+                  </span>
                 </span>
                 <div class="bubble text-wrap">
                   <span class="text-sm">{{ msg.message }}</span>
@@ -323,6 +328,8 @@ export default {
         );
         if (response >= 500) {
           this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+        } else if (response == 400) {
+          this.gangStore.getUserGangInteract[idx].status = "error";
         }
         this.message = "";
       }
@@ -554,22 +561,24 @@ export default {
   width: 10px;
 }
 
-.bubble::-webkit-scrollbar-track,
-.bubble-reverse::-webkit-scrollbar-track {
-  background: transparent;
+.bubble::-webkit-scrollbar-thumb,
+.bubble-reverse::-webkit-scrollbar-thumb {
+  background-color: rgb(233 126 114);
+  border-radius: 25px;
   background-clip: content-box;
 }
 
-.bubble::-webkit-scrollbar-thumb,
-.bubble-reverse::-webkit-scrollbar-thumb {
-  background: rgb(240, 90, 73);
-  border-radius: 20px;
-  border: 3px solid rgb(240, 90, 73);
-  height: 8px;
+.bubble::-webkit-scrollbar-thumb:hover,
+.bubble-reverse::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(231, 116, 103);
 }
 
 .sending {
   opacity: 0.5;
+}
+
+.not-sent {
+  color: rgb(250, 71, 51);
 }
 
 .modal-body {
