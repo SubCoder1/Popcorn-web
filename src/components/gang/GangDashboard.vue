@@ -109,6 +109,14 @@
           <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
           <div class="skeleton skeleton-text skeleton-text-xsm"></div>
         </div>
+        <div
+          class="d-flex flex-column align-items-center me-3 ms-3"
+          v-if="!small_screen"
+        >
+          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
+          <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
+          <div class="skeleton skeleton-text skeleton-text-xsm"></div>
+        </div>
       </div>
       <div
         v-else
@@ -249,6 +257,7 @@ export default {
   data() {
     return {
       loading: true,
+      small_screen: false,
       loading_members: false,
       gangStore: useGangStore(),
       userStore: useUserStore(),
@@ -352,6 +361,34 @@ export default {
       this.showErr = false;
       this.formErr = "";
     },
+    prepareLivekit: async function (retry) {
+      if (!this.authStore.getUserStreamToken.length) {
+        const response = await this.authStore.getStreamingToken();
+        if (response != 200 || !this.authStore.getUserStreamToken.length) {
+          if (response == 401) {
+            // Unauthorized
+            if (retry == false) {
+              // access_token expired, use refresh_token to refresh JWT
+              // Try again on success
+              const ref_token_resp = await this.authStore.refreshToken();
+              if (ref_token_resp.status == 200) {
+                await this.prepareLivekit(true);
+              }
+            } else {
+              // Not able to create gang even after refreshing token
+              this.$parent.$parent.$parent.$parent.srvErrModal();
+            }
+          } else {
+            // Server error
+            this.$parent.$parent.$parent.$parent.srvErrModal();
+          }
+        }
+      }
+      await room.prepareConnection(
+        process.env.VUE_APP_LIVEKIT_HOST_URL,
+        this.authStore.getUserStreamToken
+      );
+    },
     handleLiveKitEvents: async function (retry) {
       if (!this.play_permission) {
         this.play_permission = true;
@@ -447,6 +484,9 @@ export default {
         document.exitFullscreen();
       }
     },
+    detectSmallScreen: function (e) {
+      this.small_screen = window.innerWidth < 995;
+    },
   },
   components: {
     GangList: defineAsyncComponent(() => import("./GangList.vue")),
@@ -456,7 +496,10 @@ export default {
     GangInteract: defineAsyncComponent(() => import("./GangInteract.vue")),
   },
   async mounted() {
+    window.addEventListener("resize", this.detectSmallScreen);
+    this.detectSmallScreen();
     // Load Livekit room event handlers
+    await prepareLivekit(false);
     room.on(RoomEvent.TrackSubscribed, this.handleTrackSubscribed);
     room.on(RoomEvent.ActiveSpeakersChanged, this.handleActiveSpeakers);
     const r = await this.getUserGang(false);
