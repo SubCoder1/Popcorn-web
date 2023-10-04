@@ -499,7 +499,7 @@ export default {
     window.addEventListener("resize", this.detectSmallScreen);
     this.detectSmallScreen();
     // Load Livekit room event handlers
-    await prepareLivekit(false);
+    await this.prepareLivekit(false);
     room.on(RoomEvent.TrackSubscribed, this.handleTrackSubscribed);
     room.on(RoomEvent.ActiveSpeakersChanged, this.handleActiveSpeakers);
     const r = await this.getUserGang(false);
