@@ -124,27 +124,22 @@
         class="d-flex flex-row w-100 ps-3 pe-3 overflow-auto"
         :class="{ 'expand-members-tab': expand_members }"
       >
-        <div
-          v-for="member in gangStore.getUserGang.gang_members"
-          ref="memberRef"
-          :key="member"
-          :id="member.username"
-          class="ms-4 me-4"
-        >
-          <div class="member d-flex flex-column align-items-center">
+        <div v-for="member in active_members" :key="member" :id="member[0]">
+          <div class="member d-flex flex-column align-items-center ms-4 me-4">
             <div
               class="d-flex align-items-center justify-content-center member-view rounded-circle"
-              :class="{ speaking: isParticipantSpeaking(member.username) }"
+              ref="memberRef"
+              :class="{ speaking: isParticipantSpeaking(member[0]) }"
             >
               <img
                 v-bind:src="
-                  require(`@/assets/profile/${member.user_profile_pic}`)
+                  require(`@/assets/profile/${getMemberProfilePic(member[0])}`)
                 "
                 class="profile-pic-lg"
                 alt="User profile picture"
               />
             </div>
-            <span class="text-secondary text-xsm">@{{ member.username }}</span>
+            <span class="text-secondary text-xsm">@{{ member[0] }}</span>
           </div>
         </div>
       </div>
@@ -272,6 +267,7 @@ export default {
       load_audio: false,
       load_video: false,
       play_permission: false,
+      active_members: new Map(),
       active_speakers: [],
       speaking: false,
       expand_members: false,
@@ -361,34 +357,6 @@ export default {
       this.showErr = false;
       this.formErr = "";
     },
-    prepareLivekit: async function (retry) {
-      if (!this.authStore.getUserStreamToken.length) {
-        const response = await this.authStore.getStreamingToken();
-        if (response != 200 || !this.authStore.getUserStreamToken.length) {
-          if (response == 401) {
-            // Unauthorized
-            if (retry == false) {
-              // access_token expired, use refresh_token to refresh JWT
-              // Try again on success
-              const ref_token_resp = await this.authStore.refreshToken();
-              if (ref_token_resp.status == 200) {
-                await this.prepareLivekit(true);
-              }
-            } else {
-              // Not able to create gang even after refreshing token
-              this.$parent.$parent.$parent.$parent.srvErrModal();
-            }
-          } else {
-            // Server error
-            this.$parent.$parent.$parent.$parent.srvErrModal();
-          }
-        }
-      }
-      await room.prepareConnection(
-        process.env.VUE_APP_LIVEKIT_HOST_URL,
-        this.authStore.getUserStreamToken
-      );
-    },
     handleLiveKitEvents: async function (retry) {
       if (!this.play_permission) {
         this.play_permission = true;
@@ -425,6 +393,9 @@ export default {
           .then(() => {
             this.loading_members = false;
             console.log("connected to room - ", room.name);
+            room.participants.forEach((p) => {
+              this.handleConnectedParticipant(p);
+            });
           })
           .catch(() => {
             this.$parent.$parent.$parent.$parent.srvErrModal();
@@ -446,15 +417,23 @@ export default {
       } else {
         // User video or audio
         if (this.play_permission) {
-          this.$refs.memberRef
-            .find((x) => x.id == participant.identity)
-            .appendChild(media);
+          var member_div = this.$refs.memberRef.find(
+            (x) => x.id == participant.identity
+          );
+          if (member_div != undefined) {
+            member_div.appendChild(media);
+          }
         }
       }
     },
     handleActiveSpeakers: function (speakers) {
-      memberActivity.value++;
       this.active_speakers = speakers;
+    },
+    handleConnectedParticipant: function (participant) {
+      this.active_members.set(participant.identity, true);
+    },
+    handleDisconnectedParticipant: function (participant) {
+      delete this.active_members.delete(participant.identity);
     },
     isParticipantSpeaking: function (participant) {
       let result = false;
@@ -487,6 +466,15 @@ export default {
     detectSmallScreen: function (e) {
       this.small_screen = window.innerWidth < 995;
     },
+    getMemberProfilePic: function (member) {
+      var m = this.gangStore.getUserGang.gang_members.find(
+        (m) => m.username == member
+      );
+      if (m != undefined) {
+        return m.user_profile_pic;
+      }
+      return "default.png";
+    },
   },
   components: {
     GangList: defineAsyncComponent(() => import("./GangList.vue")),
@@ -499,10 +487,16 @@ export default {
     window.addEventListener("resize", this.detectSmallScreen);
     this.detectSmallScreen();
     // Load Livekit room event handlers
-    await this.prepareLivekit(false);
     room.on(RoomEvent.TrackSubscribed, this.handleTrackSubscribed);
     room.on(RoomEvent.ActiveSpeakersChanged, this.handleActiveSpeakers);
-    const r = await this.getUserGang(false);
+    room.on(RoomEvent.ParticipantConnected, this.handleConnectedParticipant);
+    room.on(
+      RoomEvent.ParticipantDisconnected,
+      this.handleDisconnectedParticipant
+    );
+    await this.getUserGang(false);
+    // Mark yourself as active
+    this.active_members.set(this.userStore.getUserName, true);
 
     sseClient = await this.$sse.create({
       url: process.env.VUE_APP_SSE_API,
