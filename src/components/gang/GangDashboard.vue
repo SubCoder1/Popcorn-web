@@ -125,7 +125,10 @@
         :class="{ 'expand-members-tab': expand_members }"
       >
         <div v-for="member in active_members" :key="member" :id="member[0]">
-          <div class="member d-flex flex-column align-items-center ms-4 me-4">
+          <div
+            class="member d-flex flex-column align-items-center ms-4 me-4"
+            v-if="member[0] != 'gang_admin'"
+          >
             <div
               class="d-flex align-items-center justify-content-center member-view rounded-circle"
               ref="memberRef"
