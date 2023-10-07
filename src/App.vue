@@ -70,8 +70,6 @@ export default {
 </script>
 
 <style lang="css">
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap");
-
 html,
 body {
   height: 100%;
