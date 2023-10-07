@@ -125,10 +125,7 @@
         :class="{ 'expand-members-tab': expand_members }"
       >
         <div v-for="member in active_members" :key="member" :id="member[0]">
-          <div
-            class="member d-flex flex-column align-items-center ms-4 me-4"
-            v-if="member[0] != 'gang_admin'"
-          >
+          <div class="member d-flex flex-column align-items-center ms-4 me-4">
             <div
               class="d-flex align-items-center justify-content-center member-view rounded-circle"
               ref="memberRef"
@@ -433,10 +430,14 @@ export default {
       this.active_speakers = speakers;
     },
     handleConnectedParticipant: function (participant) {
-      this.active_members.set(participant.identity, true);
+      if (participant.identity != "gang_admin") {
+        this.active_members.set(participant.identity, true);
+      }
     },
     handleDisconnectedParticipant: function (participant) {
-      delete this.active_members.delete(participant.identity);
+      if (participant.identity != "gang_admin") {
+        delete this.active_members.delete(participant.identity);
+      }
     },
     isParticipantSpeaking: function (participant) {
       let result = false;
