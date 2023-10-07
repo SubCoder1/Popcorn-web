@@ -18,6 +18,7 @@ module.exports = {
     manifestOptions: {
       short_name: "Popcorn",
       theme_color: "#f18579",
+      background_color: "#f18579",
       icons: [
         {
           src: "android-chrome-512x512.png",
@@ -48,6 +49,7 @@ module.exports = {
           src: "mstile-150x150.png",
           sizes: "150x150",
           type: "image/png",
+          purpose: "masking",
         },
       ]
     }
