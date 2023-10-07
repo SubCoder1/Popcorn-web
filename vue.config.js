@@ -1,4 +1,3 @@
-const { defineConfig } = require("@vue/cli-service");
 module.exports = {
   transpileDependencies: true,
   pwa: {
@@ -11,7 +10,7 @@ module.exports = {
       favicon32: "favicon-32x32.png",
       favicon16: "favicon-16x16.png",
       appleTouchIcon: "apple-touch-icon.png",
-      maskIcon: "safari-pinned-tab.svg",
+      maskIcon: "mstile-150x150.png",
       msTileImage: "mstile-150x150.png",
       faviconSVG: "safari-pinned-tab.svg",
     },
@@ -49,7 +48,7 @@ module.exports = {
           src: "mstile-150x150.png",
           sizes: "150x150",
           type: "image/png",
-          purpose: "masking",
+          purpose: "maskable",
         },
       ]
     }
