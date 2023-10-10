@@ -42,16 +42,24 @@
     </div>
     <div
       class="adjust-dashboard"
-      :class="{ collapse: small_screen }"
+      :class="{
+        collapse: small_screen,
+        'h-100 w-100': split_screen,
+      }"
       id="collapseDashboard"
     >
       <div
-        class="gang-dashboard-container h-auto container-style container-shadow text-left"
+        :class="{
+          'h-100 w-100': split_screen,
+          'gang-dashboard-container h-auto': !split_screen,
+        }"
+        class="container-style container-shadow text-left"
       >
         <GangDashboard :key="reload" />
       </div>
     </div>
     <div
+      v-if="!split_screen"
       :class="{
         collapse: small_screen,
         'd-flex': !small_screen,
@@ -94,6 +102,7 @@ export default {
     return {
       reload: 0,
       small_screen: false,
+      split_screen: false,
     };
   },
   methods: {
@@ -117,6 +126,9 @@ export default {
           this.$refs.collapseExtras.click();
         }
       }
+    },
+    toggleSplitScreen: function () {
+      this.split_screen = !this.split_screen;
     },
   },
   mounted() {

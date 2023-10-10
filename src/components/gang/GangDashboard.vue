@@ -2,6 +2,7 @@
 
 <template>
   <div
+    :class="{ 'h-75': split_screen }"
     class="stream-player d-flex align-items-center justify-content-center"
     v-if="gang_stream_loading"
   >
@@ -9,16 +10,20 @@
   </div>
   <div
     ref="remoteMediaContainer"
-    :class="{ 'stream-player': load_video }"
-    @dblclick="toggleFullScreen"
+    :class="{
+      'player-split-screen': split_screen && !gang_stream_loading,
+      'stream-player': load_video,
+    }"
+    @dblclick="togglePlayerFullScreen"
   ></div>
   <div
-    class="gang-users p-4"
     :class="{
-      'd-flex': !play_permission,
-      'align-items-center': !play_permission,
+      'h-25': split_screen,
+      'd-flex': !play_permission || split_screen,
+      'align-items-center': !play_permission || split_screen,
       'justify-content-center': !play_permission,
     }"
+    class="gang-users p-4 pb-0"
     v-if="!gangStore.canCreateGang || !gangStore.canJoinGang"
   >
     <button
@@ -73,6 +78,26 @@
             />
           </svg>
         </button>
+        <button
+          type="button"
+          class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
+          :class="{ 'ss-on': split_screen, 'ss-off': !split_screen }"
+          v-if="!small_screen && gangStore.getUserGang.gang_streaming"
+          @click="toggleSplitScreen"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="18"
+            fill="currentColor"
+            class="bi bi-grid-1x2"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M6 1H1v14h5V1zm9 0h-5v5h5V1zm0 9v5h-5v-5h5zM0 1a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V1zm9 0a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1V1zm1 8a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1h-5z"
+            />
+          </svg>
+        </button>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="23"
@@ -82,7 +107,7 @@
           :class="{ expanded: expand_members }"
           viewBox="0 0 16 16"
           @click="expand_members = !expand_members"
-          v-if="gangStore.getUserGang.gang_members.length > 3"
+          v-if="gangStore.getUserGang.gang_members.length > 3 && !split_screen"
         >
           <path
             fill-rule="evenodd"
@@ -129,7 +154,11 @@
             <div
               class="d-flex align-items-center justify-content-center member-view rounded-circle"
               ref="memberRef"
-              :class="{ speaking: isParticipantSpeaking(member[0]) }"
+              :class="{
+                speaking: isParticipantSpeaking(member[0]),
+                'user-split-screen': split_screen,
+                'user-expanded': expand_members,
+              }"
             >
               <img
                 v-bind:src="
@@ -168,7 +197,7 @@
       </div>
     </div>
   </div>
-  <div v-else class="d-flex flex-column">
+  <div v-else-if="!split_screen" class="d-flex flex-column">
     <GangList v-if="showGangList" />
     <GangInteract v-else-if="showGangInteract" />
     <div class="h-auto" v-else>
@@ -271,6 +300,7 @@ export default {
       active_speakers: [],
       speaking: false,
       expand_members: false,
+      split_screen: false,
     };
   },
   name: "GangDashboard",
@@ -459,11 +489,36 @@ export default {
       this.gang_stream_loading = false;
       this.$refs.remoteMediaContainer.innerHTML = "";
     },
-    toggleFullScreen: function (event) {
+    togglePlayerFullScreen: function (event) {
       const playerElement = event.target;
       if (!document.fullscreenElement) {
         playerElement.requestFullscreen();
       } else if (document.exitFullScreen) {
+        document.exitFullscreen();
+      }
+    },
+    enterFullScreen: function () {
+      var isInFullScreen =
+        (document.fullscreenElement && document.fullscreenElement !== null) ||
+        (document.webkitFullscreenElement &&
+          document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement &&
+          document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null);
+      var elem = document.documentElement;
+      if (!isInFullScreen) {
+        elem.requestFullscreen();
+      }
+    },
+    exitFullScreen: function () {
+      var isInFullScreen =
+        (document.fullscreenElement && document.fullscreenElement !== null) ||
+        (document.webkitFullscreenElement &&
+          document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement &&
+          document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null);
+      if (isInFullScreen) {
         document.exitFullscreen();
       }
     },
@@ -478,6 +533,15 @@ export default {
         return m.user_profile_pic;
       }
       return "default.png";
+    },
+    toggleSplitScreen: function () {
+      this.split_screen = !this.split_screen;
+      if (this.split_screen) {
+        this.enterFullScreen();
+      } else {
+        this.exitFullScreen();
+      }
+      this.$parent.$parent.toggleSplitScreen();
     },
   },
   components: {
@@ -586,6 +650,9 @@ export default {
     // Handle incoming gangStopContent messages from server
     sseClient.on("gangEndContent", async () => {
       this.clearStream();
+      if (this.split_screen) {
+        this.toggleSplitScreen();
+      }
       this.gangStore.getUserGangInteract.push({
         type: "gangUpdate",
         message: "THE STREAM HAS ENDED",
@@ -664,8 +731,8 @@ export default {
 }
 
 .member-view {
-  height: 80px;
-  width: 80px;
+  height: 100px;
+  width: 100px;
   background: #80808029;
 }
 
@@ -695,6 +762,11 @@ export default {
   justify-content: space-evenly;
 }
 
+.user-expanded {
+  height: 120px !important;
+  width: 120px !important;
+}
+
 .bi-arrow-down {
   position: relative;
   color: grey;
@@ -716,6 +788,20 @@ export default {
 
 .bi-arrow-down.expanded:hover {
   top: -5px;
+}
+
+.bi-grid {
+  transform: rotate(90deg);
+}
+
+.player-split-screen {
+  width: 100% !important;
+  height: 75% !important;
+}
+
+.user-split-screen {
+  height: 160px !important;
+  width: 160px !important;
 }
 
 @media only screen and (max-width: 497px) {

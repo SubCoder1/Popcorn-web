@@ -464,7 +464,8 @@ h4 {
 .leave-gang-btn,
 .delete-content-btn,
 .delete-gang-btn,
-.mic-off-btn {
+.mic-off-btn,
+.ss-off {
   background: palevioletred;
   border: 0;
   -moz-transition: all 0.2s ease-in;
@@ -479,6 +480,7 @@ h4 {
 .leave-gang-btn:hover,
 .delete-gang-btn:hover,
 .mic-off-btn:hover,
+.ss-off:hover,
 .delete-content-btn:hover,
 .modal-close-btn:focus,
 .kick-member-btn:focus,
@@ -486,7 +488,8 @@ h4 {
 .leave-gang-btn:focus,
 .delete-gang-btn:focus,
 .delete-content-btn:focus,
-.mic-off-btn:focus {
+.mic-off-btn:focus,
+.ss-off:focus {
   background: #d94072;
 }
 
@@ -514,6 +517,7 @@ video {
 
 .gang-info-btn,
 .mic-btn,
+.ss-on,
 .vid-btn {
   background: mediumpurple;
 }
@@ -522,8 +526,10 @@ video {
 .gang-info-btn:focus,
 .mic-btn:hover,
 .vid-btn:hover,
+.ss-on:hover,
 .mic-btn:focus,
-.vid-btn:focus {
+.vid-btn:focus,
+.ss-on:focus {
   background: #7b56c7;
 }
 
