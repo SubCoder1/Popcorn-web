@@ -32,7 +32,14 @@
               >
                 {{ gangStore.getUserGang.gang_content_url }}
               </a>
-              <span v-else>Yet to be uploaded.</span>
+              <span v-else>Yet to be uploaded</span>
+            </span>
+          </div>
+          <div class="d-flex justify-content-between flex-wrap mb-3">
+            <span class="text-sm mb-2">Screen Share:</span>
+            <span class="text-sm text-break text-secondary">
+              <span v-if="gangStore.getUserGang.gang_screen_share">ON</span>
+              <span v-else>OFF</span>
             </span>
           </div>
           <div class="d-flex justify-content-between flex-wrap mb-3">
@@ -124,7 +131,8 @@
             class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm admin-btn"
             v-if="
               (gangStore.getUserGang.gang_content_ID.length != 0 ||
-                gangStore.getUserGang.gang_content_url.length != 0) &&
+                gangStore.getUserGang.gang_content_url.length != 0 ||
+                gangStore.getUserGang.gang_screen_share) &&
               gangStore.getUserGang.is_admin &&
               !gangStore.getUserGang.gang_streaming
             "
@@ -139,7 +147,8 @@
             class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm delete-content-btn"
             v-else-if="
               (gangStore.getUserGang.gang_content_ID.length != 0 ||
-                gangStore.getUserGang.gang_content_url.length != 0) &&
+                gangStore.getUserGang.gang_content_url.length != 0 ||
+                gangStore.getUserGang.gang_screen_share) &&
               gangStore.getUserGang.is_admin &&
               gangStore.getUserGang.gang_streaming
             "
@@ -170,7 +179,13 @@
     </div>
     <div
       class="gang-interact-body d-flex flex-column text-wrap ps-4 pe-4"
-      :class="{ 'shrink-for-stream': gangStore.getUserGang.gang_streaming }"
+      :class="{
+        'shrink-for-stream':
+          gangStore.getUserGang.gang_streaming &&
+          (!gangStore.getUserGang.gang_screen_share ||
+            (!gangStore.getUserGang.is_admin &&
+              gangStore.getUserGang.gang_screen_share)),
+      }"
       ref="gangChatBody"
     >
       <div
@@ -296,7 +311,6 @@
 import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
 import { useUserStore } from "@/stores/user.store";
-import axios from "axios";
 
 export default {
   name: "GangInteract",
@@ -366,35 +380,10 @@ export default {
         this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
-    playContentAPI: async function () {
-      const resp = await axios
-        .post(
-          process.env.VUE_APP_PLAY_CONTENT_API,
-          {},
-          {
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          return response.status;
-        })
-        .catch((e) => {
-          // error occured
-          if (e.response) {
-            // Server sent a response
-            return e.response.status;
-            // show the first validation issue received from server
-          } else {
-            // Server unreachable
-            return 503;
-          }
-        });
-      return resp;
-    },
     playContent: async function (retry) {
-      const r = await this.$parent.$parent.handleLiveKitEvents();
       this.loading_play_btn = true;
-      const response = await this.playContentAPI();
+      const r = await this.$parent.$parent.handleLiveKitEvents();
+      const response = await this.$parent.$parent.playContentAPI();
       if (response != 200) {
         if (response == 401) {
           // Unauthorized
@@ -416,37 +405,17 @@ export default {
           this.showAddMemberModal = false;
           this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
+      } else {
+        if (this.gangStore.getUserGang.gang_screen_share) {
+          // turn on screen share
+          this.$parent.$parent.handleScreenShare(true);
+        }
       }
       this.loading_play_btn = false;
     },
-    stopContentAPI: async function () {
-      const resp = await axios
-        .post(
-          process.env.VUE_APP_STOP_CONTENT_API,
-          {},
-          {
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          return response.status;
-        })
-        .catch((e) => {
-          // error occured
-          if (e.response) {
-            // Server sent a response
-            return e.response.status;
-            // show the first validation issue received from server
-          } else {
-            // Server unreachable
-            return 503;
-          }
-        });
-      return resp;
-    },
     stopContent: async function (retry) {
       this.loading_stop_btn = true;
-      const response = await this.stopContentAPI();
+      const response = await this.$parent.$parent.stopContentAPI();
       if (response != 200) {
         if (response == 401) {
           // Unauthorized
@@ -467,6 +436,9 @@ export default {
           this.showAddMemberModal = false;
           this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
         }
+      } else {
+        // turn off screen share
+        this.$parent.$parent.handleScreenShare(false);
       }
       setTimeout(() => {
         this.loading_stop_btn = false;

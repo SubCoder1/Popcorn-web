@@ -283,7 +283,11 @@
           id="gangContentFile"
           @change="uploadContent"
           accept="video/mp4,video/x-matroska,video/*"
-          :disabled="update.gang_content_url.length != 0"
+          :disabled="
+            update.gang_content_url.length != 0 ||
+            update.gang_screen_share ||
+            gangStore.getUserGang.gang_streaming
+          "
         />
       </div>
       <div
@@ -359,9 +363,36 @@
         @click="removeErr()"
         :disabled="
           upload.uploading == true ||
-          gangStore.getUserGang.gang_content_name.length != 0
+          gangStore.getUserGang.gang_content_name.length != 0 ||
+          update.gang_screen_share ||
+          gangStore.getUserGang.gang_streaming
         "
       />
+    </div>
+    <span
+      class="d-flex justify-content-center text-secondary text-sm"
+      style="margin-bottom: 0.78rem"
+    >
+      --- OR ---
+    </span>
+    <div
+      class="d-flex align-items-center justify-content-between flex-wrap mb-3"
+    >
+      <label for="gangScreenShare" class="text-sm">Screen Share</label>
+      <div class="input-md">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          v-model="update.gang_screen_share"
+          id="gangScreenShare"
+          :disabled="
+            upload.uploading == true ||
+            gangStore.getUserGang.gang_content_name.length != 0 ||
+            update.gang_content_url.length != 0 ||
+            gangStore.getUserGang.gang_streaming
+          "
+        />
+      </div>
     </div>
     <div
       class="d-flex align-items-center justify-content-between flex-wrap mb-3"
@@ -543,6 +574,7 @@ export default {
         gang_pass_key: "",
         gang_member_limit: gangStore.getUserGang.gang_member_limit,
         gang_content_url: gangStore.getUserGang.gang_content_url,
+        gang_screen_share: gangStore.getUserGang.gang_screen_share,
         form_submitted: false,
         update_txt: "Update",
       },
@@ -782,6 +814,7 @@ export default {
           gang_name: this.update.gang_name,
           gang_pass_key: this.update.gang_pass_key,
           gang_member_limit: this.update.gang_member_limit,
+          gang_screen_share: this.update.gang_screen_share,
         };
         const response = await this.gangStore.updateGang(updateGangData);
         if (response.status == 200) {
@@ -1053,6 +1086,21 @@ input:disabled::file-selector-button {
 .content-txt {
   font-size: 13px;
   width: 290px;
+}
+
+.form-check-input[type="checkbox"] {
+  border-radius: 1rem;
+  border: 2px solid #dfdfdf;
+}
+
+.form-check-input[type="checkbox"]:focus {
+  box-shadow: none;
+  border: 2px solid rgb(241, 133, 121);
+}
+
+.form-check-input[type="checkbox"]:checked {
+  border: 2px solid rgb(241, 133, 121);
+  background-color: rgb(241, 133, 121);
 }
 
 @media only screen and (max-width: 1050px) {

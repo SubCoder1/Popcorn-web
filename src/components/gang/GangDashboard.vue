@@ -2,23 +2,37 @@
 
 <template>
   <div
+    :class="{ 'h-75': split_screen }"
     class="stream-player d-flex align-items-center justify-content-center"
-    v-if="gang_stream_loading"
+    v-if="
+      gang_stream_loading &&
+      (!gangStore.getUserGang.gang_screen_share ||
+        (!gangStore.getUserGang.is_admin &&
+          gangStore.getUserGang.gang_screen_share))
+    "
   >
     <div class="loader"></div>
   </div>
   <div
     ref="remoteMediaContainer"
-    :class="{ 'stream-player': load_video }"
-    @dblclick="toggleFullScreen"
+    :class="{
+      'player-split-screen': split_screen && !gang_stream_loading,
+      'stream-player':
+        load_video &&
+        (!gangStore.getUserGang.gang_screen_share ||
+          (!gangStore.getUserGang.is_admin &&
+            gangStore.getUserGang.gang_screen_share)),
+    }"
+    @dblclick="togglePlayerFullScreen"
   ></div>
   <div
-    class="gang-users p-4"
     :class="{
-      'd-flex': !play_permission,
-      'align-items-center': !play_permission,
+      'h-25': split_screen,
+      'd-flex': !play_permission || split_screen,
+      'align-items-center': !play_permission || split_screen,
       'justify-content-center': !play_permission,
     }"
+    class="gang-users p-4 pb-0"
     v-if="!gangStore.canCreateGang || !gangStore.canJoinGang"
   >
     <button
@@ -30,9 +44,7 @@
       click here to allow voice or video interactions
     </button>
     <div v-else class="d-flex justify-content-between">
-      <div
-        class="d-flex flex-column align-items-center justify-content-between"
-      >
+      <div class="d-flex flex-column align-items-center justify-content-around">
         <button
           type="button"
           class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
@@ -73,6 +85,31 @@
             />
           </svg>
         </button>
+        <button
+          type="button"
+          class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
+          :class="{ 'ss-on': split_screen, 'ss-off': !split_screen }"
+          v-if="
+            !small_screen &&
+            gangStore.getUserGang.gang_streaming &&
+            (!gangStore.getUserGang.gang_screen_share ||
+              !gangStore.getUserGang.is_admin)
+          "
+          @click="toggleSplitScreen"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="18"
+            fill="currentColor"
+            class="bi bi-grid-1x2"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M6 1H1v14h5V1zm9 0h-5v5h5V1zm0 9v5h-5v-5h5zM0 1a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V1zm9 0a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1V1zm1 8a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1h-5z"
+            />
+          </svg>
+        </button>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="23"
@@ -82,7 +119,7 @@
           :class="{ expanded: expand_members }"
           viewBox="0 0 16 16"
           @click="expand_members = !expand_members"
-          v-if="gangStore.getUserGang.gang_members.length > 3"
+          v-if="gangStore.getUserGang.gang_members.length > 3 && !split_screen"
         >
           <path
             fill-rule="evenodd"
@@ -129,7 +166,11 @@
             <div
               class="d-flex align-items-center justify-content-center member-view rounded-circle"
               ref="memberRef"
-              :class="{ speaking: isParticipantSpeaking(member[0]) }"
+              :class="{
+                speaking: isParticipantSpeaking(member[0]),
+                'user-split-screen': split_screen,
+                'user-expanded': expand_members,
+              }"
             >
               <img
                 v-bind:src="
@@ -143,6 +184,125 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div
+    class="d-flex align-items-center justify-content-center mt-3"
+    v-if="!split_screen && (!gangStore.canCreateGang || !gangStore.canJoinGang)"
+  >
+    <div class="position-relative" style="left: 14px">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        fill="currentColor"
+        class="bi bi-chevron-down position-relative"
+        viewBox="0 0 16 16"
+        style="right: 4px"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+        />
+      </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        fill="currentColor"
+        class="bi bi-chevron-down position-relative"
+        viewBox="0 0 16 16"
+        style="right: 8px"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+        />
+      </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        fill="currentColor"
+        class="bi bi-chevron-down position-relative"
+        viewBox="0 0 16 16"
+        style="right: 12px"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+        />
+      </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        fill="currentColor"
+        class="bi bi-chevron-down position-relative"
+        viewBox="0 0 16 16"
+        style="right: 16px"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+        />
+      </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        fill="currentColor"
+        class="bi bi-chevron-down position-relative"
+        viewBox="0 0 16 16"
+        style="right: 20px"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+        />
+      </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        fill="currentColor"
+        class="bi bi-chevron-down position-relative"
+        viewBox="0 0 16 16"
+        style="right: 24px"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+        />
+      </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        fill="currentColor"
+        class="bi bi-chevron-down position-relative"
+        viewBox="0 0 16 16"
+        style="right: 28px"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+        />
+      </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        fill="currentColor"
+        class="bi bi-chevron-down position-relative"
+        viewBox="0 0 16 16"
+        style="right: 32px"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+        />
+      </svg>
     </div>
   </div>
   <div v-if="loading" class="d-flex flex-column p-4">
@@ -168,7 +328,7 @@
       </div>
     </div>
   </div>
-  <div v-else class="d-flex flex-column">
+  <div v-else-if="!split_screen" class="d-flex flex-column">
     <GangList v-if="showGangList" />
     <GangInteract v-else-if="showGangInteract" />
     <div class="h-auto" v-else>
@@ -228,6 +388,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
 import { useUserStore } from "@/stores/user.store";
@@ -271,6 +432,7 @@ export default {
       active_speakers: [],
       speaking: false,
       expand_members: false,
+      split_screen: false,
     };
   },
   name: "GangDashboard",
@@ -357,6 +519,56 @@ export default {
       this.showErr = false;
       this.formErr = "";
     },
+    playContentAPI: async function () {
+      const resp = await axios
+        .post(
+          process.env.VUE_APP_PLAY_CONTENT_API,
+          {},
+          {
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          return response.status;
+        })
+        .catch((e) => {
+          // error occured
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+            // show the first validation issue received from server
+          } else {
+            // Server unreachable
+            return 503;
+          }
+        });
+      return resp;
+    },
+    stopContentAPI: async function () {
+      const resp = await axios
+        .post(
+          process.env.VUE_APP_STOP_CONTENT_API,
+          {},
+          {
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          return response.status;
+        })
+        .catch((e) => {
+          // error occured
+          if (e.response) {
+            // Server sent a response
+            return e.response.status;
+            // show the first validation issue received from server
+          } else {
+            // Server unreachable
+            return 503;
+          }
+        });
+      return resp;
+    },
     handleLiveKitEvents: async function (retry) {
       if (!this.play_permission) {
         this.play_permission = true;
@@ -404,7 +616,10 @@ export default {
     },
     handleTrackSubscribed: function (track, publication, participant) {
       const media = publication.track.attach();
-      if (participant.identity == "gang_admin") {
+      if (
+        participant.identity == "gang_admin" ||
+        participant.identity == this.gangStore.getUserGang.gang_admin
+      ) {
         // Stream
         this.gang_stream_loading = false;
         if (publication.kind == "video" && !this.load_video) {
@@ -439,6 +654,25 @@ export default {
         delete this.active_members.delete(participant.identity);
       }
     },
+    handleScreenShare: function (action) {
+      if (action) {
+        if (!room.localParticipant.isScreenShareEnabled) {
+          room.localParticipant.setScreenShareEnabled(true, {
+            audio: true,
+            video: true,
+          });
+        }
+      } else {
+        if (room.localParticipant.isScreenShareEnabled) {
+          room.localParticipant.setScreenShareEnabled(false);
+        }
+      }
+    },
+    handleScreenShareStopped: async function (publication, participant) {
+      if (publication.source == "screen_share") {
+        await this.stopContentAPI();
+      }
+    },
     isParticipantSpeaking: function (participant) {
       let result = false;
       this.active_speakers.forEach((speaker) => {
@@ -459,11 +693,36 @@ export default {
       this.gang_stream_loading = false;
       this.$refs.remoteMediaContainer.innerHTML = "";
     },
-    toggleFullScreen: function (event) {
+    togglePlayerFullScreen: function (event) {
       const playerElement = event.target;
       if (!document.fullscreenElement) {
         playerElement.requestFullscreen();
       } else if (document.exitFullScreen) {
+        document.exitFullscreen();
+      }
+    },
+    enterFullScreen: function () {
+      var isInFullScreen =
+        (document.fullscreenElement && document.fullscreenElement !== null) ||
+        (document.webkitFullscreenElement &&
+          document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement &&
+          document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null);
+      var elem = document.documentElement;
+      if (!isInFullScreen) {
+        elem.requestFullscreen();
+      }
+    },
+    exitFullScreen: function () {
+      var isInFullScreen =
+        (document.fullscreenElement && document.fullscreenElement !== null) ||
+        (document.webkitFullscreenElement &&
+          document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement &&
+          document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null);
+      if (isInFullScreen) {
         document.exitFullscreen();
       }
     },
@@ -478,6 +737,15 @@ export default {
         return m.user_profile_pic;
       }
       return "default.png";
+    },
+    toggleSplitScreen: function () {
+      this.split_screen = !this.split_screen;
+      if (this.split_screen) {
+        this.enterFullScreen();
+      } else {
+        this.exitFullScreen();
+      }
+      this.$parent.$parent.toggleSplitScreen();
     },
   },
   components: {
@@ -498,6 +766,7 @@ export default {
       RoomEvent.ParticipantDisconnected,
       this.handleDisconnectedParticipant
     );
+    room.on(RoomEvent.LocalTrackUnpublished, this.handleScreenShareStopped);
     await this.getUserGang(false);
     // Mark yourself as active
     this.active_members.set(this.userStore.getUserName, true);
@@ -579,13 +848,17 @@ export default {
       });
     });
     // Handle incoming gangPlayContent messages from server
-    sseClient.on("gangPlayContent", () => {
+    sseClient.on("gangPlayContent", async () => {
       this.gangStore.getUserGang.gang_streaming = true;
       this.gang_stream_loading = true;
+      await this.handleLiveKitEvents(false);
     });
     // Handle incoming gangStopContent messages from server
     sseClient.on("gangEndContent", async () => {
       this.clearStream();
+      if (this.split_screen) {
+        this.toggleSplitScreen();
+      }
       this.gangStore.getUserGangInteract.push({
         type: "gangUpdate",
         message: "THE STREAM HAS ENDED",
@@ -606,6 +879,14 @@ export default {
     });
   },
   async beforeUnmount() {
+    if (
+      this.gangStore.getUserGang.gang_screen_share &&
+      this.gangStore.getUserGang.gang_streaming
+    ) {
+      console.log("working");
+      room.localParticipant.setScreenShareEnabled(false);
+      await this.stopContentAPI();
+    }
     await room.disconnect();
     // Make sure to close the connection with the events server
     // when the component is destroyed, or we'll have ghost connections!
@@ -664,8 +945,8 @@ export default {
 }
 
 .member-view {
-  height: 80px;
-  width: 80px;
+  height: 100px;
+  width: 100px;
   background: #80808029;
 }
 
@@ -695,6 +976,11 @@ export default {
   justify-content: space-evenly;
 }
 
+.user-expanded {
+  height: 120px !important;
+  width: 120px !important;
+}
+
 .bi-arrow-down {
   position: relative;
   color: grey;
@@ -716,6 +1002,25 @@ export default {
 
 .bi-arrow-down.expanded:hover {
   top: -5px;
+}
+
+.bi-grid {
+  transform: rotate(90deg);
+}
+
+.player-split-screen {
+  width: 100% !important;
+  height: 75% !important;
+  border-radius: 0% !important;
+}
+
+.user-split-screen {
+  height: 160px !important;
+  width: 160px !important;
+}
+
+.bi-chevron-down {
+  color: darkgrey;
 }
 
 @media only screen and (max-width: 497px) {
