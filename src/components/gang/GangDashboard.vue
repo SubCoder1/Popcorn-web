@@ -43,10 +43,8 @@
     >
       click here to allow voice or video interactions
     </button>
-    <div v-else class="d-flex justify-content-around">
-      <div
-        class="d-flex flex-column align-items-center justify-content-between"
-      >
+    <div v-else class="d-flex justify-content-between">
+      <div class="d-flex flex-column align-items-center justify-content-around">
         <button
           type="button"
           class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
