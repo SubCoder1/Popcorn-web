@@ -149,7 +149,7 @@ export default {
 <style scoped lang="css">
 .gang-dashboard-container {
   width: 760px;
-  max-height: 710px;
+  max-height: 730px;
   overflow: auto;
 }
 
