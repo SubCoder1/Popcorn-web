@@ -812,6 +812,7 @@ export default {
           type: "gangJoin",
           message: msg.message,
         });
+        memberActivity.value++;
       }
     });
     // Handle incoming gangBoot messages from server
@@ -883,7 +884,6 @@ export default {
       this.gangStore.getUserGang.gang_screen_share &&
       this.gangStore.getUserGang.gang_streaming
     ) {
-      console.log("working");
       room.localParticipant.setScreenShareEnabled(false);
       await this.stopContentAPI();
     }
