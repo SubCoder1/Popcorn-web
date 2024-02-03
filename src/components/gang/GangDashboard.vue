@@ -334,7 +334,7 @@
     <div class="h-auto" v-else>
       <template v-if="gangStore.canCreateGang && gangStore.canJoinGang">
         <div
-          class="d-flex flex-wrap align-items-center justify-content-between p-4 pb-0"
+          class="d-flex flex-wrap align-items-center justify-content-between p-4 pb-2"
         >
           <div>
             <h4 v-if="createOrJoin">Join a Gang</h4>
