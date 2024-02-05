@@ -198,7 +198,7 @@
           alt="Empty search"
         />
         <span class="mt-3 text-sm text-secondary">
-          Have a chat with the members
+          A place for all of the chit-chatting
         </span>
       </div>
       <transition-group name="fade" tag="div">
