@@ -186,126 +186,8 @@
       </div>
     </div>
   </div>
-  <div
-    class="d-flex align-items-center justify-content-center mt-3"
-    v-if="!split_screen && (!gangStore.canCreateGang || !gangStore.canJoinGang)"
-  >
-    <div class="position-relative" style="left: 14px">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        fill="currentColor"
-        class="bi bi-chevron-down position-relative"
-        viewBox="0 0 16 16"
-        style="right: 4px"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-        />
-      </svg>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        fill="currentColor"
-        class="bi bi-chevron-down position-relative"
-        viewBox="0 0 16 16"
-        style="right: 8px"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-        />
-      </svg>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        fill="currentColor"
-        class="bi bi-chevron-down position-relative"
-        viewBox="0 0 16 16"
-        style="right: 12px"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-        />
-      </svg>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        fill="currentColor"
-        class="bi bi-chevron-down position-relative"
-        viewBox="0 0 16 16"
-        style="right: 16px"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-        />
-      </svg>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        fill="currentColor"
-        class="bi bi-chevron-down position-relative"
-        viewBox="0 0 16 16"
-        style="right: 20px"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-        />
-      </svg>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        fill="currentColor"
-        class="bi bi-chevron-down position-relative"
-        viewBox="0 0 16 16"
-        style="right: 24px"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-        />
-      </svg>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        fill="currentColor"
-        class="bi bi-chevron-down position-relative"
-        viewBox="0 0 16 16"
-        style="right: 28px"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-        />
-      </svg>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        fill="currentColor"
-        class="bi bi-chevron-down position-relative"
-        viewBox="0 0 16 16"
-        style="right: 32px"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-        />
-      </svg>
-    </div>
-  </div>
-  <div v-if="loading" class="d-flex flex-column p-4">
+  <div class="wavy-line"></div>
+  <div v-if="loading" class="d-flex flex-column pt-0 p-4">
     <div class="d-flex flex-row mb-3">
       <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
       <div class="d-flex flex-column justify-content-center">
@@ -334,7 +216,7 @@
     <div class="h-auto" v-else>
       <template v-if="gangStore.canCreateGang && gangStore.canJoinGang">
         <div
-          class="d-flex flex-wrap align-items-center justify-content-between p-4 pb-2"
+          class="d-flex flex-wrap align-items-center justify-content-between pt-0 p-4 pb-2"
         >
           <div>
             <h4 v-if="createOrJoin">Join a Gang</h4>
@@ -1019,8 +901,12 @@ export default {
   width: 160px !important;
 }
 
-.bi-chevron-down {
-  color: darkgrey;
+.wavy-line {
+  width: auto;
+  position: relative;
+  height: 90px;
+  background: url("~@/assets/misc/wavy.svg") no-repeat center;
+  background-size: contain;
 }
 
 @media only screen and (max-width: 497px) {
