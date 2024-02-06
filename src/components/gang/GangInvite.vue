@@ -253,7 +253,7 @@ export default {
             await this.acceptInvite(true, invite);
           }
         } else {
-          // Not able to create gang even after refreshing token
+          // Not able to accept invite even after refreshing token
           this.showWarnModal = false;
           this.$parent.$parent.$parent.$parent.srvErrModal();
         }
