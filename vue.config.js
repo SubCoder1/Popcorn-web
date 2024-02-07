@@ -1,5 +1,17 @@
 module.exports = {
   transpileDependencies: true,
+  chainWebpack: config => {
+    config.module
+      .rule('vue')
+      .use('vue-loader')
+      .tap(options => ({
+        ...options,
+        compilerOptions: {
+          // treat lottie-player tags as custom elements
+          isCustomElement: tag => tag.startsWith('dotlottie-')
+        }
+      }))
+  },
   pwa: {
     name: "Popcorn",
     themeColor: "#f18579",
