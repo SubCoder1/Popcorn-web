@@ -904,7 +904,7 @@ export default {
 .wavy-line {
   width: auto;
   position: relative;
-  height: 90px;
+  height: 42px;
   background: url("~@/assets/misc/wavy.svg") no-repeat center;
   background-size: contain;
 }
