@@ -211,7 +211,8 @@ h4 {
 .play-btn,
 .update-btn,
 .allow-play-perm,
-.success {
+.success,
+.accept-invite {
   background-color: mediumaquamarine;
 }
 
@@ -242,7 +243,9 @@ h4 {
 .allow-play-perm:hover,
 .allow-play-perm:focus,
 .success:hover,
-.success:focus {
+.success:focus,
+.accept-invite:hover,
+.accept-invite:focus {
   background-color: #0cc183;
 }
 
@@ -436,7 +439,7 @@ h4 {
 }
 
 .input-xsm {
-  width: 60px;
+  width: 65px;
 }
 
 .profile-pic-xsm {
