@@ -32,7 +32,7 @@
       'align-items-center': !play_permission || split_screen,
       'justify-content-center': !play_permission,
     }"
-    class="gang-users p-4 pb-0"
+    class="gang-users flex-column pb-3 p-4"
     v-if="!gangStore.canCreateGang || !gangStore.canJoinGang"
   >
     <button
@@ -54,8 +54,8 @@
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="23"
+            width="23"
+            height="18"
             fill="currentColor"
             class="bi bi-mic"
             viewBox="0 0 16 16"
@@ -70,8 +70,8 @@
           </svg>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="23"
+            width="23"
+            height="18"
             fill="currentColor"
             class="bi bi-mic-mute"
             viewBox="0 0 16 16"
@@ -158,35 +158,87 @@
       <div
         v-else
         ref="memberActivity"
-        class="d-flex flex-row w-100 ps-3 pe-3 overflow-auto"
+        class="d-flex flex-row w-100 overflow-auto"
         :class="{ 'expand-members-tab': expand_members }"
       >
-        <div v-for="member in active_members" :key="member" :id="member[0]">
-          <div class="member d-flex flex-column align-items-center ms-4 me-4">
-            <div
-              class="d-flex align-items-center justify-content-center member-view rounded-circle"
-              ref="memberRef"
-              :class="{
-                speaking: isParticipantSpeaking(member[0]),
-                'user-split-screen': split_screen,
-                'user-expanded': expand_members,
-              }"
-            >
-              <img
-                v-bind:src="
-                  require(`@/assets/profile/${getMemberProfilePic(member[0])}`)
-                "
-                class="profile-pic-lg"
-                alt="User profile picture"
-              />
-            </div>
-            <span class="text-secondary text-xsm">@{{ member[0] }}</span>
+        <div
+          v-for="member in active_members"
+          :key="member"
+          :id="member[0]"
+          class="member position-relative d-flex flex-column align-items-center ms-3 me-3"
+        >
+          <div
+            class="d-flex align-items-center justify-content-center member-view rounded-circle"
+            ref="memberRef"
+            :class="{
+              speaking: isParticipantSpeaking(member[0]),
+              'user-split-screen': split_screen,
+              'user-expanded': expand_members,
+            }"
+          >
+            <img
+              v-bind:src="
+                require(`@/assets/profile/${getMemberProfilePic(member[0])}`)
+              "
+              class="profile-pic-lg"
+              alt="User profile picture"
+            />
           </div>
+          <span class="text-secondary text-xsm">@{{ member[0] }}</span>
+          <button
+            v-if="!member[1].isLocal"
+            class="btn btn-circle-sm rounded-circle position-absolute d-flex align-items-center justify-content-center p-0"
+            :class="{
+              'mute-sound-btn': member[1].getVolume() != 0,
+              'unmute-sound-btn': member[1].getVolume() == 0,
+            }"
+            @click="toggleMemberNoise(member[1])"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-volume-mute"
+              viewBox="0 0 16 16"
+              v-if="member[1].getVolume() != 0"
+            >
+              <path
+                d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06M6 5.04 4.312 6.39A.5.5 0 0 1 4 6.5H2v3h2a.5.5 0 0 1 .312.11L6 10.96zm7.854.606a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0"
+              />
+            </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-volume-up"
+              viewBox="0 0 16 16"
+              v-else
+            >
+              <path
+                d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z"
+              />
+              <path
+                d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89z"
+              />
+              <path
+                d="M10.025 8a4.5 4.5 0 0 1-1.318 3.182L8 10.475A3.5 3.5 0 0 0 9.025 8c0-.966-.392-1.841-1.025-2.475l.707-.707A4.5 4.5 0 0 1 10.025 8M7 4a.5.5 0 0 0-.812-.39L3.825 5.5H1.5A.5.5 0 0 0 1 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 7 12zM4.312 6.39 6 5.04v5.92L4.312 9.61A.5.5 0 0 0 4 9.5H2v-3h2a.5.5 0 0 0 .312-.11"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
+    <div
+      class="d-flex align-items-center justify-content-center text-secondary text-xsm mt-3 m-auto"
+      v-if="play_permission && !loading_members"
+    >
+      ---
+      <div class="online rounded-circle ms-2 me-2"></div>
+      {{ active_members.size }} active ---
+    </div>
   </div>
-  <div class="wavy-line"></div>
   <div v-if="loading" class="d-flex flex-column pt-0 p-4">
     <div class="d-flex flex-row mb-3">
       <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
@@ -216,7 +268,7 @@
     <div class="h-auto" v-else>
       <template v-if="gangStore.canCreateGang && gangStore.canJoinGang">
         <div
-          class="d-flex flex-wrap align-items-center justify-content-between pt-0 p-4 pb-2"
+          class="d-flex flex-wrap align-items-center justify-content-between p-4 pb-2"
         >
           <div>
             <h4 v-if="createOrJoin">Join a Gang</h4>
@@ -491,8 +543,14 @@ export default {
               this.handleConnectedParticipant(p);
             });
           })
-          .catch(() => {
-            this.$parent.$parent.$parent.$parent.srvErrModal();
+          .catch(async () => {
+            if (retry == false) {
+              this.play_permission = false;
+              this.authStore.stream_token = "";
+              await this.handleLiveKitEvents(false);
+            } else {
+              this.$parent.$parent.$parent.$parent.srvErrModal();
+            }
           });
       }
     },
@@ -528,7 +586,7 @@ export default {
     },
     handleConnectedParticipant: function (participant) {
       if (participant.identity != "gang_admin") {
-        this.active_members.set(participant.identity, true);
+        this.active_members.set(participant.identity, participant);
       }
     },
     handleDisconnectedParticipant: function (participant) {
@@ -568,6 +626,13 @@ export default {
     toggleMic: function () {
       this.speaking = !this.speaking;
       room.localParticipant.setMicrophoneEnabled(this.speaking);
+    },
+    toggleMemberNoise: function (member) {
+      if (member.getVolume() == 0) {
+        member.setVolume(1); // Unmute
+      } else {
+        member.setVolume(0); // Mute
+      }
     },
     clearStream: async function () {
       this.load_video = false;
@@ -651,7 +716,7 @@ export default {
     room.on(RoomEvent.LocalTrackUnpublished, this.handleScreenShareStopped);
     await this.getUserGang(false);
     // Mark yourself as active
-    this.active_members.set(this.userStore.getUserName, true);
+    this.active_members.set(this.userStore.getUserName, room.localParticipant);
 
     sseClient = await this.$sse.create({
       url: process.env.VUE_APP_SSE_API,
@@ -663,6 +728,7 @@ export default {
       // When this error is caught, it means the initial connection to the
       // events server failed.  No automatic attempts to reconnect will be made.
       console.error("Failed to connect to server", err);
+      this.$parent.$parent.$parent.$parent.srvErrModal();
     });
     // Handle incoming gangInvite messages from server
     sseClient.on("gangInvite", (msg) => {
@@ -755,7 +821,7 @@ export default {
     // Catch any errors (ie. lost connections, etc.)
     sseClient.on("error", (e) => {
       console.error("lost connection or failed to parse!", e);
-
+      this.$parent.$parent.$parent.$parent.srvErrModal();
       // If this error is due to an unexpected disconnection, EventSource will
       // automatically attempt to reconnect indefinitely. You will _not_ need to
       // re-add your handlers.
@@ -901,12 +967,29 @@ export default {
   width: 160px !important;
 }
 
-.wavy-line {
-  width: auto;
+.seperator {
+  height: 5px;
+  margin: 1rem;
+}
+
+.mute-sound-btn {
+  top: 0;
+  right: -10px;
+  background: #db70936e;
+}
+
+.unmute-sound-btn {
+  top: 0;
+  right: -10px;
+  background: #66cdaa6e;
+}
+
+.online {
+  height: 8px;
+  width: 8px;
+  background: mediumaquamarine;
   position: relative;
-  height: 42px;
-  background: url("~@/assets/misc/wavy.svg") no-repeat center;
-  background-size: contain;
+  top: 1px;
 }
 
 @media only screen and (max-width: 497px) {
