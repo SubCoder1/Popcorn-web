@@ -119,7 +119,7 @@
   <div class="gang-interact-parent">
     <div class="gang-interact-header d-flex">
       <div
-        class="gang-info d-flex align-items-center justify-content-between w-100 p-4"
+        class="gang-info d-flex align-items-center justify-content-between w-100 pt-2 p-4"
       >
         <div>
           <h4>{{ gangStore.getUserGang.gang_name }}</h4>
@@ -198,7 +198,7 @@
           alt="Empty search"
         />
         <span class="mt-3 text-sm text-secondary">
-          A place for all of the chit-chatting
+          Gang messages will show up here
         </span>
       </div>
       <transition-group name="fade" tag="div">
@@ -240,7 +240,7 @@
                 v-bind:src="
                   require(`@/assets/profile/${msg.user.user_profile_pic}`)
                 "
-                class="me-2 profile-pic-xsm"
+                class="me-2 profile-pic-sm"
                 alt="User profile picture"
               />
               <div class="message-body">
@@ -496,7 +496,7 @@ export default {
 }
 
 .gang-interact-header {
-  height: 109px;
+  height: 95px;
 }
 .gang-interact-body {
   height: 370px;
@@ -598,6 +598,10 @@ export default {
   pointer-events: none;
 }
 
+.gang-interact-img {
+  height: 100px;
+}
+
 @media only screen and (max-width: 497px) {
   .gang-info-members-list {
     margin-top: 0.8rem;
@@ -609,7 +613,7 @@ export default {
   }
 
   .gang-interact-img {
-    height: 95px;
+    height: 90px;
   }
 }
 </style>
