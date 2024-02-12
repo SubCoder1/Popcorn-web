@@ -352,7 +352,7 @@
     >
       <label for="gangContentURL" class="text-sm">
         Content URL <br />
-        <span class="text-secondary">Downloadable:</span>
+        <span class="text-secondary">Should be downloadable:</span>
       </label>
       <input
         type="url"
