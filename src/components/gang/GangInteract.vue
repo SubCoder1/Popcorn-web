@@ -119,16 +119,16 @@
   <div class="gang-interact-parent">
     <div class="gang-interact-header d-flex">
       <div
-        class="gang-info d-flex align-items-center justify-content-between w-100 pt-2 p-4"
+        class="gang-info d-flex align-items-center justify-content-between flex-wrap w-100 pt-2 p-4"
       >
-        <div>
+        <div class="position-relative overflow-scroll" style="top: 4px">
           <h4>{{ gangStore.getUserGang.gang_name }}</h4>
           <router-link to="" @click="goBackToGangList()">Go back</router-link>
         </div>
         <div class="d-flex align-items-center">
           <button
             type="button"
-            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm ms-2"
+            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm"
             :class="{ copied: copied }"
             @click="copyToClipboard()"
             :disabled="copied"
