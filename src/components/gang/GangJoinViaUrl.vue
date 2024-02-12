@@ -53,6 +53,7 @@
         <button
           type="button"
           class="btn btn-sm text-sm rounded-md accept-invite ms-3"
+          @click="acceptInvite(false)"
         >
           Accept
         </button>
