@@ -125,7 +125,17 @@
           <h4>{{ gangStore.getUserGang.gang_name }}</h4>
           <router-link to="" @click="goBackToGangList()">Go back</router-link>
         </div>
-        <div class="d-flex">
+        <div class="d-flex align-items-center">
+          <button
+            type="button"
+            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm"
+            :class="{ copied: copied }"
+            @click="copyToClipboard()"
+            :disabled="copied"
+          >
+            <span v-if="!copied">SHARE</span>
+            <span v-else>COPIED</span>
+          </button>
           <button
             type="button"
             class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm admin-btn"
@@ -325,6 +335,7 @@ export default {
       loading_play_btn: false,
       loading_stop_btn: false,
       loading_leave_btn: false,
+      copied: false,
     };
   },
   methods: {
@@ -478,6 +489,19 @@ export default {
       }
       this.loading_leave_btn = false;
     },
+    copyToClipboard: async function () {
+      await navigator.clipboard.writeText(
+        window.location.origin +
+          "/invite/" +
+          this.gangStore.getUserGang.gang_admin +
+          "/" +
+          this.gangStore.getUserGang.gang_invite_hashcode
+      );
+      this.copied = true;
+      setTimeout(() => {
+        this.copied = false;
+      }, 3500);
+    },
   },
   async mounted() {
     this.scrollToBottomOfChatBody();
@@ -600,6 +624,10 @@ export default {
 
 .gang-interact-img {
   height: 100px;
+}
+
+.copied {
+  background: mediumaquamarine;
 }
 
 @media only screen and (max-width: 497px) {
