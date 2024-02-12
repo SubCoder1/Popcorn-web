@@ -128,7 +128,7 @@
         <div class="d-flex align-items-center">
           <button
             type="button"
-            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm"
+            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm ms-2"
             :class="{ copied: copied }"
             @click="copyToClipboard()"
             :disabled="copied"
@@ -138,7 +138,7 @@
           </button>
           <button
             type="button"
-            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm admin-btn"
+            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm admin-btn ms-2"
             v-if="
               (gangStore.getUserGang.gang_content_ID.length != 0 ||
                 gangStore.getUserGang.gang_content_url.length != 0 ||
@@ -154,7 +154,7 @@
           </button>
           <button
             type="button"
-            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm delete-content-btn"
+            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm delete-content-btn ms-2"
             v-else-if="
               (gangStore.getUserGang.gang_content_ID.length != 0 ||
                 gangStore.getUserGang.gang_content_url.length != 0 ||
@@ -170,7 +170,7 @@
           </button>
           <button
             type="button"
-            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm leave-gang-btn"
+            class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-sm leave-gang-btn ms-2"
             v-if="!gangStore.getUserGang.is_admin"
             @click="leaveGang(false)"
           >
