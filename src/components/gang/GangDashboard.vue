@@ -4,12 +4,7 @@
   <div
     :class="{ 'h-75': split_screen }"
     class="stream-player d-flex align-items-center justify-content-center"
-    v-if="
-      gang_stream_loading &&
-      (!gangStore.getUserGang.gang_screen_share ||
-        (!gangStore.getUserGang.is_admin &&
-          gangStore.getUserGang.gang_screen_share))
-    "
+    v-if="gang_stream_loading"
   >
     <div class="loader"></div>
   </div>
@@ -17,11 +12,7 @@
     ref="remoteMediaContainer"
     :class="{
       'player-split-screen': split_screen && !gang_stream_loading,
-      'stream-player':
-        load_video &&
-        (!gangStore.getUserGang.gang_screen_share ||
-          (!gangStore.getUserGang.is_admin &&
-            gangStore.getUserGang.gang_screen_share)),
+      'stream-player': load_video,
     }"
     @dblclick="togglePlayerFullScreen"
   ></div>
@@ -89,12 +80,7 @@
           type="button"
           class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
           :class="{ 'ss-on': split_screen, 'ss-off': !split_screen }"
-          v-if="
-            !small_screen &&
-            gangStore.getUserGang.gang_streaming &&
-            (!gangStore.getUserGang.gang_screen_share ||
-              !gangStore.getUserGang.is_admin)
-          "
+          v-if="!small_screen && gangStore.getUserGang.gang_streaming"
           @click="toggleSplitScreen"
         >
           <svg
@@ -231,7 +217,7 @@
       </div>
     </div>
     <div
-      class="d-flex align-items-center justify-content-center text-secondary text-xsm mt-3 m-auto"
+      class="d-flex align-items-center justify-content-center text-secondary text-xsm m-auto"
       v-if="play_permission && !loading_members"
     >
       ---
@@ -341,6 +327,17 @@ const room = new Room({
   // automatically manage subscribed video quality
   adaptiveStream: true,
   dynacast: true,
+  audioCaptureDefaults: {
+    echoCancellation: true,
+    noiseSuppression: true,
+  },
+  publishDefaults: {
+    screenShareEncoding: {
+      maxBitrate: 1_500_000,
+      maxFramerate: 30,
+    },
+    dtx: true,
+  },
 });
 
 export default {
@@ -594,18 +591,30 @@ export default {
         delete this.active_members.delete(participant.identity);
       }
     },
-    handleScreenShare: function (action) {
-      if (action) {
-        if (!room.localParticipant.isScreenShareEnabled) {
-          room.localParticipant.setScreenShareEnabled(true, {
-            audio: true,
-            video: true,
-          });
+    handleScreenShareContent: function (publication, participant) {
+      if (publication.kind == "video" && !this.load_video) {
+        this.gang_stream_loading = false;
+        const media = publication.track.attach();
+        this.load_video = true;
+        this.$refs.remoteMediaContainer.appendChild(media);
+      }
+    },
+    toggleScreenShare: function (action) {
+      try {
+        if (action) {
+          if (!room.localParticipant.isScreenShareEnabled) {
+            room.localParticipant.setScreenShareEnabled(true, {
+              audio: true,
+              video: true,
+            });
+          }
+        } else {
+          if (room.localParticipant.isScreenShareEnabled) {
+            room.localParticipant.setScreenShareEnabled(false);
+          }
         }
-      } else {
-        if (room.localParticipant.isScreenShareEnabled) {
-          room.localParticipant.setScreenShareEnabled(false);
-        }
+      } catch (err) {
+        this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
     handleScreenShareStopped: async function (publication, participant) {
@@ -634,7 +643,7 @@ export default {
         member.setVolume(0); // Mute
       }
     },
-    clearStream: async function () {
+    clearStream: function () {
       this.load_video = false;
       this.load_audio = false;
       this.gang_stream_loading = false;
@@ -706,15 +715,22 @@ export default {
     window.addEventListener("resize", this.detectSmallScreen);
     this.detectSmallScreen();
     // Load Livekit room event handlers
+    // Triggerd when a new remote track is published (can be stream or user video/audio)
     room.on(RoomEvent.TrackSubscribed, this.handleTrackSubscribed);
+    // Triggered whenever there's a change in active speakers
     room.on(RoomEvent.ActiveSpeakersChanged, this.handleActiveSpeakers);
+    // Triggered whenever a new member joins in
     room.on(RoomEvent.ParticipantConnected, this.handleConnectedParticipant);
+    // Triggered whenever a member disconnects
     room.on(
       RoomEvent.ParticipantDisconnected,
       this.handleDisconnectedParticipant
     );
+    // Triggered when screen shared stream is received by the LOCAL user
+    room.on(RoomEvent.LocalTrackPublished, this.handleScreenShareContent);
+    // Triggered when screen share is stopped
     room.on(RoomEvent.LocalTrackUnpublished, this.handleScreenShareStopped);
-    await this.getUserGang(false);
+    const _ = await this.getUserGang(false);
     // Mark yourself as active
     this.active_members.set(this.userStore.getUserName, room.localParticipant);
 
