@@ -71,8 +71,12 @@
                     alt="User profile picture"
                   />
                   <div class="d-flex flex-column justify-content-center">
-                    <p class="mb-1 text-sm">{{ user[1].full_name }}</p>
-                    <p class="mb-0 text-sm text-secondary">
+                    <p class="mb-1 text-sm handle-txt-overflow txt-width">
+                      {{ user[1].full_name }}
+                    </p>
+                    <p
+                      class="mb-0 text-sm text-secondary handle-txt-overflow txt-width"
+                    >
                       @{{ user[1].username }}
                     </p>
                   </div>
@@ -182,6 +186,21 @@
               {{ gangStore.getUserGang.gang_member_limit }}
             </span>
           </div>
+          <div
+            class="d-flex justify-content-between align-items-center flex-wrap mb-3"
+          >
+            <span class="text-sm mb-2">Invite via URL:</span>
+            <button
+              type="button"
+              class="btn d-flex align-items-center justify-content-center btn-xsm rounded-md text-xsm"
+              :class="{ copied: copied }"
+              :disabled="copied"
+              @click="copyToClipboard()"
+            >
+              <span v-if="!copied">COPY</span>
+              <span v-else>COPIED!</span>
+            </button>
+          </div>
           <div class="d-flex justify-content-between flex-wrap">
             <div class="d-flex flex-column">
               <label for="gangMembers" class="text-sm m-0">Gang Members:</label>
@@ -242,8 +261,12 @@
                       alt="User profile picture"
                     />
                     <div class="d-flex flex-column justify-content-center">
-                      <p class="mb-1 text-sm">{{ member.full_name }}</p>
-                      <p class="mb-0 text-sm text-secondary">
+                      <p class="mb-1 text-sm handle-txt-overflow txt-width">
+                        {{ member.full_name }}
+                      </p>
+                      <p
+                        class="mb-0 text-sm text-secondary handle-txt-overflow txt-width"
+                      >
                         @{{ member.username }}
                       </p>
                     </div>
@@ -303,8 +326,10 @@
       <div
         class="gang-info d-flex align-items-center justify-content-between flex-wrap w-100 pt-2 p-4"
       >
-        <div class="position-relative overflow-scroll" style="top: 4px">
-          <h4>{{ gangStore.getUserGang.gang_name }}</h4>
+        <div class="position-relative">
+          <h4 class="handle-txt-overflow txt-width">
+            {{ gangStore.getUserGang.gang_name }}
+          </h4>
           <router-link to="" @click="goBackToGangList()">Go back</router-link>
         </div>
         <div class="d-flex align-items-center">
@@ -441,7 +466,7 @@
                 v-bind:src="
                   require(`@/assets/profile/${msg.user.user_profile_pic}`)
                 "
-                class="ms-2 profile-pic-xsm"
+                class="ms-2 profile-pic-sm"
                 alt="User profile picture"
               />
               <div class="message-body text-end">
@@ -516,6 +541,7 @@ export default {
         showAddMemberModal: false,
       },
       message: "",
+      copied: false,
       showGangInfoModal: false,
       loading_members_list: false,
       loading_play_btn: false,
@@ -901,13 +927,13 @@ export default {
 </script>
 
 <style scoped lang="css">
+.bi-share {
+  cursor: pointer;
+}
 .gang-info {
   height: fit-content;
 }
 
-.gang-interact-header {
-  height: 95px;
-}
 .gang-interact-body {
   height: 370px;
   overflow: auto;
@@ -917,7 +943,7 @@ export default {
 }
 
 .shrink-for-stream {
-  height: 185px;
+  height: 160px;
 }
 
 .gang-interact-body::-webkit-scrollbar {
@@ -1017,6 +1043,10 @@ export default {
   background: mediumaquamarine;
 }
 
+.txt-width {
+  max-width: 200px;
+}
+
 @media only screen and (max-width: 497px) {
   .gang-info-members-list {
     margin-top: 0.8rem;
@@ -1029,6 +1059,10 @@ export default {
 
   .gang-interact-img {
     height: 90px;
+  }
+
+  .txt-width {
+    max-width: 190px;
   }
 }
 </style>
