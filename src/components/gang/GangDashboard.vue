@@ -2,230 +2,271 @@
 
 <template>
   <div
-    :class="{ 'h-75': split_screen }"
+    :class="{ 'w-75': split_screen }"
     class="stream-player d-flex align-items-center justify-content-center"
     v-if="gang_stream_loading"
   >
     <div class="loader"></div>
   </div>
   <div
-    ref="remoteMediaContainer"
     :class="{
-      'player-split-screen': split_screen && !gang_stream_loading,
-      'stream-player': load_video,
+      'd-flex align-items-center h-100 overflow-hidden': split_screen,
     }"
-    @dblclick="togglePlayerFullScreen"
-  ></div>
-  <div
-    :class="{
-      'h-25': split_screen,
-      'd-flex': !play_permission || split_screen,
-      'align-items-center': !play_permission || split_screen,
-      'justify-content-center': !play_permission,
-    }"
-    class="gang-users flex-column pb-3 p-4"
-    v-if="!gangStore.canCreateGang || !gangStore.canJoinGang"
   >
-    <button
-      type="button"
-      class="btn rounded-md text-xsm allow-play-perm h-auto"
-      v-if="!play_permission"
-      @click="handleLiveKitEvents(false)"
+    <div
+      ref="remoteMediaContainer"
+      :class="{
+        'player-split-screen': split_screen && !gang_stream_loading,
+        'stream-player': load_video,
+      }"
+      @dblclick="togglePlayerFullScreen"
+    ></div>
+    <div
+      :class="{
+        'h-100 w-20 overflow-auto': split_screen,
+        'd-flex': !play_permission || split_screen,
+        'align-items-center': !play_permission || split_screen,
+        'justify-content-center': !play_permission,
+      }"
+      class="gang-users flex-column pb-3 p-4"
+      v-if="!gangStore.canCreateGang || !gangStore.canJoinGang"
     >
-      click here to allow voice or video interactions
-    </button>
-    <div v-else class="d-flex justify-content-between">
-      <div class="d-flex flex-column align-items-center justify-content-around">
-        <button
-          type="button"
-          class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
-          :class="{ 'mic-btn': speaking, 'mic-off-btn': !speaking }"
-          :disabled="loading_members"
-          @click="toggleMic"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="23"
-            height="18"
-            fill="currentColor"
-            class="bi bi-mic"
-            viewBox="0 0 16 16"
-            v-if="speaking"
-          >
-            <path
-              d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"
-            />
-            <path
-              d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0v5zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"
-            />
-          </svg>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="23"
-            height="18"
-            fill="currentColor"
-            class="bi bi-mic-mute"
-            viewBox="0 0 16 16"
-            v-else
-          >
-            <path
-              d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0v1zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4zm3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3z"
-            />
-            <path
-              d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607zm-7.84-9.253 12 12 .708-.708-12-12-.708.708z"
-            />
-          </svg>
-        </button>
-        <button
-          type="button"
-          class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
-          :class="{ 'ss-on': split_screen, 'ss-off': !split_screen }"
-          v-if="!small_screen && gangStore.getUserGang.gang_streaming"
-          @click="toggleSplitScreen"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="18"
-            fill="currentColor"
-            class="bi bi-grid-1x2"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M6 1H1v14h5V1zm9 0h-5v5h5V1zm0 9v5h-5v-5h5zM0 1a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V1zm9 0a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1V1zm1 8a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1h-5z"
-            />
-          </svg>
-        </button>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="23"
-          height="26"
-          fill="currentColor"
-          class="bi bi-arrow-down"
-          :class="{ expanded: expand_members }"
-          viewBox="0 0 16 16"
-          @click="expand_members = !expand_members"
-          v-if="gangStore.getUserGang.gang_members.length > 3 && !split_screen"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"
-          />
-        </svg>
-      </div>
-      <div
-        v-if="loading_members"
-        class="d-flex flex-row justify-content-between w-100"
+      <button
+        type="button"
+        class="btn rounded-md text-xsm allow-play-perm h-auto"
+        v-if="!play_permission"
+        @click="handleLiveKitEvents(false)"
       >
-        <div class="d-flex flex-column align-items-center me-3 ms-3">
-          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
-          <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
-          <div class="skeleton skeleton-text skeleton-text-xsm"></div>
-        </div>
-        <div class="d-flex flex-column align-items-center me-3 ms-3">
-          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
-          <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
-          <div class="skeleton skeleton-text skeleton-text-xsm"></div>
-        </div>
-        <div class="d-flex flex-column align-items-center me-3 ms-3">
-          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
-          <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
-          <div class="skeleton skeleton-text skeleton-text-xsm"></div>
-        </div>
-        <div
-          class="d-flex flex-column align-items-center me-3 ms-3"
-          v-if="!small_screen"
-        >
-          <div class="skeleton user-prof-skeleton-lg rounded-circle mb-2"></div>
-          <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
-          <div class="skeleton skeleton-text skeleton-text-xsm"></div>
-        </div>
-      </div>
+        click here to allow voice or video interactions
+      </button>
       <div
         v-else
-        ref="memberActivity"
-        class="d-flex flex-row w-100 overflow-auto"
-        :class="{ 'expand-members-tab': expand_members }"
+        class="d-flex justify-content-between"
+        :class="{
+          'overflow-auto': !split_screen,
+          'flex-column': split_screen,
+        }"
       >
         <div
-          v-for="member in active_members"
-          :key="member"
-          :id="member[0]"
-          class="member position-relative d-flex flex-column align-items-center ms-3 me-3"
+          class="d-flex align-items-center justify-content-around"
+          :class="{
+            'flex-column': !split_screen,
+            'flex-row mb-4': split_screen,
+          }"
         >
-          <div
-            class="d-flex align-items-center justify-content-center member-view rounded-circle"
-            ref="memberRef"
-            :class="{
-              speaking: isParticipantSpeaking(member[0]),
-              'user-split-screen': split_screen,
-              'user-expanded': expand_members,
-            }"
-          >
-            <img
-              v-bind:src="
-                require(`@/assets/profile/${getMemberProfilePic(member[0])}`)
-              "
-              class="profile-pic-lg"
-              alt="User profile picture"
-            />
-          </div>
-          <span class="text-secondary text-xsm">@{{ member[0] }}</span>
           <button
-            v-if="!member[1].isLocal"
-            class="btn btn-circle-sm rounded-circle position-absolute d-flex align-items-center justify-content-center p-0"
-            :class="{
-              'mute-sound-btn': member[1].getVolume() != 0,
-              'unmute-sound-btn': member[1].getVolume() == 0,
-            }"
-            @click="toggleMemberNoise(member[1])"
+            type="button"
+            class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
+            :class="{ 'mic-btn': speaking, 'mic-off-btn': !speaking }"
+            :disabled="loading_members"
+            @click="toggleMic"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
+              width="23"
+              height="18"
               fill="currentColor"
-              class="bi bi-volume-mute"
+              class="bi bi-mic"
               viewBox="0 0 16 16"
-              v-if="member[1].getVolume() != 0"
+              v-if="speaking"
             >
               <path
-                d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06M6 5.04 4.312 6.39A.5.5 0 0 1 4 6.5H2v3h2a.5.5 0 0 1 .312.11L6 10.96zm7.854.606a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0"
+                d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"
+              />
+              <path
+                d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0v5zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"
               />
             </svg>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
+              width="23"
+              height="18"
               fill="currentColor"
-              class="bi bi-volume-up"
+              class="bi bi-mic-mute"
               viewBox="0 0 16 16"
               v-else
             >
               <path
-                d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z"
+                d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0v1zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4zm3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3z"
               />
               <path
-                d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89z"
-              />
-              <path
-                d="M10.025 8a4.5 4.5 0 0 1-1.318 3.182L8 10.475A3.5 3.5 0 0 0 9.025 8c0-.966-.392-1.841-1.025-2.475l.707-.707A4.5 4.5 0 0 1 10.025 8M7 4a.5.5 0 0 0-.812-.39L3.825 5.5H1.5A.5.5 0 0 0 1 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 7 12zM4.312 6.39 6 5.04v5.92L4.312 9.61A.5.5 0 0 0 4 9.5H2v-3h2a.5.5 0 0 0 .312-.11"
+                d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607zm-7.84-9.253 12 12 .708-.708-12-12-.708.708z"
               />
             </svg>
           </button>
+          <button
+            type="button"
+            class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
+            :class="{ 'ss-on': split_screen, 'ss-off': !split_screen }"
+            v-if="!small_screen && gangStore.getUserGang.gang_streaming"
+            @click="toggleSplitScreen"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="18"
+              fill="currentColor"
+              class="bi bi-camera-reels"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM1 3a2 2 0 1 0 4 0 2 2 0 0 0-4 0z"
+              />
+              <path
+                d="M9 6h.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 7.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 16H2a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h7zm6 8.73V7.27l-3.5 1.555v4.35l3.5 1.556zM1 8v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z"
+              />
+              <path
+                d="M9 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM7 3a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"
+              />
+            </svg>
+          </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="23"
+            height="26"
+            fill="currentColor"
+            class="bi bi-arrow-down"
+            :class="{ expanded: expand_members }"
+            viewBox="0 0 16 16"
+            @click="expand_members = !expand_members"
+            v-if="
+              gangStore.getUserGang.gang_members.length > 5 && !split_screen
+            "
+          >
+            <path
+              fill-rule="evenodd"
+              d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"
+            />
+          </svg>
+        </div>
+        <div
+          v-if="loading_members"
+          class="d-flex flex-row justify-content-between w-100"
+        >
+          <div class="d-flex flex-column align-items-center me-3 ms-3">
+            <div
+              class="skeleton user-prof-skeleton-lg rounded-circle mb-2"
+            ></div>
+            <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
+            <div class="skeleton skeleton-text skeleton-text-xsm"></div>
+          </div>
+          <div class="d-flex flex-column align-items-center me-3 ms-3">
+            <div
+              class="skeleton user-prof-skeleton-lg rounded-circle mb-2"
+            ></div>
+            <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
+            <div class="skeleton skeleton-text skeleton-text-xsm"></div>
+          </div>
+          <div class="d-flex flex-column align-items-center me-3 ms-3">
+            <div
+              class="skeleton user-prof-skeleton-lg rounded-circle mb-2"
+            ></div>
+            <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
+            <div class="skeleton skeleton-text skeleton-text-xsm"></div>
+          </div>
+          <div
+            class="d-flex flex-column align-items-center me-3 ms-3"
+            v-if="!small_screen"
+          >
+            <div
+              class="skeleton user-prof-skeleton-lg rounded-circle mb-2"
+            ></div>
+            <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
+            <div class="skeleton skeleton-text skeleton-text-xsm"></div>
+          </div>
+        </div>
+        <div
+          v-else
+          ref="memberActivity"
+          class="d-flex"
+          :class="{
+            'expand-members-tab': expand_members && !split_screen,
+            'flex-row w-100': !split_screen,
+            'flex-column h-100': split_screen,
+          }"
+        >
+          <div
+            v-for="member in active_members"
+            :key="member"
+            :id="member[0]"
+            class="member position-relative d-flex flex-column align-items-center ms-3 me-3"
+            :class="{ 'mb-3': split_screen }"
+          >
+            <div
+              class="d-flex align-items-center justify-content-center member-view rounded-circle"
+              ref="memberRef"
+              :class="{
+                speaking: isParticipantSpeaking(member[0]),
+                'user-split-screen': split_screen,
+                'user-expanded': expand_members,
+              }"
+            >
+              <img
+                v-bind:src="
+                  require(`@/assets/profile/${getMemberProfilePic(member[0])}`)
+                "
+                class="profile-pic-lg"
+                alt="User profile picture"
+              />
+            </div>
+            <span class="text-secondary text-xsm handle-txt-overflow txt-width">
+              @{{ member[0] }}
+            </span>
+            <button
+              v-if="!member[1].isLocal"
+              class="btn btn-circle-sm rounded-circle position-absolute d-flex align-items-center justify-content-center p-0"
+              :class="{
+                'mute-sound-btn': member[1].getVolume() != 0,
+                'unmute-sound-btn': member[1].getVolume() == 0,
+              }"
+              @click="toggleMemberNoise(member[1])"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-volume-mute"
+                viewBox="0 0 16 16"
+                v-if="member[1].getVolume() != 0"
+              >
+                <path
+                  d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06M6 5.04 4.312 6.39A.5.5 0 0 1 4 6.5H2v3h2a.5.5 0 0 1 .312.11L6 10.96zm7.854.606a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0"
+                />
+              </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-volume-up"
+                viewBox="0 0 16 16"
+                v-else
+              >
+                <path
+                  d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z"
+                />
+                <path
+                  d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89z"
+                />
+                <path
+                  d="M10.025 8a4.5 4.5 0 0 1-1.318 3.182L8 10.475A3.5 3.5 0 0 0 9.025 8c0-.966-.392-1.841-1.025-2.475l.707-.707A4.5 4.5 0 0 1 10.025 8M7 4a.5.5 0 0 0-.812-.39L3.825 5.5H1.5A.5.5 0 0 0 1 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 7 12zM4.312 6.39 6 5.04v5.92L4.312 9.61A.5.5 0 0 0 4 9.5H2v-3h2a.5.5 0 0 0 .312-.11"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-    <div
-      class="d-flex align-items-center justify-content-center text-secondary text-xsm m-auto"
-      v-if="play_permission && !loading_members"
-    >
-      ---
-      <div class="online rounded-circle ms-2 me-2"></div>
-      {{ active_members.size }} active ---
+      <div
+        class="d-flex align-items-center justify-content-center text-secondary text-xsm pt-1 m-auto"
+        v-if="play_permission && !loading_members && !split_screen"
+      >
+        <div class="online rounded-circle ms-2 me-2"></div>
+        {{ active_members.size }} ACTIVE
+      </div>
     </div>
   </div>
-  <div v-if="loading" class="d-flex flex-column pt-0 p-4">
+  <div v-if="loading" class="d-flex flex-column p-4">
     <div class="d-flex flex-row mb-3">
       <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
       <div class="d-flex flex-column justify-content-center">
@@ -282,7 +323,7 @@
       </template>
       <template v-else>
         <div
-          class="d-flex flex-wrap align-items-center justify-content-between p-4 pb-0"
+          class="d-flex flex-wrap align-items-center justify-content-between p-4 pt-2 pb-0"
         >
           <div class="dashboard-header">
             <h4 v-if="showCustomizePage">Customize Gang</h4>
@@ -552,30 +593,34 @@ export default {
       }
     },
     handleTrackSubscribed: function (track, publication, participant) {
-      const media = publication.track.attach();
-      if (
-        participant.identity == "gang_admin" ||
-        participant.identity == this.gangStore.getUserGang.gang_admin
-      ) {
-        // Stream
-        this.gang_stream_loading = false;
-        if (publication.kind == "video" && !this.load_video) {
-          this.load_video = true;
-          this.$refs.remoteMediaContainer.appendChild(media);
-        } else if (publication.kind == "audio" && !this.load_audio) {
-          this.load_audio = true;
-          this.$refs.remoteMediaContainer.appendChild(media);
-        }
-      } else {
-        // User video or audio
-        if (this.play_permission) {
-          var member_div = this.$refs.memberRef.find(
-            (x) => x.id == participant.identity
-          );
-          if (member_div != undefined) {
-            member_div.appendChild(media);
+      try {
+        const media = publication.track.attach();
+        if (
+          participant.identity == "gang_admin" ||
+          participant.identity == this.gangStore.getUserGang.gang_admin
+        ) {
+          // Stream
+          this.gang_stream_loading = false;
+          if (publication.kind == "video" && !this.load_video) {
+            this.load_video = true;
+            this.$refs.remoteMediaContainer.appendChild(media);
+          } else if (publication.kind == "audio" && !this.load_audio) {
+            this.load_audio = true;
+            this.$refs.remoteMediaContainer.appendChild(media);
+          }
+        } else {
+          // User video or audio
+          if (this.play_permission) {
+            var member_div = this.$refs.memberRef.find(
+              (x) => x.id == participant.identity
+            );
+            if (member_div != undefined) {
+              member_div.appendChild(media);
+            }
           }
         }
+      } catch (err) {
+        this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
     handleActiveSpeakers: function (speakers) {
@@ -848,7 +893,7 @@ export default {
       this.gangStore.getUserGang.gang_screen_share &&
       this.gangStore.getUserGang.gang_streaming
     ) {
-      room.localParticipant.setScreenShareEnabled(false);
+      this.toggleScreenShare(false);
       await this.stopContentAPI();
     }
     await room.disconnect();
@@ -973,8 +1018,8 @@ export default {
 }
 
 .player-split-screen {
-  width: 100% !important;
-  height: 75% !important;
+  width: 88% !important;
+  height: 100% !important;
   border-radius: 0% !important;
 }
 
@@ -1003,14 +1048,22 @@ export default {
 .online {
   height: 8px;
   width: 8px;
-  background: mediumaquamarine;
+  background: #2de5a7;
   position: relative;
   top: 1px;
+}
+
+.txt-width {
+  max-width: 170px;
 }
 
 @media only screen and (max-width: 497px) {
   .stream-player {
     height: 285px;
+  }
+
+  .txt-width {
+    max-width: 101px;
   }
 }
 </style>
