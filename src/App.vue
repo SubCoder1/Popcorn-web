@@ -74,6 +74,7 @@ html,
 body {
   height: 100%;
   background-color: rgb(248 246 243);
+  scroll-behavior: smooth;
 }
 
 #app {
@@ -102,6 +103,10 @@ body {
 
 ::-webkit-scrollbar-track {
   background: transparent;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -543,6 +548,13 @@ video {
 .vid-btn:focus,
 .ss-on:focus {
   background: #7b56c7;
+}
+
+.handle-txt-overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  white-space: nowrap;
 }
 
 @media only screen and (max-width: 1200px) {
