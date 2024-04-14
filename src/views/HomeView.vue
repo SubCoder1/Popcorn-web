@@ -148,8 +148,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="css">
 .gang-dashboard-container {
-  width: 760px;
-  max-height: 730px;
+  width: 800px;
+  max-height: 782px;
   overflow: auto;
 }
 
