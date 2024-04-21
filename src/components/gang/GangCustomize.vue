@@ -212,6 +212,7 @@
           type="checkbox"
           v-model="update.gang_screen_share"
           id="gangScreenShare"
+          @click="removeErr()"
           :disabled="
             upload.uploading == true ||
             gangStore.getUserGang.gang_content_name.length != 0 ||
@@ -356,6 +357,7 @@ export default {
       }
     },
     updateGang: async function (retry) {
+      this.removeErr();
       this.update.form_submitted = true;
       if (this.validateForm()) {
         let updateGangData = {
