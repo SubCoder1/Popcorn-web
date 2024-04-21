@@ -3,7 +3,11 @@
 <template>
   <div
     class="modal fade"
-    v-show="search.showAddMemberModal && gangStore.getUserGang.is_admin"
+    v-show="
+      search.showAddMemberModal &&
+      gangStore.getUserGang.is_admin &&
+      !pocket_mode
+    "
     v-bind:class="{
       show: search.showAddMemberModal,
       'd-block': search.showAddMemberModal,
@@ -157,7 +161,7 @@
   </div>
   <div
     class="modal fade"
-    v-show="showGangInfoModal"
+    v-show="showGangInfoModal && !pocket_mode"
     v-bind:class="{
       show: showGangInfoModal,
       'd-block': showGangInfoModal,
@@ -322,7 +326,7 @@
     </div>
   </div>
   <div class="gang-interact-parent">
-    <div class="gang-interact-header d-flex">
+    <div class="gang-interact-header d-flex" v-if="!pocket_mode">
       <div
         class="gang-info d-flex align-items-center justify-content-between flex-wrap w-100 pt-2 p-4"
       >
@@ -388,9 +392,11 @@
       </div>
     </div>
     <div
-      class="gang-interact-body d-flex flex-column text-wrap ps-4 pe-4"
+      class="gang-interact-body d-flex flex-column text-wrap"
       :class="{
-        'shrink-for-stream': gangStore.getUserGang.gang_streaming,
+        'shrink-for-stream':
+          gangStore.getUserGang.gang_streaming && !pocket_mode,
+        'ps-4 pe-4': !pocket_mode,
       }"
       ref="gangChatBody"
     >
@@ -456,8 +462,8 @@
                     | ERROR
                   </span>
                 </span>
-                <div class="bubble text-wrap">
-                  <span class="text-sm">{{ msg.message }}</span>
+                <div class="bubble" :class="{ 'mw-100': pocket_mode }">
+                  <span class="text-sm text-wrap">{{ msg.message }}</span>
                 </div>
               </div>
             </div>
@@ -473,8 +479,8 @@
                 <span class="mb-1 text-xsm text-secondary">
                   @{{ msg.user.username }}
                 </span>
-                <div class="bubble-reverse text-wrap">
-                  <span class="text-sm">{{ msg.message }}</span>
+                <div class="bubble-reverse" :class="{ 'mw-100': pocket_mode }">
+                  <span class="text-sm text-wrap">{{ msg.message }}</span>
                 </div>
               </div>
             </div>
@@ -482,7 +488,10 @@
         </div>
       </transition-group>
     </div>
-    <div class="gang-interact-footer d-flex ps-4 pe-4 pb-3">
+    <div
+      class="gang-interact-footer d-flex"
+      :class="{ 'ps-4 pe-4 pb-3': !pocket_mode }"
+    >
       <input
         type="text"
         class="form-control text-sm rounded-md input-lg"
@@ -548,6 +557,12 @@ export default {
       loading_stop_btn: false,
       loading_leave_btn: false,
     };
+  },
+  props: {
+    pocket_mode: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     goBackToGangList: function () {

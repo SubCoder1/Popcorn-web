@@ -22,13 +22,14 @@
       @dblclick="togglePlayerFullScreen"
     ></div>
     <div
+      class="gang-users flex-column"
       :class="{
-        'h-100 w-20 overflow-auto': split_screen,
+        'p-3': !split_screen,
+        'h-100 w-22': split_screen,
         'd-flex': !play_permission || split_screen,
         'align-items-center': !play_permission || split_screen,
         'justify-content-center': !play_permission,
       }"
-      class="gang-users flex-column pb-3 p-4"
       v-if="!gangStore.canCreateGang || !gangStore.canJoinGang"
     >
       <button
@@ -44,7 +45,9 @@
         class="d-flex justify-content-between"
         :class="{
           'overflow-auto': !split_screen,
-          'flex-column': split_screen,
+          'flex-column p-2': split_screen,
+          'h-50': split_screen_chat_view,
+          'h-100': !split_screen_chat_view,
         }"
       >
         <div
@@ -178,11 +181,11 @@
         <div
           v-else
           ref="memberActivity"
-          class="d-flex"
+          class="d-flex w-100"
           :class="{
             'expand-members-tab': expand_members && !split_screen,
-            'flex-row w-100': !split_screen,
-            'flex-column h-100': split_screen,
+            'flex-row': !split_screen,
+            'overflow-auto flex-column h-100': split_screen,
           }"
         >
           <div
@@ -263,6 +266,39 @@
       >
         <div class="online rounded-circle ms-2 me-2"></div>
         {{ active_members.size }} ACTIVE
+      </div>
+      <div
+        class="accordion w-100"
+        :class="{ 'h-50': split_screen_chat_view }"
+        id="gangChatSplitScreenView"
+        v-show="split_screen"
+      >
+        <div
+          class="accordion-item"
+          @click="split_screen_chat_view = !split_screen_chat_view"
+        >
+          <h4 class="accordion-header">
+            <button
+              class="btn accordion-button text-sm"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseOne"
+              aria-expanded="true"
+              aria-controls="collapseOne"
+            >
+              Gang messages
+            </button>
+          </h4>
+        </div>
+        <div
+          id="collapseOne"
+          class="accordion-collapse collapse show"
+          data-bs-parent="#gangChatSplitScreenView"
+        >
+          <div class="accordion-body pe-2 ps-2">
+            <GangInteract :pocket_mode="true" />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -405,6 +441,7 @@ export default {
       speaking: false,
       expand_members: false,
       split_screen: false,
+      split_screen_chat_view: true,
     };
   },
   name: "GangDashboard",
@@ -1055,6 +1092,39 @@ export default {
 
 .txt-width {
   max-width: 170px;
+}
+
+.w-22 {
+  width: 22% !important;
+}
+
+.accordion-item {
+  background: rgb(241, 133, 121);
+  border: 0;
+}
+
+.accordion-button {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+}
+
+.accordion-button:focus {
+  background: rgb(241, 133, 121);
+}
+
+.accordion-button::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23FFFFFF'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.accordion-item:first-of-type .accordion-button {
+  border-top-left-radius: 0rem;
+  border-top-right-radius: 0rem;
+}
+
+.accordion-button:not(.collapsed) {
+  color: white;
+  background-color: rgb(241, 133, 121);
+  box-shadow: none;
 }
 
 @media only screen and (max-width: 497px) {
