@@ -1,4 +1,46 @@
 <template>
+  <div
+    class="modal fade"
+    v-show="gangStore.getUserGang.is_admin && showGangDeleteWarningModal"
+    v-bind:class="{
+      show: showGangDeleteWarningModal,
+      'd-block': showGangDeleteWarningModal,
+    }"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0">
+        <div class="modal-body">
+          Do you really want to delete your gang? <br /><br />
+          <strong>NOTE</strong>: This will stop any ongoing stream in your gang.
+        </div>
+        <div class="modal-footer border-0">
+          <button
+            type="button"
+            class="btn delete-gang-btn rounded-md text-sm d-flex align-items-center justify-content-center"
+            style="width: 80px"
+            @click="delGang()"
+            :disabled="load_delete_gang_btn"
+          >
+            <span v-if="!load_delete_gang_btn">DELETE</span>
+            <div v-else class="loader"></div>
+          </button>
+          <button
+            type="button"
+            class="btn rounded-md text-sm"
+            data-bs-dismiss="modal"
+            @click="showGangDeleteWarningModal = !showGangDeleteWarningModal"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="d-flex justify-content-between pt-0 p-4">
     <div
       class="d-flex br-left ps-3"
@@ -77,7 +119,7 @@
           type="button"
           class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle delete-gang-btn ms-2"
           v-bind:class="{ 'admin-btn': gangStore.getUserGang.is_admin }"
-          @click="delGang()"
+          @click="showGangDeleteWarningModal = !showGangDeleteWarningModal"
           :disabled="load_delete_gang_btn"
         >
           <svg
@@ -104,6 +146,7 @@
   <router-link to="" v-if="gangStore.canCreateGang" @click="showGangList()">
     Create a gang
   </router-link>
+  <div v-if="showGangDeleteWarningModal" class="modal-backdrop fade show"></div>
 </template>
 
 <script>
@@ -116,6 +159,7 @@ export default {
       gangStore: useGangStore(),
       load_delete_gang_btn: false,
       load_leave_gang_btn: false,
+      showGangDeleteWarningModal: false,
     };
   },
   methods: {
