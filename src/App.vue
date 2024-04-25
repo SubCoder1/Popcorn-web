@@ -85,6 +85,7 @@ body {
   height: 100%;
   background-image: url("~@/assets/background/bg-1.png");
   background-size: cover;
+  overflow: auto;
 }
 
 .container-style {
@@ -609,7 +610,7 @@ video {
   }
 
   video {
-    height: 285px;
+    height: 100%;
     width: 100%;
   }
 
