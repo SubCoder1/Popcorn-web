@@ -328,7 +328,7 @@
   <div class="gang-interact-parent">
     <div class="gang-interact-header d-flex" v-if="!pocket_mode">
       <div
-        class="gang-info d-flex align-items-center justify-content-between flex-wrap w-100 pt-2 p-4"
+        class="gang-info d-flex align-items-center justify-content-between flex-wrap w-100 pb-2"
       >
         <div class="position-relative">
           <h4 class="handle-txt-overflow txt-width">
@@ -396,7 +396,6 @@
       :class="{
         'shrink-for-stream':
           gangStore.getUserGang.gang_streaming && !pocket_mode,
-        'ps-4 pe-4': !pocket_mode,
       }"
       ref="gangChatBody"
     >
@@ -488,10 +487,7 @@
         </div>
       </transition-group>
     </div>
-    <div
-      class="gang-interact-footer d-flex"
-      :class="{ 'ps-4 pe-4 pb-3': !pocket_mode }"
-    >
+    <div class="gang-interact-footer d-flex">
       <input
         type="text"
         class="form-control text-sm rounded-md input-lg"

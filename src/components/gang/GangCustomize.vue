@@ -63,7 +63,7 @@
       </div>
     </div>
   </div>
-  <form @submit.prevent="updateGang(false)" class="gang-update-form p-4">
+  <form @submit.prevent="updateGang(false)" class="gang-update-form">
     <div
       class="upload-content-container d-flex align-items-center justify-content-between flex-wrap mb-3"
     >
@@ -206,7 +206,7 @@
       class="d-flex align-items-center justify-content-between flex-wrap mb-3"
     >
       <label for="gangScreenShare" class="text-sm">Screen Sharing</label>
-      <div class="input-md">
+      <div class="input-md w-auto">
         <input
           class="form-check-input"
           type="checkbox"
@@ -622,6 +622,11 @@ input:disabled::file-selector-button {
 .content-txt {
   font-size: 13px;
   width: 290px;
+}
+
+.form-check-input {
+  width: 1.2em;
+  height: 1.2em;
 }
 
 .form-check-input[type="checkbox"] {
