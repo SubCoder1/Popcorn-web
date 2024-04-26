@@ -2,8 +2,52 @@
 
 <template>
   <div
+    class="modal fade"
+    v-show="
+      !close_rotate_screen_modal &&
+      !split_screen_permission &&
+      gangStore.getUserGang.gang_streaming
+    "
+    v-bind:class="{
+      /* eslint-disable */
+      'show d-block': !close_rotate_screen_modal && !split_screen_permission && gangStore.getUserGang.gang_streaming,
+    }"
+    refs="srvErrModal"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0">
+        <div class="modal-body d-flex flex-column align-items-center text-center">
+          <lottie-player
+            src="https://lottie.host/fea482ed-fd7f-481d-a61e-3d8adbb4b74b/PaMoKa9qaY.json"
+            background="transparent"
+            style="height: 250px"
+            loop
+            autoplay
+            v-pre
+          ></lottie-player>
+          Please tilt your screen to enable theatre mode. Trust me just do it :)
+        </div>
+        <div class="modal-footer border-0">
+          <button
+            type="button"
+            class="btn modal-close-btn rounded-md text-sm"
+            data-bs-dismiss="modal"
+            @click="close_rotate_screen_modal = !close_rotate_screen_modal"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
     :class="{ 'w-75': split_screen }"
-    class="stream-player d-flex align-items-center justify-content-center"
+    class="stream-player-loader d-flex align-items-center justify-content-center"
     v-if="gang_stream_loading"
   >
     <div class="loader"></div>
@@ -24,7 +68,7 @@
     <div
       class="gang-users flex-column"
       :class="{
-        'p-3': !split_screen,
+        'p-3 pb-1': !split_screen,
         'h-100 w-22': split_screen,
         'd-flex': !play_permission || split_screen,
         'align-items-center': !play_permission || split_screen,
@@ -101,7 +145,8 @@
             type="button"
             class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
             :class="{ 'ss-on': split_screen, 'ss-off': !split_screen }"
-            v-if="!small_screen && gangStore.getUserGang.gang_streaming"
+            v-if="gangStore.getUserGang.gang_streaming"
+            :disabled="!split_screen_permission"
             @click="toggleSplitScreen"
           >
             <svg
@@ -167,16 +212,6 @@
             <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
             <div class="skeleton skeleton-text skeleton-text-xsm"></div>
           </div>
-          <div
-            class="d-flex flex-column align-items-center me-3 ms-3"
-            v-if="!small_screen"
-          >
-            <div
-              class="skeleton user-prof-skeleton-lg rounded-circle mb-2"
-            ></div>
-            <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
-            <div class="skeleton skeleton-text skeleton-text-xsm"></div>
-          </div>
         </div>
         <div
           v-else
@@ -200,7 +235,7 @@
               ref="memberRef"
               :class="{
                 speaking: isParticipantSpeaking(member[0]),
-                'user-split-screen': split_screen,
+                'user-split-screen': split_screen && split_screen_permission,
                 'user-expanded': expand_members,
               }"
             >
@@ -271,7 +306,7 @@
         class="accordion w-100"
         :class="{ 'h-50': split_screen_chat_view }"
         id="gangChatSplitScreenView"
-        v-show="split_screen"
+        v-show="split_screen && !small_screen"
       >
         <div
           class="accordion-item"
@@ -325,13 +360,13 @@
       </div>
     </div>
   </div>
-  <div v-else-if="!split_screen" class="d-flex flex-column">
+  <div v-else-if="!split_screen" class="d-flex flex-column p-4">
     <GangList v-if="showGangList" />
     <GangInteract v-else-if="showGangInteract" />
     <div class="h-auto" v-else>
       <template v-if="gangStore.canCreateGang && gangStore.canJoinGang">
         <div
-          class="d-flex flex-wrap align-items-center justify-content-between p-4 pb-2"
+          class="d-flex flex-wrap align-items-center justify-content-between pb-2"
         >
           <div>
             <h4 v-if="createOrJoin">Join a Gang</h4>
@@ -359,9 +394,9 @@
       </template>
       <template v-else>
         <div
-          class="d-flex flex-wrap align-items-center justify-content-between p-4 pt-2 pb-0"
+          class="d-flex flex-wrap align-items-center justify-content-between"
         >
-          <div class="dashboard-header">
+          <div class="dashboard-header pb-2">
             <h4 v-if="showCustomizePage">Customize Gang</h4>
             <h4 v-else-if="gangStore.canCreateGang">Create a Gang</h4>
             <h4 v-else>Join a Gang</h4>
@@ -382,6 +417,10 @@
       <GangCreate v-else />
     </div>
   </div>
+  <div
+    v-if="!close_rotate_screen_modal && !split_screen_permission && gangStore.getUserGang.gang_streaming"
+    class="modal-backdrop fade show"
+  ></div>
 </template>
 
 <script>
@@ -440,8 +479,10 @@ export default {
       active_speakers: [],
       speaking: false,
       expand_members: false,
+      split_screen_permission: false,
       split_screen: false,
       split_screen_chat_view: true,
+      close_rotate_screen_modal: true,
     };
   },
   name: "GangDashboard",
@@ -645,6 +686,8 @@ export default {
             this.load_audio = true;
             this.$refs.remoteMediaContainer.appendChild(media);
           }
+          // to show the screen-rotate popup in smaller screens
+          this.toggleSplitScreenPermissionOnScreenResize();
         } else {
           // User video or audio
           if (this.play_permission) {
@@ -674,14 +717,20 @@ export default {
       }
     },
     handleScreenShareContent: function (publication, participant) {
-      if (publication.kind == "video" && !this.load_video) {
-        this.gang_stream_loading = false;
-        const media = publication.track.attach();
-        this.load_video = true;
-        this.$refs.remoteMediaContainer.appendChild(media);
+      try {
+        if (publication.kind == "video" && !this.load_video) {
+          this.gang_stream_loading = false;
+          const media = publication.track.attach();
+          this.load_video = true;
+          this.$refs.remoteMediaContainer.appendChild(media);
+        }
+        // to show the screen-rotate popup in smaller screens
+        this.toggleSplitScreenPermissionOnScreenResize();
+      } catch (e) {
+        this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
-    toggleScreenShare: function (action) {
+    toggleScreenShare: async function (action) {
       try {
         if (action) {
           if (!room.localParticipant.isScreenShareEnabled) {
@@ -689,10 +738,16 @@ export default {
               audio: true,
               video: true,
             });
+          } else {
+            // permission denied
+            await this.stopContentAPI();
           }
         } else {
           if (room.localParticipant.isScreenShareEnabled) {
             room.localParticipant.setScreenShareEnabled(false);
+          } else {
+            // permission denied
+            await this.stopContentAPI();
           }
         }
       } catch (err) {
@@ -726,10 +781,13 @@ export default {
       }
     },
     clearStream: function () {
-      this.load_video = false;
-      this.load_audio = false;
-      this.gang_stream_loading = false;
-      this.$refs.remoteMediaContainer.innerHTML = "";
+      try {
+        this.load_video = false;
+        this.load_audio = false;
+        this.gang_stream_loading = false;
+        this.$refs.remoteMediaContainer.innerHTML = "";
+        // eslint-disable-next-line
+      } catch (e) {}
     },
     togglePlayerFullScreen: function (event) {
       const playerElement = event.target;
@@ -764,8 +822,18 @@ export default {
         document.exitFullscreen();
       }
     },
-    detectSmallScreen: function (e) {
-      this.small_screen = window.innerWidth < 995;
+    toggleSplitScreenPermissionOnScreenResize: function (e) {
+      // eslint-disable-next-line
+      this.split_screen_permission = window.innerWidth > window.innerHeight && window.innerWidth > 200;
+      this.small_screen = window.innerHeight < 530;
+      if (!this.split_screen_permission) {
+        if (this.gangStore.getUserGang.gang_streaming) {
+          this.close_rotate_screen_modal = !this.close_rotate_screen_modal;
+        }
+        if (this.split_screen) {
+          this.toggleSplitScreen();
+        }
+      }
     },
     getMemberProfilePic: function (member) {
       var m = this.gangStore.getUserGang.gang_members.find(
@@ -794,8 +862,10 @@ export default {
     GangInteract: defineAsyncComponent(() => import("./GangInteract.vue")),
   },
   async mounted() {
-    window.addEventListener("resize", this.detectSmallScreen);
-    this.detectSmallScreen();
+    console.log(remoteMediaContainer, memberRef, memberActivity);
+    // eslint-disable-next-line
+    window.addEventListener("resize", this.toggleSplitScreenPermissionOnScreenResize);
+    this.toggleSplitScreenPermissionOnScreenResize();
     // Load Livekit room event handlers
     // Triggerd when a new remote track is published (can be stream or user video/audio)
     room.on(RoomEvent.TrackSubscribed, this.handleTrackSubscribed);
@@ -975,11 +1045,15 @@ export default {
   width: 150px;
 }
 
-.stream-player {
-  height: 480px;
+.stream-player,
+.stream-player-loader {
   border-radius: 0.5rem 0.5rem 0 0;
   width: auto;
   background: rgb(43, 42, 51);
+}
+
+.stream-player-loader {
+  height: 480px;
 }
 
 .gang-users {
@@ -1056,7 +1130,7 @@ export default {
 
 .player-split-screen {
   width: 88% !important;
-  height: 100% !important;
+  height: 100vh !important;
   border-radius: 0% !important;
 }
 
@@ -1127,11 +1201,13 @@ export default {
   box-shadow: none;
 }
 
-@media only screen and (max-width: 497px) {
-  .stream-player {
-    height: 285px;
+@media only screen and (max-width: 995px) {
+  .stream-player-loader {
+    height: 250px;
   }
+}
 
+@media only screen and (max-width: 497px) {
   .txt-width {
     max-width: 101px;
   }

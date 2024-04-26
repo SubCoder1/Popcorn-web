@@ -12,8 +12,8 @@
     }"
   >
     <div
-      class="d-flex align-items-center justify-content-center mb-4 mt-2"
-      :class="{ 'd-none': !small_screen }"
+      class="d-flex align-items-center justify-content-center mb-3 mt-2"
+      :class="{ 'd-none': !small_screen || split_screen }"
     >
       <button
         class="btn btn-sm ms-2 dashboard-collapse-btn collapsed"
@@ -44,13 +44,13 @@
       class="adjust-dashboard"
       :class="{
         collapse: small_screen,
-        'h-100 w-100': split_screen,
+        'h-100 w-100': split_screen && !small_screen,
       }"
       id="collapseDashboard"
     >
       <div
         :class="{
-          'h-100 w-100': split_screen,
+          'h-100 w-100': split_screen && !small_screen,
           'gang-dashboard-container h-auto': !split_screen,
         }"
         class="container-style container-shadow text-left"
@@ -74,7 +74,7 @@
         <GangInvite />
       </div>
       <div
-        class="user-profile-container container-style container-shadow w-auto mt-4 p-4"
+        class="user-profile-container container-style container-shadow w-auto mt-4 mb-2 p-4"
       >
         <UserProfile />
       </div>
@@ -223,6 +223,7 @@ export default {
     margin-right: 0;
     margin: 12px;
     width: auto;
+    max-height: 715px;
   }
 
   .adjust-dashboard {
