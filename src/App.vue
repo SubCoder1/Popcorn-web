@@ -74,6 +74,7 @@ html,
 body {
   height: 100%;
   background-color: rgb(248 246 243);
+  scroll-behavior: smooth;
 }
 
 #app {
@@ -84,6 +85,7 @@ body {
   height: 100%;
   background-image: url("~@/assets/background/bg-1.png");
   background-size: cover;
+  overflow: auto;
 }
 
 .container-style {
@@ -102,6 +104,10 @@ body {
 
 ::-webkit-scrollbar-track {
   background: transparent;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -211,7 +217,8 @@ h4 {
 .play-btn,
 .update-btn,
 .allow-play-perm,
-.success {
+.success,
+.accept-invite {
   background-color: mediumaquamarine;
 }
 
@@ -229,8 +236,13 @@ h4 {
 }
 
 .btn-circle-md {
-  height: 38px;
-  width: 38px;
+  height: 35px;
+  width: 35px;
+}
+
+.btn-circle-sm {
+  height: 30px;
+  width: 30px;
 }
 
 .admin-btn:hover,
@@ -242,7 +254,11 @@ h4 {
 .allow-play-perm:hover,
 .allow-play-perm:focus,
 .success:hover,
-.success:focus {
+.success:focus,
+.accept-invite:hover,
+.accept-invite:focus,
+.unmute-sound-btn:hover,
+.unmute-sound-btn:focus {
   background-color: #0cc183;
 }
 
@@ -436,7 +452,7 @@ h4 {
 }
 
 .input-xsm {
-  width: 60px;
+  width: 65px;
 }
 
 .profile-pic-xsm {
@@ -482,6 +498,7 @@ h4 {
 .mic-off-btn:hover,
 .ss-off:hover,
 .delete-content-btn:hover,
+.mute-sound-btn:hover,
 .modal-close-btn:focus,
 .kick-member-btn:focus,
 .decline-invite-btn:focus,
@@ -489,7 +506,8 @@ h4 {
 .delete-gang-btn:focus,
 .delete-content-btn:focus,
 .mic-off-btn:focus,
-.ss-off:focus {
+.ss-off:focus,
+.mute-sound-btn:focus {
   background: #d94072;
 }
 
@@ -531,6 +549,13 @@ video {
 .vid-btn:focus,
 .ss-on:focus {
   background: #7b56c7;
+}
+
+.handle-txt-overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  white-space: nowrap;
 }
 
 @media only screen and (max-width: 1200px) {
@@ -585,7 +610,7 @@ video {
   }
 
   video {
-    height: 285px;
+    height: 100%;
     width: 100%;
   }
 

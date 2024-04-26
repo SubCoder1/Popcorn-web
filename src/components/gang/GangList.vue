@@ -1,5 +1,47 @@
 <template>
-  <div class="d-flex justify-content-between p-4">
+  <div
+    class="modal fade"
+    v-show="gangStore.getUserGang.is_admin && showGangDeleteWarningModal"
+    v-bind:class="{
+      show: showGangDeleteWarningModal,
+      'd-block': showGangDeleteWarningModal,
+    }"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0">
+        <div class="modal-body">
+          Do you really want to delete your gang? <br /><br />
+          <strong>NOTE</strong>: This will stop any ongoing stream in your gang.
+        </div>
+        <div class="modal-footer border-0">
+          <button
+            type="button"
+            class="btn delete-gang-btn rounded-md text-sm d-flex align-items-center justify-content-center"
+            style="width: 80px"
+            @click="delGang()"
+            :disabled="load_delete_gang_btn"
+          >
+            <span v-if="!load_delete_gang_btn">DELETE</span>
+            <div v-else class="loader"></div>
+          </button>
+          <button
+            type="button"
+            class="btn rounded-md text-sm"
+            data-bs-dismiss="modal"
+            @click="showGangDeleteWarningModal = !showGangDeleteWarningModal"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-between">
     <div
       class="d-flex br-left ps-3"
       v-bind:class="{
@@ -8,11 +50,11 @@
       }"
     >
       <div class="d-flex flex-column justify-content-center">
-        <p class="text-sm mb-1">
+        <p class="text-sm mb-1 handle-txt-overflow txt-width">
           {{ gangStore.getUserGang.gang_name }}
         </p>
-        <p class="text-sm mb-1 text-secondary">
-          Admin: {{ gangStore.getUserGang.gang_admin }}
+        <p class="text-sm mb-1 text-secondary handle-txt-overflow txt-width">
+          Admin: @{{ gangStore.getUserGang.gang_admin }}
         </p>
         <p class="text-sm mb-1 text-secondary">
           {{ gangStore.getUserGang.gang_members_count }} /
@@ -38,20 +80,17 @@
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="23"
-            height="26"
+            width="26"
+            height="23"
             fill="currentColor"
-            class="bi bi-camera-reels"
+            class="bi bi-chat-left-dots"
             viewBox="0 0 16 16"
           >
             <path
-              d="M6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM1 3a2 2 0 1 0 4 0 2 2 0 0 0-4 0z"
+              d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"
             />
             <path
-              d="M9 6h.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 7.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 16H2a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h7zm6 8.73V7.27l-3.5 1.555v4.35l3.5 1.556zM1 8v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z"
-            />
-            <path
-              d="M9 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM7 3a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"
+              d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
             />
           </svg>
         </button>
@@ -80,7 +119,7 @@
           type="button"
           class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle delete-gang-btn ms-2"
           v-bind:class="{ 'admin-btn': gangStore.getUserGang.is_admin }"
-          @click="delGang()"
+          @click="showGangDeleteWarningModal = !showGangDeleteWarningModal"
           :disabled="load_delete_gang_btn"
         >
           <svg
@@ -107,6 +146,7 @@
   <router-link to="" v-if="gangStore.canCreateGang" @click="showGangList()">
     Create a gang
   </router-link>
+  <div v-if="showGangDeleteWarningModal" class="modal-backdrop fade show"></div>
 </template>
 
 <script>
@@ -119,6 +159,7 @@ export default {
       gangStore: useGangStore(),
       load_delete_gang_btn: false,
       load_leave_gang_btn: false,
+      showGangDeleteWarningModal: false,
     };
   },
   methods: {
@@ -139,3 +180,15 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="css">
+.txt-width {
+  max-width: 300px;
+}
+
+@media only screen and (max-width: 497px) {
+  .txt-width {
+    max-width: 190px;
+  }
+}
+</style>

@@ -32,6 +32,7 @@
         placeholder="Passkey"
         v-model="gang_pass_key"
         minlength="5"
+        maxlength="730"
         id="gangPassKey"
         @click="removeErr()"
         required
@@ -77,7 +78,7 @@ export default {
       form_submitted: false,
       gang_name: "",
       gang_pass_key: "",
-      gang_member_limit: 2,
+      gang_member_limit: 10,
     };
   },
   name: "GangCreate",

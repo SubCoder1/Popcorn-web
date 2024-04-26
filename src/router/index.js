@@ -6,6 +6,7 @@ import UserLogin from "@/components/user/UserLogin.vue";
 import UserReg from "@/components/user/UserReg.vue";
 import UserFPwD from "@/components/user/UserFPwD.vue";
 import HomeView from "@/views/HomeView.vue";
+import InviteViaUrlView from "@/views/InviteViaUrlView.vue";
 import { useAuthStore } from "@/stores/auth.store";
 import { useLoaderStore } from "@/stores/loader.store";
 
@@ -39,6 +40,15 @@ const routes = [
         component: UserFPwD,
       },
     ],
+  },
+  // InviteView routes
+  {
+    path: "/invite/:from/:hashcode",
+    name: "invite",
+    component: InviteViaUrlView,
+    meta: {
+      requiresAuth: true,
+    },
   },
   // HomeView routes
   {
