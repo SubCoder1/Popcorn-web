@@ -736,6 +736,7 @@ export default {
             cursor: this.search.cursor,
           },
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then((response) => {
           res.status = response.status;
@@ -764,6 +765,7 @@ export default {
           },
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then((response) => {
@@ -784,6 +786,7 @@ export default {
       const response = await axios
         .post(process.env.VUE_APP_BOOT_MEMBER_API, member, {
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then((r) => {
           return r.status;

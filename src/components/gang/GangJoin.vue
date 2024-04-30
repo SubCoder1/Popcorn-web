@@ -187,6 +187,7 @@ export default {
             cursor: this.gang_search.cursor,
           },
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then((response) => {
           res.status = response.status;

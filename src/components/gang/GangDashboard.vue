@@ -576,6 +576,7 @@ export default {
           {},
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then((response) => {
@@ -601,6 +602,7 @@ export default {
           {},
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then((response) => {
