@@ -11,6 +11,7 @@ You can check Popcorn out in production at https://popcorntv.click
 
 Make sure that you've `npm`, `node` and `VueJS` installed in your system. You can run this project using the command below :-
 ```
+npm install .
 npm run serve -- --port 8081
 # visit localhost:8081 to check it out!
 ```
