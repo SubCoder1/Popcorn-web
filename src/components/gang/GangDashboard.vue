@@ -144,6 +144,41 @@
           <button
             type="button"
             class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
+            :class="{ 'vid-btn': video_call, 'vid-off-btn': !video_call }"
+            :disabled="loading_members"
+            @click="toggleVC"
+          >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="23"
+            height="18"
+            fill="currentColor"
+            class="bi bi-camera-video-off"
+            viewBox="0 0 16 16"
+            v-if="!video_call"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10.961 12.365a2 2 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l.714 1H9.5a1 1 0 0 1 1 1v6a1 1 0 0 1-.144.518zM1.428 4.18A1 1 0 0 0 1 5v6a1 1 0 0 0 1 1h5.014l.714 1H2a2 2 0 0 1-2-2V5c0-.675.334-1.272.847-1.634zM15 11.73l-3.5-1.555v-4.35L15 4.269zm-4.407 3.56-10-14 .814-.58 10 14z"
+            />
+          </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="23"
+            height="18"
+            fill="currentColor"
+            class="bi bi-camera-video"
+            viewBox="0 0 16 16"
+            v-else
+          >
+            <path
+              fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1z"
+            />
+          </svg>
+          </button>
+          <button
+            type="button"
+            class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
             :class="{ 'ss-on': split_screen, 'ss-off': !split_screen }"
             v-if="gangStore.getUserGang.gang_streaming"
             :disabled="!split_screen_permission"
@@ -337,7 +372,7 @@
       </div>
     </div>
   </div>
-  <div v-if="loading" class="d-flex flex-column p-4">
+  <div v-if="loading" class="d-flex flex-column p-3">
     <div class="d-flex flex-row mb-3">
       <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
       <div class="d-flex flex-column justify-content-center">
@@ -360,7 +395,7 @@
       </div>
     </div>
   </div>
-  <div v-else-if="!split_screen" class="d-flex flex-column p-4">
+  <div v-else-if="!split_screen" class="d-flex flex-column p-3">
     <GangList v-if="showGangList" />
     <GangInteract v-else-if="showGangInteract" />
     <div class="h-auto" v-else>
@@ -478,6 +513,7 @@ export default {
       active_members: new Map(),
       active_speakers: [],
       speaking: false,
+      video_call: false,
       expand_members: false,
       split_screen_permission: false,
       split_screen: false,
@@ -665,7 +701,7 @@ export default {
             if (retry == false) {
               this.play_permission = false;
               this.authStore.stream_token = "";
-              await this.handleLiveKitEvents(false);
+              await this.handleLiveKitEvents(!retry);
             } else {
               this.$parent.$parent.$parent.$parent.srvErrModal();
             }
@@ -774,6 +810,10 @@ export default {
     toggleMic: function () {
       this.speaking = !this.speaking;
       room.localParticipant.setMicrophoneEnabled(this.speaking);
+    },
+    toggleVC: function () {
+      this.video_call = !this.video_call;
+      room.localParticipant.setCameraEnabled(this.video_call);
     },
     toggleMemberNoise: function (member) {
       if (member.getVolume() == 0) {
