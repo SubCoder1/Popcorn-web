@@ -1062,6 +1062,10 @@ export default {
 }
 
 @media only screen and (max-width: 497px) {
+  .gang-interact-body {
+    height: 300px;
+  }
+
   .gang-info-members-list {
     margin-top: 0.8rem;
     width: 100%;
