@@ -202,7 +202,10 @@
     <div
       class="d-flex align-items-center justify-content-between flex-wrap mb-3"
     >
-      <label for="gangScreenShare" class="text-sm">Screen Sharing</label>
+      <label for="gangScreenShare" class="text-sm">
+        Screen Sharing <br />
+        <span class="text-secondary">Only on PC:</span>
+      </label>
       <div class="input-md w-auto">
         <input
           class="form-check-input"
@@ -214,7 +217,8 @@
             upload.uploading == true ||
             gangStore.getUserGang.gang_content_name.length != 0 ||
             update.gang_content_url.length != 0 ||
-            gangStore.getUserGang.gang_streaming
+            gangStore.getUserGang.gang_streaming ||
+            small_screen
           "
         />
       </div>
@@ -326,6 +330,7 @@ export default {
       },
       loading_members_list: false,
       timeout: null,
+      small_screen: window.innerWidth < 995,
     };
   },
   methods: {
@@ -539,6 +544,11 @@ export default {
       }
       return true;
     },
+  },
+  mounted() {
+    window.addEventListener("resize", () => {
+      this.small_screen = window.innerWidth < 995;
+    });
   },
 };
 </script>
