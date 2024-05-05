@@ -94,7 +94,7 @@ router.beforeEach(async (to) => {
     }
   } else {
     // User can't access noAuth pages like login, register... if they're already authenticated
-    if (authStore.getUserAuth) {
+    if (authStore.getUserAuth || (await authStore.isUserAuthenticated())) {
       return { name: "home" };
     }
   }
