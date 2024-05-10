@@ -1,16 +1,16 @@
 module.exports = {
   transpileDependencies: true,
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     config.module
-      .rule('vue')
-      .use('vue-loader')
-      .tap(options => ({
+      .rule("vue")
+      .use("vue-loader")
+      .tap((options) => ({
         ...options,
         compilerOptions: {
           // treat lottie-player tags as custom elements
-          isCustomElement: tag => tag.startsWith('dotlottie-')
-        }
-      }))
+          isCustomElement: (tag) => tag.startsWith("dotlottie-"),
+        },
+      }));
   },
   pwa: {
     name: "Popcorn",
@@ -28,7 +28,8 @@ module.exports = {
     },
     manifestOptions: {
       short_name: "Popcorn",
-      description: "Popcorn is a virtual watchparty platform written in Go which lets a group of people watch uploaded content together.",
+      description:
+        "Popcorn is a virtual watchparty platform written in Go which lets a group of people watch uploaded content together.",
       theme_color: "#f18579",
       background_color: "#f18579",
       icons: [
@@ -111,7 +112,7 @@ module.exports = {
           src: "windows11/LargeTile.scale-100.png",
           sizes: "310x310",
           type: "image/png",
-          "purpose": "maskable",
+          purpose: "maskable",
         },
         {
           src: "windows11/LargeTile.scale-125.png",
@@ -592,7 +593,7 @@ module.exports = {
           src: "ios/1024.png",
           sizes: "1024x1024",
           type: "image/png",
-        }
+        },
       ],
       screenshots: [
         {
@@ -625,7 +626,7 @@ module.exports = {
           sizes: "1393x784",
           form_factor: "wide",
         },
-      ]
-    }
+      ],
+    },
   },
 };
