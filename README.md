@@ -7,9 +7,21 @@ Popcorn-web is an application powered by Vue-js which serves as a frontend for [
 
 You can check Popcorn out in production at https://popcorntv.click
 
+# Requirements
+
+**Node** <20 or above>
+
+**NPM** <9 or above>
+
+**VueJS** <3 or above>
+
 # Building
 
 Make sure that you've `npm`, `node` and `VueJS` installed in your system. You can run this project using the command below :-
+
+This step is only required if Popcorn-Web is running without Docker.
+1. Set ```VUE_APP_SERVER_URL = http://localhost:<server-port>``` in Popcorn-web/.env (line-1).
+2. Execute the following commands :-
 ```
 npm install .
 npm run serve -- --port 8081
