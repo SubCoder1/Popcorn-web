@@ -739,6 +739,28 @@ export default {
         });
       return resp;
     },
+    prepareLivekit: async function (retry) {
+      if (this.authStore.getUserStreamToken.length) {
+        await room
+          .prepareConnection(
+            process.env.VUE_APP_LIVEKIT_HOST_URL,
+            this.authStore.getUserStreamToken
+          )
+          .catch(async (e) => {
+            if (retry) {
+              this.authStore.stream_token = "";
+              await this.prepareLivekit(!retry);
+            } else {
+              console.log(e);
+            }
+          });
+      } else {
+        const response = await this.authStore.getStreamingToken();
+        if (response == 200) {
+          await this.prepareLivekit(retry);
+        }
+      }
+    },
     handleLiveKitEvents: async function (retry) {
       if (!this.play_permission) {
         this.play_permission = true;
@@ -801,9 +823,10 @@ export default {
       try {
         const media = publication.track.attach();
         if (
-          (participant.identity == "gang_admin" ||
-            participant.identity == this.gangStore.getUserGang.gang_admin) &&
-          publication.source != "camera"
+          (participant.identity == "gang_admin" &&
+            publication.source == "camera") ||
+          (participant.identity == this.gangStore.getUserGang.gang_admin &&
+            publication.source != "camera")
         ) {
           // Stream
           this.gang_stream_loading = false;
@@ -818,25 +841,23 @@ export default {
           this.toggleSplitScreenPermissionOnScreenResize();
         } else {
           // User video or audio
-          if (this.play_permission) {
-            if (publication.kind == "video") {
+          if (this.play_permission && publication.kind == "video") {
+            this.active_members.set(participant.identity, {
+              participant: participant,
+              video: true,
+            });
+            await this.sleep(3);
+            let member_dom = this.$refs.memberRef.find(
+              (x) => x.id == participant.identity
+            );
+            if (member_dom != undefined) {
+              media.classList.add("user-vc");
+              member_dom.appendChild(media);
+            } else {
               this.active_members.set(participant.identity, {
                 participant: participant,
-                video: true,
+                video: false,
               });
-              await this.sleep(3);
-              let member_dom = this.$refs.memberRef.find(
-                (x) => x.id == participant.identity
-              );
-              if (member_dom != undefined) {
-                media.classList.add("user-vc");
-                member_dom.appendChild(media);
-              } else {
-                this.active_members.set(participant.identity, {
-                  participant: participant,
-                  video: false,
-                });
-              }
             }
           }
         }
@@ -846,9 +867,10 @@ export default {
     },
     handleTrackUnsubscribed: function (track, publication, participant) {
       if (
-        (participant.identity == "gang_admin" ||
-          participant.identity == this.gangStore.getUserGang.gang_admin) &&
-        publication.source != "camera"
+        (participant.identity == "gang_admin" &&
+          publication.source == "camera") ||
+        (participant.identity == this.gangStore.getUserGang.gang_admin &&
+          publication.source != "camera")
       ) {
         // stream
         this.clearStream();
@@ -869,7 +891,7 @@ export default {
       if (participant.identity != "gang_admin") {
         this.active_members.set(participant.identity, {
           participant: participant,
-          video: false,
+          video: participant.videoTracks.size != 0,
         });
       }
     },
@@ -880,13 +902,13 @@ export default {
     },
     handleLocalTrackPublished: async function (publication, participant) {
       try {
-        const media = publication.track.attach();
         if (
           publication.kind == "video" &&
           publication.source == "screen_share" &&
           !this.load_video
         ) {
           // screen shared content
+          const media = publication.track.attach();
           this.gang_stream_loading = false;
           this.load_video = true;
           this.$refs.remoteMediaContainer.appendChild(media);
@@ -897,6 +919,7 @@ export default {
           publication.kind == "video"
         ) {
           // user vc
+          const media = publication.track.attach();
           this.active_members.set(participant.identity, {
             participant: participant,
             video: true,
@@ -1107,6 +1130,8 @@ export default {
     GangInteract: defineAsyncComponent(() => import("./GangInteract.vue")),
   },
   async mounted() {
+    // prepare livekit connection for faster setup
+    await this.prepareLivekit(true);
     // I think this line makes null ref issues go away, but who knows :)
     console.log(remoteMediaContainer, memberRef);
     // eslint-disable-next-line
