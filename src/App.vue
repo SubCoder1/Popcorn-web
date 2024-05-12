@@ -15,9 +15,19 @@
   >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0">
-        <div class="modal-body">
-          Looks like its houseful at the moment, Please refresh or try again
-          after sometime.
+        <div
+          class="modal-body d-flex flex-column align-items-center text-center"
+        >
+          <img
+            class="m-auto"
+            src="@/assets/misc/error.png"
+            style="height: 130px"
+            alt="Server error"
+          />
+          <span class="mt-4">
+            Looks like its houseful at the moment, Please refresh or try again
+            after sometime.
+          </span>
         </div>
         <div class="modal-footer border-0">
           <button
