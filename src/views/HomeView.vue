@@ -223,7 +223,7 @@ export default {
     margin-right: 0;
     margin: 12px;
     width: auto;
-    max-height: 715px;
+    max-height: 621px;
   }
 
   .adjust-dashboard {

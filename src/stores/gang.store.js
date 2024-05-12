@@ -26,6 +26,7 @@ export const useGangStore = defineStore("gang", {
       const res = await axios
         .get(process.env.VUE_APP_GET_GANG_API, {
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then(async (response) => {
           this.userGang = response.data.gang;
@@ -59,6 +60,7 @@ export const useGangStore = defineStore("gang", {
       await axios
         .post(process.env.VUE_APP_CREATE_GANG_API, createGangData, {
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then((response) => {
           // successfully created gang
@@ -96,6 +98,7 @@ export const useGangStore = defineStore("gang", {
       await axios
         .post(process.env.VUE_APP_JOIN_GANG_API, joinGangData, {
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then((response) => {
           res.status = response.status;
@@ -129,6 +132,7 @@ export const useGangStore = defineStore("gang", {
       await axios
         .post(process.env.VUE_APP_UPDATE_GANG_API, updateGangData, {
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then(async (response) => {
           // successfully updated gang
@@ -162,6 +166,7 @@ export const useGangStore = defineStore("gang", {
       const res = await axios
         .get(process.env.VUE_APP_GET_GANG_MEMBERS_API, {
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then((response) => {
           this.getUserGang.gang_members = response.data.members;
@@ -191,6 +196,7 @@ export const useGangStore = defineStore("gang", {
       const res = await axios
         .get(process.env.VUE_APP_GET_INVITES_API, {
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then((response) => {
           this.userGangInvites = response.data.invites;
@@ -214,6 +220,7 @@ export const useGangStore = defineStore("gang", {
       const res = await axios
         .post(process.env.VUE_APP_ACCEPT_INVITE_API, invite, {
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then((response) => {
           this.JoinGang = false;
@@ -237,6 +244,7 @@ export const useGangStore = defineStore("gang", {
       const response = await axios
         .post(process.env.VUE_APP_REJECT_INVITE_API, invite, {
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then((r) => {
           return r.status;
@@ -260,6 +268,7 @@ export const useGangStore = defineStore("gang", {
           {},
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then((r) => {
@@ -284,6 +293,7 @@ export const useGangStore = defineStore("gang", {
           {},
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then((r) => {
@@ -312,6 +322,7 @@ export const useGangStore = defineStore("gang", {
           },
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then((r) => {
@@ -336,6 +347,7 @@ export const useGangStore = defineStore("gang", {
           process.env.VUE_APP_UPLOAD_API + "/" + this.userGang.gang_content_ID,
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then((r) => {

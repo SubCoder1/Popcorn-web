@@ -23,10 +23,11 @@ export const useUserStore = defineStore("user", {
       await axios
         .get(process.env.VUE_APP_GET_USER_API, {
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then((response) => {
           // Successfully fetched client's data
-          res["status"] = 200;
+          res["status"] = response.status;
           this.username = response.data.user.username;
           this.full_name = response.data.user.full_name;
           this.user_profile_pic = response.data.user.user_profile_pic;

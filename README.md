@@ -6,3 +6,12 @@
 Popcorn-web is an application powered by Vue-js which serves as a frontend for [Popcorn](https://github.com/SubCoder1/Popcorn).
 
 You can check Popcorn out in production at https://popcorntv.click
+
+# Building
+
+Make sure that you've `npm`, `node` and `VueJS` installed in your system. You can run this project using the command below :-
+```
+npm install .
+npm run serve -- --port 8081
+# visit localhost:8081 to check it out!
+```

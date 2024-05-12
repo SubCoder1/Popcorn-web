@@ -28,6 +28,7 @@ export const useAuthStore = defineStore("auth", {
           },
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then(() => {
@@ -71,6 +72,7 @@ export const useAuthStore = defineStore("auth", {
           },
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then(() => {
@@ -111,6 +113,7 @@ export const useAuthStore = defineStore("auth", {
           {},
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then(async () => {
@@ -141,10 +144,11 @@ export const useAuthStore = defineStore("auth", {
       return res;
     },
     // isUserAuthenticated API handler
-    async isUserAuth() {
-      let authenticated = await axios
+    async isUserAuthenticated() {
+      await axios
         .get(process.env.VUE_APP_AUTH_CHECK_API, {
           withCredentials: true,
+          timeout: 1000 * 5,
         })
         .then(() => {
           // User is authenticated
@@ -156,7 +160,7 @@ export const useAuthStore = defineStore("auth", {
           this.user_auth = false;
           return false;
         });
-      return authenticated;
+      return this.user_auth;
     },
     // Refresh token API handler
     async refreshToken() {
@@ -169,6 +173,7 @@ export const useAuthStore = defineStore("auth", {
           {},
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then(() => {
@@ -205,6 +210,7 @@ export const useAuthStore = defineStore("auth", {
           {},
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then((response) => {

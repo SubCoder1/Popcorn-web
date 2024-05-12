@@ -481,7 +481,8 @@ h4 {
 .delete-content-btn,
 .delete-gang-btn,
 .mic-off-btn,
-.ss-off {
+.ss-off,
+.vid-off-btn {
   background: palevioletred;
   border: 0;
   -moz-transition: all 0.2s ease-in;
@@ -497,6 +498,7 @@ h4 {
 .delete-gang-btn:hover,
 .mic-off-btn:hover,
 .ss-off:hover,
+.vid-off-btn:hover,
 .delete-content-btn:hover,
 .mute-sound-btn:hover,
 .modal-close-btn:focus,
@@ -506,6 +508,7 @@ h4 {
 .delete-gang-btn:focus,
 .delete-content-btn:focus,
 .mic-off-btn:focus,
+.vid-off-btn:focus,
 .ss-off:focus,
 .mute-sound-btn:focus {
   background: #d94072;
@@ -528,9 +531,15 @@ strong {
 
 video {
   border-radius: 0.5rem 0.5rem 0 0;
-  height: 100%;
-  width: 100%;
+  height: 100% !important;
+  width: 100% !important;
   background: rgb(43, 42, 51);
+}
+
+.user-vc {
+  border-radius: 50% !important;
+  object-fit: cover;
+  background: transparent;
 }
 
 .gang-info-btn,

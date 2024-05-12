@@ -144,6 +144,41 @@
           <button
             type="button"
             class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
+            :class="{ 'vid-btn': video_call, 'vid-off-btn': !video_call }"
+            :disabled="loading_members"
+            @click="toggleVC"
+          >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="23"
+            height="18"
+            fill="currentColor"
+            class="bi bi-camera-video-off"
+            viewBox="0 0 16 16"
+            v-if="!video_call"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10.961 12.365a2 2 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l.714 1H9.5a1 1 0 0 1 1 1v6a1 1 0 0 1-.144.518zM1.428 4.18A1 1 0 0 0 1 5v6a1 1 0 0 0 1 1h5.014l.714 1H2a2 2 0 0 1-2-2V5c0-.675.334-1.272.847-1.634zM15 11.73l-3.5-1.555v-4.35L15 4.269zm-4.407 3.56-10-14 .814-.58 10 14z"
+            />
+          </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="23"
+            height="18"
+            fill="currentColor"
+            class="bi bi-camera-video"
+            viewBox="0 0 16 16"
+            v-else
+          >
+            <path
+              fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1z"
+            />
+          </svg>
+          </button>
+          <button
+            type="button"
+            class="btn btn-circle-md d-flex align-items-center justify-content-center rounded-circle p-0"
             :class="{ 'ss-on': split_screen, 'ss-off': !split_screen }"
             v-if="gangStore.getUserGang.gang_streaming"
             :disabled="!split_screen_permission"
@@ -188,34 +223,6 @@
           </svg>
         </div>
         <div
-          v-if="loading_members"
-          class="d-flex flex-row justify-content-between w-100"
-        >
-          <div class="d-flex flex-column align-items-center me-3 ms-3">
-            <div
-              class="skeleton user-prof-skeleton-lg rounded-circle mb-2"
-            ></div>
-            <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
-            <div class="skeleton skeleton-text skeleton-text-xsm"></div>
-          </div>
-          <div class="d-flex flex-column align-items-center me-3 ms-3">
-            <div
-              class="skeleton user-prof-skeleton-lg rounded-circle mb-2"
-            ></div>
-            <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
-            <div class="skeleton skeleton-text skeleton-text-xsm"></div>
-          </div>
-          <div class="d-flex flex-column align-items-center me-3 ms-3">
-            <div
-              class="skeleton user-prof-skeleton-lg rounded-circle mb-2"
-            ></div>
-            <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
-            <div class="skeleton skeleton-text skeleton-text-xsm"></div>
-          </div>
-        </div>
-        <div
-          v-else
-          ref="memberActivity"
           class="d-flex w-100"
           :class="{
             'expand-members-tab': expand_members && !split_screen,
@@ -224,17 +231,42 @@
           }"
         >
           <div
+            v-if="loading_members"
+            class="d-flex flex-row justify-content-between w-100"
+          >
+            <div class="d-flex flex-column align-items-center me-3 ms-3">
+              <div
+                class="skeleton user-prof-skeleton-lg rounded-circle mb-2"
+              ></div>
+              <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
+              <div class="skeleton skeleton-text skeleton-text-xsm"></div>
+            </div>
+            <div class="d-flex flex-column align-items-center me-3 ms-3">
+              <div
+                class="skeleton user-prof-skeleton-lg rounded-circle mb-2"
+              ></div>
+              <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
+              <div class="skeleton skeleton-text skeleton-text-xsm"></div>
+            </div>
+            <div class="d-flex flex-column align-items-center me-3 ms-3">
+              <div
+                class="skeleton user-prof-skeleton-lg rounded-circle mb-2"
+              ></div>
+              <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
+              <div class="skeleton skeleton-text skeleton-text-xsm"></div>
+            </div>
+          </div>
+          <div
             v-for="member in active_members"
-            :key="member"
-            :id="member[0]"
+            :key="member[0]"
             class="member position-relative d-flex flex-column align-items-center ms-3 me-3"
             :class="{ 'mb-3': split_screen }"
           >
             <div
               class="d-flex align-items-center justify-content-center member-view rounded-circle"
-              ref="memberRef"
               :class="{
-                speaking: isParticipantSpeaking(member[0]),
+                speaking:
+                  !member[1].participant.isLocal && member[1].participant.getVolume() != 0 && isParticipantSpeaking(member[0]),
                 'user-split-screen': split_screen && split_screen_permission,
                 'user-expanded': expand_members,
               }"
@@ -245,33 +277,30 @@
                 "
                 class="profile-pic-lg"
                 alt="User profile picture"
+                v-if="!member[1].video"
               />
+              <div
+                ref="memberRef"
+                class="h-100"
+                :class="{
+                  'w-auto': !member[1].video,
+                  'w-100': member[1].video,
+                }"
+                :id="member[0]"
+              ></div>
             </div>
             <span class="text-secondary text-xsm handle-txt-overflow txt-width">
               @{{ member[0] }}
             </span>
             <button
-              v-if="!member[1].isLocal"
+              v-if="!member[1].participant.isLocal"
               class="btn btn-circle-sm rounded-circle position-absolute d-flex align-items-center justify-content-center p-0"
               :class="{
-                'mute-sound-btn': member[1].getVolume() != 0,
-                'unmute-sound-btn': member[1].getVolume() == 0,
+                'mute-sound-btn': member[1].participant.getVolume() != 0,
+                'unmute-sound-btn': member[1].participant.getVolume() == 0,
               }"
-              @click="toggleMemberNoise(member[1])"
+              @click="toggleMemberNoise(member[1].participant)"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                class="bi bi-volume-mute"
-                viewBox="0 0 16 16"
-                v-if="member[1].getVolume() != 0"
-              >
-                <path
-                  d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06M6 5.04 4.312 6.39A.5.5 0 0 1 4 6.5H2v3h2a.5.5 0 0 1 .312.11L6 10.96zm7.854.606a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0"
-                />
-              </svg>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -279,7 +308,7 @@
                 fill="currentColor"
                 class="bi bi-volume-up"
                 viewBox="0 0 16 16"
-                v-else
+                v-if="member[1].participant.getVolume() != 0"
               >
                 <path
                   d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z"
@@ -289,6 +318,19 @@
                 />
                 <path
                   d="M10.025 8a4.5 4.5 0 0 1-1.318 3.182L8 10.475A3.5 3.5 0 0 0 9.025 8c0-.966-.392-1.841-1.025-2.475l.707-.707A4.5 4.5 0 0 1 10.025 8M7 4a.5.5 0 0 0-.812-.39L3.825 5.5H1.5A.5.5 0 0 0 1 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 7 12zM4.312 6.39 6 5.04v5.92L4.312 9.61A.5.5 0 0 0 4 9.5H2v-3h2a.5.5 0 0 0 .312-.11"
+                />
+              </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-volume-mute"
+                viewBox="0 0 16 16"
+                v-else
+              >
+                <path
+                  d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06M6 5.04 4.312 6.39A.5.5 0 0 1 4 6.5H2v3h2a.5.5 0 0 1 .312.11L6 10.96zm7.854.606a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0"
                 />
               </svg>
             </button>
@@ -337,7 +379,7 @@
       </div>
     </div>
   </div>
-  <div v-if="loading" class="d-flex flex-column p-4">
+  <div v-if="loading" class="d-flex flex-column p-3">
     <div class="d-flex flex-row mb-3">
       <div class="skeleton user-prof-skeleton-md rounded-circle me-3"></div>
       <div class="d-flex flex-column justify-content-center">
@@ -360,7 +402,7 @@
       </div>
     </div>
   </div>
-  <div v-else-if="!split_screen" class="d-flex flex-column p-4">
+  <div v-else-if="!split_screen" class="d-flex flex-column p-3">
     <GangList v-if="showGangList" />
     <GangInteract v-else-if="showGangInteract" />
     <div class="h-auto" v-else>
@@ -437,7 +479,6 @@ let sseClient;
 
 const remoteMediaContainer = ref(null);
 const memberRef = ref([]);
-const memberActivity = ref(0);
 
 const room = new Room({
   // automatically manage subscribed video quality
@@ -478,6 +519,7 @@ export default {
       active_members: new Map(),
       active_speakers: [],
       speaking: false,
+      video_call: false,
       expand_members: false,
       split_screen_permission: false,
       split_screen: false,
@@ -487,6 +529,9 @@ export default {
   },
   name: "GangDashboard",
   methods: {
+    sleep: function (time) {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    },
     getUserGang: async function (retry) {
       this.loading = true;
       const response = await this.gangStore.getGang();
@@ -576,6 +621,7 @@ export default {
           {},
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then((response) => {
@@ -601,6 +647,7 @@ export default {
           {},
           {
             withCredentials: true,
+            timeout: 1000 * 5,
           }
         )
         .then((response) => {
@@ -646,6 +693,7 @@ export default {
             }
           }
         }
+
         // Connect with livekit room using the fetched token
         await room
           .connect(
@@ -655,6 +703,12 @@ export default {
           .then(() => {
             this.loading_members = false;
             console.log("connected to room - ", room.name);
+            // Mark yourself as active
+            this.active_members.set(this.userStore.getUserName, {
+              participant: room.localParticipant,
+              video: false,
+            });
+            // Add members who're already active into active_members map
             room.participants.forEach((p) => {
               this.handleConnectedParticipant(p);
             });
@@ -663,19 +717,20 @@ export default {
             if (retry == false) {
               this.play_permission = false;
               this.authStore.stream_token = "";
-              await this.handleLiveKitEvents(false);
+              await this.handleLiveKitEvents(!retry);
             } else {
               this.$parent.$parent.$parent.$parent.srvErrModal();
             }
           });
       }
     },
-    handleTrackSubscribed: function (track, publication, participant) {
+    handleTrackSubscribed: async function (track, publication, participant) {
       try {
         const media = publication.track.attach();
         if (
-          participant.identity == "gang_admin" ||
-          participant.identity == this.gangStore.getUserGang.gang_admin
+          (participant.identity == "gang_admin" ||
+            participant.identity == this.gangStore.getUserGang.gang_admin) &&
+          publication.source != "camera"
         ) {
           // Stream
           this.gang_stream_loading = false;
@@ -691,11 +746,24 @@ export default {
         } else {
           // User video or audio
           if (this.play_permission) {
-            var member_div = this.$refs.memberRef.find(
-              (x) => x.id == participant.identity
-            );
-            if (member_div != undefined) {
-              member_div.appendChild(media);
+            if (publication.kind == "video") {
+              this.active_members.set(participant.identity, {
+                participant: participant,
+                video: true,
+              });
+              await this.sleep(3);
+              let member_dom = this.$refs.memberRef.find(
+                (x) => x.id == participant.identity
+              );
+              if (member_dom != undefined) {
+                media.classList.add("user-vc");
+                member_dom.appendChild(media);
+              } else {
+                this.active_members.set(participant.identity, {
+                  participant: participant,
+                  video: false,
+                });
+              }
             }
           }
         }
@@ -703,29 +771,77 @@ export default {
         this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
+    handleTrackUnsubscribed: function (track, publication, participant) {
+      if (
+        (participant.identity == "gang_admin" ||
+          participant.identity == this.gangStore.getUserGang.gang_admin) &&
+        publication.source != "camera"
+      ) {
+        // stream
+        this.clearStream();
+      } else {
+        // audio or video
+        if (publication.kind == "video") {
+          this.active_members.set(participant.identity, {
+            participant: participant,
+            video: false,
+          });
+        }
+      }
+    },
     handleActiveSpeakers: function (speakers) {
       this.active_speakers = speakers;
     },
     handleConnectedParticipant: function (participant) {
       if (participant.identity != "gang_admin") {
-        this.active_members.set(participant.identity, participant);
+        this.active_members.set(participant.identity, {
+          participant: participant,
+          video: false,
+        });
       }
     },
     handleDisconnectedParticipant: function (participant) {
       if (participant.identity != "gang_admin") {
-        delete this.active_members.delete(participant.identity);
+        this.active_members.delete(participant.identity);
       }
     },
-    handleScreenShareContent: function (publication, participant) {
+    handleLocalTrackPublished: async function (publication, participant) {
       try {
-        if (publication.kind == "video" && !this.load_video) {
+        const media = publication.track.attach();
+        if (
+          publication.kind == "video" &&
+          publication.source == "screen_share" &&
+          !this.load_video
+        ) {
+          // screen shared content
           this.gang_stream_loading = false;
-          const media = publication.track.attach();
           this.load_video = true;
           this.$refs.remoteMediaContainer.appendChild(media);
+          // to show the screen-rotate popup in smaller screens
+          this.toggleSplitScreenPermissionOnScreenResize();
+        } else if (
+          publication.source == "camera" &&
+          publication.kind == "video"
+        ) {
+          // user vc
+          this.active_members.set(participant.identity, {
+            participant: participant,
+            video: true,
+          });
+          await this.sleep(3);
+          let member_dom = this.$refs.memberRef.find(
+            (x) => x.id == participant.identity
+          );
+          if (member_dom != undefined) {
+            media.classList.add("user-vc");
+            member_dom.appendChild(media);
+          } else {
+            this.active_members.set(participant.identity, {
+              participant: participant,
+              video: false,
+            });
+          }
         }
-        // to show the screen-rotate popup in smaller screens
-        this.toggleSplitScreenPermissionOnScreenResize();
       } catch (e) {
         this.$parent.$parent.$parent.$parent.srvErrModal();
       }
@@ -754,9 +870,47 @@ export default {
         this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
-    handleScreenShareStopped: async function (publication, participant) {
+    handleLocalTrackUnPublished: async function (publication, participant) {
       if (publication.source == "screen_share") {
         await this.stopContentAPI();
+      }
+    },
+    handleTrackMuted: function (publication, participant) {
+      if (publication.source == "camera") {
+        // user vc
+        let member_dom = this.$refs.memberRef.find(
+          (x) => x.id == participant.identity
+        );
+        if (member_dom != undefined) {
+          member_dom.innerHTML = "";
+        }
+        this.active_members.set(participant.identity, {
+          participant: participant,
+          video: false,
+        });
+      }
+    },
+    handleTrackUnMuted: async function (publication, participant) {
+      if (publication.source == "camera") {
+        // user vc
+        await this.sleep(3);
+        const media = publication.track.attach();
+        let member_dom = this.$refs.memberRef.find(
+          (x) => x.id == participant.identity
+        );
+        if (member_dom != undefined) {
+          media.classList.add("user-vc");
+          member_dom.appendChild(media);
+          this.active_members.set(participant.identity, {
+            participant: participant,
+            video: true,
+          });
+        } else {
+          this.active_members.set(participant.identity, {
+            participant: participant,
+            video: false,
+          });
+        }
       }
     },
     isParticipantSpeaking: function (participant) {
@@ -769,9 +923,23 @@ export default {
       });
       return result;
     },
-    toggleMic: function () {
-      this.speaking = !this.speaking;
-      room.localParticipant.setMicrophoneEnabled(this.speaking);
+    toggleMic: async function () {
+      try {
+        this.speaking = !this.speaking;
+        await room.localParticipant.setMicrophoneEnabled(this.speaking);
+      } catch (e) {
+        this.speaking = !this.speaking;
+        console.log("Microphone permission is disabled.");
+      }
+    },
+    toggleVC: async function () {
+      try {
+        this.video_call = !this.video_call;
+        await room.localParticipant.setCameraEnabled(this.video_call);
+      } catch (e) {
+        this.video_call = !this.video_call;
+        console.log("Camera permission is disabled.");
+      }
     },
     toggleMemberNoise: function (member) {
       if (member.getVolume() == 0) {
@@ -862,13 +1030,16 @@ export default {
     GangInteract: defineAsyncComponent(() => import("./GangInteract.vue")),
   },
   async mounted() {
-    console.log(remoteMediaContainer, memberRef, memberActivity);
+    // I think this line makes null ref issues go away, but who knows :)
+    console.log(remoteMediaContainer, memberRef);
     // eslint-disable-next-line
     window.addEventListener("resize", this.toggleSplitScreenPermissionOnScreenResize);
     this.toggleSplitScreenPermissionOnScreenResize();
     // Load Livekit room event handlers
-    // Triggerd when a new remote track is published (can be stream or user video/audio)
+    // Triggered when a new remote track is published (can be stream or user video/audio)
     room.on(RoomEvent.TrackSubscribed, this.handleTrackSubscribed);
+    // Triggered when a remote track is unpublished (can be a stream or user video/audio)
+    room.on(RoomEvent.TrackUnsubscribed, this.handleTrackUnsubscribed);
     // Triggered whenever there's a change in active speakers
     room.on(RoomEvent.ActiveSpeakersChanged, this.handleActiveSpeakers);
     // Triggered whenever a new member joins in
@@ -879,12 +1050,15 @@ export default {
       this.handleDisconnectedParticipant
     );
     // Triggered when screen shared stream is received by the LOCAL user
-    room.on(RoomEvent.LocalTrackPublished, this.handleScreenShareContent);
+    room.on(RoomEvent.LocalTrackPublished, this.handleLocalTrackPublished);
     // Triggered when screen share is stopped
-    room.on(RoomEvent.LocalTrackUnpublished, this.handleScreenShareStopped);
+    room.on(RoomEvent.LocalTrackUnpublished, this.handleLocalTrackUnPublished);
+    // Triggered when user vc is stopped
+    room.on(RoomEvent.TrackMuted, this.handleTrackMuted);
+    // Triggered when user vc is restarted
+    room.on(RoomEvent.TrackUnmuted, this.handleTrackUnMuted);
+
     const _ = await this.getUserGang(false);
-    // Mark yourself as active
-    this.active_members.set(this.userStore.getUserName, room.localParticipant);
 
     sseClient = await this.$sse.create({
       url: process.env.VUE_APP_SSE_API,
@@ -928,7 +1102,6 @@ export default {
           type: "gangJoin",
           message: msg.message,
         });
-        memberActivity.value++;
       }
     });
     // Handle incoming gangBoot messages from server
@@ -1065,8 +1238,8 @@ export default {
 }
 
 .member-view {
-  height: 100px;
-  width: 100px;
+  height: 110px;
+  width: 110px;
   background: #80808029;
 }
 
@@ -1199,6 +1372,11 @@ export default {
   color: white;
   background-color: rgb(241, 133, 121);
   box-shadow: none;
+}
+
+.user-vc {
+  border-radius: 50% !important;
+  object-fit: fill;
 }
 
 @media only screen and (max-width: 995px) {

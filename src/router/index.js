@@ -79,7 +79,7 @@ router.beforeEach(async (to) => {
   const authStore = useAuthStore();
   if (to.meta.requiresAuth) {
     // View or Component requires auth
-    if (!(await authStore.isUserAuth())) {
+    if (!(await authStore.isUserAuthenticated())) {
       // client not authenticated
       // use refresh_token and check if user can still authenticate
       await authStore.refreshToken();
@@ -94,7 +94,7 @@ router.beforeEach(async (to) => {
     }
   } else {
     // User can't access noAuth pages like login, register... if they're already authenticated
-    if (authStore.getUserAuth) {
+    if (authStore.getUserAuth || (await authStore.isUserAuthenticated())) {
       return { name: "home" };
     }
   }
