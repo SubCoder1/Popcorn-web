@@ -22,7 +22,7 @@ Make sure that you've `npm`, `node` and `VueJS` installed in your system. You ca
 This step is only required if Popcorn-Web is running without Docker.
 1. Set ```VUE_APP_SERVER_URL = http://localhost:<server-port>``` in Popcorn-web/.env (line-1).
 2. Execute the following commands :-
-```
+```console
 npm install .
 npm run serve -- --port 8081
 # visit localhost:8081 to check it out!
