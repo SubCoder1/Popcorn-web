@@ -531,9 +531,15 @@ strong {
 
 video {
   border-radius: 0.5rem 0.5rem 0 0;
-  height: 100%;
-  width: 100%;
+  height: 100% !important;
+  width: 100% !important;
   background: rgb(43, 42, 51);
+}
+
+.user-vc {
+  border-radius: 50% !important;
+  object-fit: cover;
+  background: transparent;
 }
 
 .gang-info-btn,
