@@ -3,6 +3,75 @@
 <template>
   <div
     class="modal fade"
+    v-show="mic_issue.length || vc_issue.length"
+    v-bind:class="{ 'show d-block': mic_issue.length || vc_issue.length }"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0">
+        <div
+          class="modal-body d-flex flex-column align-items-center text-center"
+        >
+          <img
+            class="m-auto"
+            src="@/assets/misc/warning.png"
+            style="height: 130px"
+            alt="Media device failure"
+          />
+          <h3 class="text-secondary mt-4">It's not US, it's YOU!</h3>
+          <span
+            class="text-secondary"
+            v-if="
+              mic_issue == 'PermissionDenied' || vc_issue == 'PermissionDenied'
+            "
+          >
+            Please allow
+            {{ mic_issue.length ? "microphone" : "camera" }} permission for
+            {{ mic_issue.length ? "voice" : "video" }} interactions.
+          </span>
+          <span
+            class="text-secondary"
+            v-else-if="mic_issue == 'NotFound' || vc_issue == 'NotFound'"
+          >
+            Popcorn couldn't find a working
+            {{ mic_issue.length ? "microphone" : "camera" }} in your platform,
+            hmmm... weird indeed!
+          </span>
+          <span
+            class="text-secondary"
+            v-else-if="mic_issue == 'DeviceInUse' || vc_issue == 'DeviceInUse'"
+          >
+            The {{ mic_issue.length ? "microphone device" : "camera" }} we're
+            currently trying to access is already in use.
+          </span>
+          <span class="text-secondary" v-else>
+            I can't tell for sure what's going on with your
+            {{ mic_issue.length ? "microphone" : "camera" }}. You're on your own
+            here :)
+          </span>
+        </div>
+        <div class="modal-footer border-0">
+          <button
+            type="button"
+            class="btn modal-close-btn rounded-md text-sm"
+            data-bs-dismiss="modal"
+            @click="
+              mic_issue = '';
+              vc_issue = '';
+            "
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="modal fade"
     v-show="
       !close_rotate_screen_modal &&
       !split_screen_permission &&
@@ -12,7 +81,6 @@
       /* eslint-disable */
       'show d-block': !close_rotate_screen_modal && !split_screen_permission && gangStore.getUserGang.gang_streaming,
     }"
-    refs="srvErrModal"
     data-bs-backdrop="static"
     data-bs-keyboard="false"
     tabindex="-1"
@@ -460,7 +528,10 @@
     </div>
   </div>
   <div
-    v-if="!close_rotate_screen_modal && !split_screen_permission && gangStore.getUserGang.gang_streaming"
+    v-if="
+      (!close_rotate_screen_modal && !split_screen_permission && gangStore.getUserGang.gang_streaming) ||
+      (mic_issue.length || vc_issue.length)
+    "
     class="modal-backdrop fade show"
   ></div>
 </template>
@@ -472,7 +543,7 @@ import { useGangStore } from "@/stores/gang.store";
 import { useUserStore } from "@/stores/user.store";
 import { defineAsyncComponent } from "vue";
 import time2TimeAgo from "@/utils/timeago";
-import { Room, RoomEvent } from "livekit-client";
+import { Room, RoomEvent, MediaDeviceFailure } from "livekit-client";
 import { ref } from "vue";
 
 let sseClient;
@@ -525,6 +596,8 @@ export default {
       split_screen: false,
       split_screen_chat_view: true,
       close_rotate_screen_modal: true,
+      mic_issue: "",
+      vc_issue: "",
     };
   },
   name: "GangDashboard",
@@ -713,13 +786,13 @@ export default {
               this.handleConnectedParticipant(p);
             });
           })
-          .catch(async () => {
+          .catch(async (e) => {
             if (retry == false) {
               this.play_permission = false;
               this.authStore.stream_token = "";
               await this.handleLiveKitEvents(!retry);
             } else {
-              this.$parent.$parent.$parent.$parent.srvErrModal();
+              console.log(e);
             }
           });
       }
@@ -928,6 +1001,8 @@ export default {
         this.speaking = !this.speaking;
         await room.localParticipant.setMicrophoneEnabled(this.speaking);
       } catch (e) {
+        // eslint-disable-next-line
+        this.mic_issue = MediaDeviceFailure.getFailure(room.localParticipant.lastMicrophoneError);
         this.speaking = !this.speaking;
         console.log("Microphone permission is disabled.");
       }
@@ -937,6 +1012,8 @@ export default {
         this.video_call = !this.video_call;
         await room.localParticipant.setCameraEnabled(this.video_call);
       } catch (e) {
+        // eslint-disable-next-line
+        this.vc_issue = MediaDeviceFailure.getFailure(room.localParticipant.lastCameraError);
         this.video_call = !this.video_call;
         console.log("Camera permission is disabled.");
       }
