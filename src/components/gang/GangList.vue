@@ -14,9 +14,20 @@
   >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0">
-        <div class="modal-body">
-          Do you really want to delete your gang? <br /><br />
-          <strong>NOTE</strong>: This will stop any ongoing stream in your gang.
+        <div
+          class="modal-body d-flex flex-column align-items-center text-center"
+        >
+          <img
+            class="m-auto"
+            src="@/assets/misc/warning.png"
+            style="height: 130px"
+            alt="Warning"
+          />
+          <span class="mt-4 mb-2">Do you really want to delete your gang?</span>
+          <em class="text-secondary">
+            <strong>NOTE</strong>: This will stop any ongoing stream in your
+            gang.
+          </em>
         </div>
         <div class="modal-footer border-0">
           <button
@@ -125,8 +136,8 @@
           <svg
             v-if="!load_delete_gang_btn"
             xmlns="http://www.w3.org/2000/svg"
-            width="23"
-            height="26"
+            width="26"
+            height="23"
             fill="currentColor"
             class="bi bi-trash3"
             viewBox="0 0 16 16"
