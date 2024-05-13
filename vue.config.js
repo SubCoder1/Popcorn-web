@@ -32,6 +32,7 @@ module.exports = {
         "Popcorn is a virtual watchparty platform written in Go which lets a group of people watch uploaded content together.",
       theme_color: "#f18579",
       background_color: "#f18579",
+      display: "fullscreen",
       icons: [
         {
           src: "windows11/SmallTile.scale-100.png",
