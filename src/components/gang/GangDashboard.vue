@@ -1102,7 +1102,7 @@ export default {
       // eslint-disable-next-line
       this.split_screen_permission = window.innerWidth > window.innerHeight && window.innerWidth > 200;
       // basic check for small screen platforms
-      this.small_screen = window.innerWidth < 530;
+      this.small_screen = window.innerWidth < 530 || window.innerHeight < 550;
       if (
         this.gangStore.getUserGang.gang_streaming &&
         !this.is_stream_landscape &&
