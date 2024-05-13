@@ -156,7 +156,6 @@
         v-else
         class="d-flex justify-content-between"
         :class="{
-          'overflow-auto': !split_screen,
           'flex-column p-2': split_screen,
           'h-50': split_screen_chat_view,
           'h-100': !split_screen_chat_view,
@@ -291,11 +290,11 @@
           </svg>
         </div>
         <div
-          class="d-flex w-100"
+          class="d-flex w-100 overflow-auto"
           :class="{
             'expand-members-tab': expand_members && !split_screen,
             'flex-row': !split_screen,
-            'overflow-auto flex-column h-100': split_screen,
+            'flex-column h-100': split_screen,
           }"
         >
           <div
@@ -316,7 +315,10 @@
               <div class="skeleton skeleton-text skeleton-text-sm mb-1"></div>
               <div class="skeleton skeleton-text skeleton-text-xsm"></div>
             </div>
-            <div class="d-flex flex-column align-items-center me-3 ms-3">
+            <div
+              class="d-flex flex-column align-items-center me-3 ms-3"
+              v-if="!small_screen"
+            >
               <div
                 class="skeleton user-prof-skeleton-lg rounded-circle mb-2"
               ></div>
@@ -598,6 +600,7 @@ export default {
       close_rotate_screen_modal: true,
       mic_issue: "",
       vc_issue: "",
+      is_stream_landscape: true,
     };
   },
   name: "GangDashboard",
@@ -755,10 +758,7 @@ export default {
             }
           });
       } else {
-        const response = await this.authStore.getStreamingToken();
-        if (response == 200) {
-          await this.prepareLivekit(retry);
-        }
+        await this.authStore.getStreamingToken();
       }
     },
     handleLiveKitEvents: async function (retry) {
@@ -830,15 +830,18 @@ export default {
         ) {
           // Stream
           this.gang_stream_loading = false;
+          await this.sleep(3);
           if (publication.kind == "video" && !this.load_video) {
             this.load_video = true;
             this.$refs.remoteMediaContainer.appendChild(media);
+            // to show the screen-rotate popup in smaller screens
+            this.is_stream_landscape =
+              publication.dimensions.width >= publication.dimensions.height;
+            this.toggleSplitScreenPermissionOnScreenResize();
           } else if (publication.kind == "audio" && !this.load_audio) {
             this.load_audio = true;
             this.$refs.remoteMediaContainer.appendChild(media);
           }
-          // to show the screen-rotate popup in smaller screens
-          this.toggleSplitScreenPermissionOnScreenResize();
         } else {
           // User video or audio
           if (this.play_permission && publication.kind == "video") {
@@ -862,6 +865,7 @@ export default {
           }
         }
       } catch (err) {
+        console.log(err);
         this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
@@ -913,6 +917,8 @@ export default {
           this.load_video = true;
           this.$refs.remoteMediaContainer.appendChild(media);
           // to show the screen-rotate popup in smaller screens
+          this.is_stream_landscape =
+            publication.dimensions.width >= publication.dimensions.height;
           this.toggleSplitScreenPermissionOnScreenResize();
         } else if (
           publication.source == "camera" &&
@@ -939,31 +945,32 @@ export default {
           }
         }
       } catch (e) {
+        console.log(e);
         this.$parent.$parent.$parent.$parent.srvErrModal();
       }
     },
     toggleScreenShare: async function (action) {
-      try {
-        if (action) {
-          if (!room.localParticipant.isScreenShareEnabled) {
-            room.localParticipant.setScreenShareEnabled(true, {
-              audio: true,
-              video: true,
+      if (action) {
+        if (!room.localParticipant.isScreenShareEnabled) {
+          try {
+            await room.localParticipant.setScreenShareEnabled(action, {
+              audio: action,
+              video: action,
             });
-          } else {
+          } catch (e) {
             // permission denied
-            await this.stopContentAPI();
-          }
-        } else {
-          if (room.localParticipant.isScreenShareEnabled) {
-            room.localParticipant.setScreenShareEnabled(false);
-          } else {
-            // permission denied
+            console.log(e);
             await this.stopContentAPI();
           }
         }
-      } catch (err) {
-        this.$parent.$parent.$parent.$parent.srvErrModal();
+      } else {
+        if (room.localParticipant.isScreenShareEnabled) {
+          try {
+            await room.localParticipant.setScreenShareEnabled(action);
+          } catch (e) {
+            console.log(e);
+          }
+        }
       }
     },
     handleLocalTrackUnPublished: async function (publication, participant) {
@@ -989,8 +996,8 @@ export default {
     handleTrackUnMuted: async function (publication, participant) {
       if (publication.source == "camera") {
         // user vc
-        await this.sleep(3);
         const media = publication.track.attach();
+        await this.sleep(3);
         let member_dom = this.$refs.memberRef.find(
           (x) => x.id == participant.identity
         );
@@ -1091,10 +1098,20 @@ export default {
       }
     },
     toggleSplitScreenPermissionOnScreenResize: function (e) {
+      // checks if screen is in landscape mode
       // eslint-disable-next-line
       this.split_screen_permission = window.innerWidth > window.innerHeight && window.innerWidth > 200;
-      this.small_screen = window.innerHeight < 530;
-      if (!this.split_screen_permission) {
+      // basic check for small screen platforms
+      this.small_screen = window.innerWidth < 530;
+      if (
+        this.gangStore.getUserGang.gang_streaming &&
+        !this.is_stream_landscape &&
+        this.small_screen
+      ) {
+        // cannot enter theatre mode for potrait streams in smaller screen platforms
+        this.split_screen_permission = false;
+        this.close_rotate_screen_modal = false;
+      } else if (!this.split_screen_permission) {
         if (this.gangStore.getUserGang.gang_streaming) {
           this.close_rotate_screen_modal = !this.close_rotate_screen_modal;
         }
@@ -1168,7 +1185,7 @@ export default {
       withCredentials: true,
       polyfill: true,
     });
-    sseClient.connect().catch((err) => {
+    await sseClient.connect().catch((err) => {
       // When this error is caught, it means the initial connection to the
       // events server failed.  No automatic attempts to reconnect will be made.
       console.error("Failed to connect to server", err);

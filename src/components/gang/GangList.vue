@@ -74,7 +74,7 @@
       </div>
     </div>
     <div class="d-flex flex-column">
-      <p class="text-xsm text-secondary text-end">
+      <p class="text-xsm text-secondary text-end" style="margin-bottom: 8px">
         {{ gangStore.getUserGang.gang_created }}
       </p>
       <div

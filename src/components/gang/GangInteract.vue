@@ -1058,7 +1058,7 @@ export default {
 }
 
 .txt-width {
-  max-width: 200px;
+  max-width: 330px;
 }
 
 @media only screen and (max-width: 497px) {
@@ -1080,7 +1080,7 @@ export default {
   }
 
   .txt-width {
-    max-width: 190px;
+    max-width: 170px;
   }
 }
 </style>
