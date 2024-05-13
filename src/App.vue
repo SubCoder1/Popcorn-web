@@ -593,7 +593,7 @@ video {
   }
 
   h4 {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .text-sm {

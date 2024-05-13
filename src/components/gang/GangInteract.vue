@@ -1080,7 +1080,7 @@ export default {
   }
 
   .txt-width {
-    max-width: 170px;
+    max-width: 160px;
   }
 }
 </style>
