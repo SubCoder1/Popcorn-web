@@ -638,6 +638,7 @@ export default {
           // Server error
           this.forceStopModals();
           this.$parent.$parent.$parent.$parent.$parent.$parent.srvErrModal();
+          await this.stopContent();
         }
       } else {
         if (this.gangStore.getUserGang.gang_screen_share) {
@@ -1080,7 +1081,7 @@ export default {
   }
 
   .txt-width {
-    max-width: 160px;
+    max-width: 145px;
   }
 }
 </style>
