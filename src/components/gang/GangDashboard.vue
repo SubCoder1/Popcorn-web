@@ -1073,28 +1073,18 @@ export default {
       }
     },
     enterFullScreen: function () {
-      var isInFullScreen =
-        (document.fullscreenElement && document.fullscreenElement !== null) ||
-        (document.webkitFullscreenElement &&
-          document.webkitFullscreenElement !== null) ||
-        (document.mozFullScreenElement &&
-          document.mozFullScreenElement !== null) ||
-        (document.msFullscreenElement && document.msFullscreenElement !== null);
-      var elem = document.documentElement;
-      if (!isInFullScreen) {
+      try {
+        let elem = document.body;
         elem.requestFullscreen();
+      } catch (e) {
+        // ignore
       }
     },
     exitFullScreen: function () {
-      var isInFullScreen =
-        (document.fullscreenElement && document.fullscreenElement !== null) ||
-        (document.webkitFullscreenElement &&
-          document.webkitFullscreenElement !== null) ||
-        (document.mozFullScreenElement &&
-          document.mozFullScreenElement !== null) ||
-        (document.msFullscreenElement && document.msFullscreenElement !== null);
-      if (isInFullScreen) {
+      try {
         document.exitFullscreen();
+      } catch (e) {
+        // ignore
       }
     },
     toggleSplitScreenPermissionOnScreenResize: function (e) {
