@@ -17,17 +17,21 @@
   >
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
       <div class="modal-content border-0">
-        <div class="modal-body h-auto">
+        <div class="modal-body h-auto text-center">
           <span class="text-secondary">
             Great! Now you can live-stream this content by visiting
-            <button type="button" class="btn btn-circle rounded-circle pe-none">
+            <button
+              type="button"
+              class="btn btn-circle rounded-circle pe-none"
+              style="height: 41px; width: 41px"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="23"
-                height="26"
+                width="18"
+                height="24"
                 fill="currentColor"
                 class="bi bi-chat-left-dots"
-                viewBox="0 0 16 16"
+                viewBox="0 0 18 18"
               >
                 <path
                   d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"
@@ -37,14 +41,14 @@
                 />
               </svg>
             </button>
-            and press
-            <button class="btn btn-xsm rounded-md text-sm play-btn pe-none">
+            and press the
+            <button
+              class="btn btn-xsm rounded-md text-sm play-btn pe-none"
+              style="height: 35px"
+            >
               PLAY
             </button>
-            <br /><br />
-            <strong>
-              Remember: You cannot change content while you're streaming.
-            </strong>
+            button!
           </span>
         </div>
         <div class="modal-footer border-0">
@@ -59,6 +63,12 @@
         </div>
       </div>
     </div>
+  </div>
+  <div
+    class="warnings text-sm text-center mb-3"
+    v-if="gangStore.getUserGangMetrics.ingress_quota_exceeded"
+  >
+    Streaming through a file or an URL is currently disabled.
   </div>
   <form @submit.prevent="updateGang(false)" class="gang-update-form">
     <div
@@ -79,7 +89,10 @@
           type="button"
           class="btn btn-circle d-flex align-items-center justify-content-center rounded-circle delete-content-btn"
           @click="deleteContent(false)"
-          :disabled="gangStore.getUserGang.gang_streaming"
+          :disabled="
+            gangStore.getUserGang.gang_streaming ||
+            gangStore.getUserGangMetrics.ingress_quota_exceeded
+          "
         >
           <svg
             v-if="!upload.load_del_content_btn"
@@ -110,7 +123,8 @@
           :disabled="
             update.gang_content_url.length != 0 ||
             update.gang_screen_share ||
-            gangStore.getUserGang.gang_streaming
+            gangStore.getUserGang.gang_streaming ||
+            gangStore.getUserGangMetrics.ingress_quota_exceeded
           "
         />
       </div>
@@ -189,7 +203,8 @@
           upload.uploading == true ||
           gangStore.getUserGang.gang_content_name.length != 0 ||
           update.gang_screen_share ||
-          gangStore.getUserGang.gang_streaming
+          gangStore.getUserGang.gang_streaming ||
+          gangStore.getUserGangMetrics.ingress_quota_exceeded
         "
       />
     </div>
@@ -371,6 +386,12 @@ export default {
         };
         const response = await gangStore.updateGang(updateGangData);
         if (response.status == 200) {
+          if (
+            this.update.gang_screen_share ||
+            this.update.gang_content_url != ""
+          ) {
+            this.upload.showUploadSuccessModal = true;
+          }
           await this.getGangMembers(false);
           this.update.update_txt = "Updated!";
           setTimeout(() => {
@@ -401,6 +422,11 @@ export default {
       this.update.form_submitted = false;
     },
     uploadContent: function (e) {
+      if (this.gangStore.getUserGangMetrics.ingress_quota_exceeded) {
+        let error = "Monthly URL or File streaming quota has been exceeded";
+        this.$parent.$parent.ErrPopUp(error);
+        return;
+      }
       this.upload.uploading = true;
       var file = e.target.files[0];
       var srverr = this.$parent.$parent.$parent.$parent.$parent.$parent;
@@ -541,6 +567,14 @@ export default {
         error = "Gang passkey should be of at least 5 characters.";
         this.$parent.$parent.ErrPopUp(error);
         return false;
+      } else if (
+        this.update.gang_content_url != "" &&
+        this.gangStore.getUserGangMetrics.ingress_quota_exceeded
+      ) {
+        // livekit monthly ingress quota is exceeded
+        error = "Monthly URL or File streaming quota has been exceeded";
+        this.$parent.$parent.ErrPopUp(error);
+        return false;
       }
       return true;
     },
@@ -649,6 +683,10 @@ input:disabled::file-selector-button {
 .form-check-input[type="checkbox"]:checked {
   border: 2px solid rgb(241, 133, 121);
   background-color: rgb(241, 133, 121);
+}
+
+.warnings {
+  color: #f18579;
 }
 
 @media only screen and (max-width: 1050px) {

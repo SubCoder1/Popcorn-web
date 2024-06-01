@@ -12,6 +12,7 @@ export const useGangStore = defineStore("gang", {
     userGang: {},
     userGangInvites: [],
     userGangInteract: [],
+    metrics: {},
   }),
   getters: {
     canCreateGang: (state) => state.CreateGang,
@@ -19,6 +20,7 @@ export const useGangStore = defineStore("gang", {
     getUserGang: (state) => state.userGang,
     getUserGangInvites: (state) => state.userGangInvites,
     getUserGangInteract: (state) => state.userGangInteract,
+    getUserGangMetrics: (state) => state.metrics,
   },
   actions: {
     // getGang API handler
@@ -30,6 +32,7 @@ export const useGangStore = defineStore("gang", {
         })
         .then(async (response) => {
           this.userGang = response.data.gang;
+          this.metrics = response.data.metrics;
           this.userGang.gang_members = [];
           await this.getGangMembers();
           if (this.userGang.gang_admin != null) {
