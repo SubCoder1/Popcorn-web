@@ -28,6 +28,8 @@ module.exports = {
     },
     manifestOptions: {
       short_name: "Popcorn",
+      id: "/",
+      start_url: ".",
       description:
         "Popcorn is a virtual watchparty platform written in Go which lets a group of people watch uploaded content together.",
       theme_color: "#f18579",
@@ -444,6 +446,7 @@ module.exports = {
           src: "android/android-launchericon-192-192.png",
           sizes: "192x192",
           type: "image/png",
+          purpose: "maskable",
         },
         {
           src: "android/android-launchericon-144-144.png",
