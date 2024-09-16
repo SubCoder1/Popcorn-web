@@ -5,7 +5,7 @@
 
 Popcorn-web is an application powered by Vue-js which serves as a frontend for [Popcorn](https://github.com/SubCoder1/Popcorn).
 
-You can check Popcorn out in production at https://popcorntv.click
+You can check Popcorn out in production at https://popcorntv.in
 
 # Requirements
 
