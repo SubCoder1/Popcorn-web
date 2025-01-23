@@ -260,7 +260,11 @@
       <input
         type="password"
         class="form-control text-sm rounded-md input-md"
-        placeholder="Passkey"
+        :placeholder="
+          gangStore.getUserGang.is_private
+            ? 'Gang is protected'
+            : 'Gang is public'
+        "
         v-model="update.gang_pass_key"
         id="gangPassKey"
         @click="removeErr()"
@@ -307,6 +311,10 @@ import { useUserStore } from "@/stores/user.store";
 
 let gangStore = useGangStore();
 let userStore = useUserStore();
+let authStore = useAuthStore();
+// This random passkey will be used to handle situations where
+// an user changed the password and made it empty (public gang from private)
+let random_passkey = Math.random().toString().substr(2, 11);
 var tus = require("tus-js-client");
 
 function formatBytes(bytes, decimals = 2) {
@@ -328,7 +336,7 @@ export default {
       gangStore: gangStore,
       update: {
         gang_name: gangStore.getUserGang.gang_name,
-        gang_pass_key: "",
+        gang_pass_key: random_passkey,
         gang_member_limit: gangStore.getUserGang.gang_member_limit,
         gang_content_url: gangStore.getUserGang.gang_content_url,
         gang_screen_share: gangStore.getUserGang.gang_screen_share,
@@ -359,7 +367,6 @@ export default {
         if (retry == false) {
           // access_token expired, use refresh_token to refresh JWT
           // Try again on success
-          const authStore = useAuthStore();
           const ref_token_resp = await authStore.refreshToken();
           if (ref_token_resp.status == 200) {
             await this.getGangMembers(true);
@@ -380,10 +387,12 @@ export default {
         let updateGangData = {
           gang_content_url: this.update.gang_content_url,
           gang_name: this.update.gang_name,
-          gang_pass_key: this.update.gang_pass_key,
           gang_member_limit: this.update.gang_member_limit,
           gang_screen_share: this.update.gang_screen_share,
         };
+        if (this.update.gang_pass_key != random_passkey) {
+          updateGangData.gang_pass_key = this.update.gang_pass_key;
+        }
         const response = await gangStore.updateGang(updateGangData);
         if (response.status == 200) {
           if (
@@ -402,7 +411,6 @@ export default {
           if (retry == false) {
             // access_token expired, use refresh_token to refresh JWT
             // Try again on success
-            const authStore = useAuthStore();
             const ref_token_resp = await authStore.refreshToken();
             if (ref_token_resp.status == 200) {
               await this.updateGang(true);
@@ -509,7 +517,6 @@ export default {
         if (retry == false) {
           // access_token expired, use refresh_token to refresh JWT
           // Try again on success
-          const authStore = useAuthStore();
           const ref_token_resp = await authStore.refreshToken();
           if (ref_token_resp.status == 200) {
             await this.deleteContent(false);

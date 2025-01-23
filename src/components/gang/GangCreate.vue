@@ -8,7 +8,7 @@
     <div
       class="d-flex align-items-center justify-content-between flex-wrap mb-3"
     >
-      <label for="gangName" class="text-sm">Name of the Gang:</label>
+      <label for="gangName" class="text-sm">Gang Name:</label>
       <input
         type="text"
         class="form-control text-sm rounded-md input-md"
@@ -29,13 +29,12 @@
       <input
         type="password"
         class="form-control text-sm rounded-md input-md"
-        placeholder="Passkey"
+        placeholder="Passkey (Optional)"
         v-model="gang_pass_key"
         minlength="5"
         maxlength="730"
         id="gangPassKey"
         @click="removeErr()"
-        required
       />
     </div>
     <div
@@ -72,6 +71,8 @@
 import { useAuthStore } from "@/stores/auth.store";
 import { useGangStore } from "@/stores/gang.store";
 
+let authStore = useAuthStore();
+
 export default {
   data() {
     return {
@@ -104,7 +105,6 @@ export default {
             if (retry == false) {
               // access_token expired, use refresh_token to refresh JWT
               // Try again on success
-              const authStore = useAuthStore();
               const ref_token_resp = await authStore.refreshToken();
               if (ref_token_resp.status == 200) {
                 await this.getUserData(true);
@@ -149,7 +149,8 @@ export default {
         error = "Gang name cannot contain only whitespaces";
         this.$parent.$parent.ErrPopUp(error);
         return false;
-      } else if (this.gang_pass_key.length < 5) {
+        // eslint-disable-next-line
+      } else if (this.gang_pass_key.length > 0 && this.gang_pass_key.length < 5) {
         // gang_passkey length should be >= 5
         error = "Gang passkey should be of at least 5 characters.";
         this.$parent.$parent.ErrPopUp(error);
